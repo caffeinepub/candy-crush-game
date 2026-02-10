@@ -1,0 +1,29 @@
+{
+  "kind": "spec_vs_diff_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-10T10:05:16.198Z",
+  "summary": "Implemented core PWA/TWA prep: added manifest, service worker + registration, assetlinks.json template, and a Play Store/TWA guide. One key gap is that the required icon image files themselves are not shown as added/committed in the diff (only referenced).",
+  "missing_requirements": [
+    {
+      "id": "REQ-34",
+      "requirement": "Add required PWA icon assets (including maskable) and ensure the manifest references the correct icon paths so Android/Chrome installs show the correct launcher icon.",
+      "reason": "The manifest and HTML reference icon URLs under /assets/generated, but the diff does not show the actual PNG icon files being added as static assets. Without committing these files, the icons cannot be loaded successfully by direct URL as required.",
+      "evidence": [
+        "frontend/public/manifest.webmanifest (references /assets/generated/pwa-icon.dim_192x192.png, /assets/generated/pwa-icon.dim_512x512.png, /assets/generated/pwa-icon-maskable.dim_512x512.png)",
+        "frontend/index.html (references /assets/generated/pwa-icon.dim_192x192.png and /assets/generated/pwa-icon.dim_512x512.png)"
+      ]
+    }
+  ],
+  "hallucinated_features": [],
+  "confidence": 0.72,
+  "changed_files": [
+    "frontend-file-summaries.txt",
+    "frontend/PLAY_STORE_TWA_GUIDE.md",
+    "frontend/index.html",
+    "frontend/public/.well-known/assetlinks.json",
+    "frontend/public/manifest.webmanifest",
+    "frontend/public/sw.js",
+    "frontend/src/App.tsx",
+    "project_state.json"
+  ]
+}

@@ -1,0 +1,129 @@
+{
+  "kind": "build_request",
+  "title": "Prepare Snake web game for Google Play Store via PWA + TWA (Bubblewrap)",
+  "priority": "normal",
+  "requirements": [
+    {
+      "id": "REQ-33",
+      "text": "Convert the Snake web game into a Play-Store-ready Progressive Web App (PWA) by adding a web app manifest and wiring it into the app so the game can be installed and launched in standalone display mode.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "You can make this game into app to upload into play store"
+        ]
+      },
+      "acceptanceCriteria": [
+        "A valid web app manifest file is added under the frontend public assets and is served at runtime.",
+        "The manifest includes at minimum: name, short_name, start_url, scope, display=standalone, theme_color, background_color, and icons.",
+        "The manifest is referenced from the HTML entry point so browsers detect it as installable.",
+        "User-facing app name used for install is \"Snake Game\" (or a single consistent English name) rather than \"Candy Crush Game\".",
+        "The installed PWA launches directly into the Snake experience (current app behavior preserved)."
+      ]
+    },
+    {
+      "id": "REQ-34",
+      "text": "Add required PWA icon assets (including maskable) and ensure the manifest references the correct icon paths so Android/Chrome installs show the correct launcher icon.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "You can make this game into app to upload into play store"
+        ]
+      },
+      "acceptanceCriteria": [
+        "At least one 192x192 and one 512x512 icon are available and referenced by the manifest.",
+        "At least one maskable icon is available and referenced by the manifest with purpose \"maskable\".",
+        "Icons are committed as static files and load successfully when requested directly by URL in the browser."
+      ]
+    },
+    {
+      "id": "REQ-35",
+      "text": "Add a service worker to enable basic offline support for the Snake game (app shell + static assets) and register it from the frontend so the PWA meets typical installability expectations.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "You can make this game into app to upload into play store"
+        ]
+      },
+      "acceptanceCriteria": [
+        "A service worker is present and registered in the client at runtime.",
+        "With the service worker active, a previously loaded session can start the app while offline and still render the Snake UI (app shell) without a blank page.",
+        "No backend calls are required for app startup; the game remains playable as it is today."
+      ]
+    },
+    {
+      "id": "REQ-36",
+      "text": "Create a Play Store packaging guide in-repo that documents how to generate an Android App Bundle (AAB) using a Trusted Web Activity (TWA) workflow (Bubblewrap), including the required values that must be filled in (applicationId/package name, signing key, SHA-256 fingerprint, asset links).",
+      "target": "unknown",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "You can make this game into app to upload into play store"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Documentation exists in the repository describing step-by-step how to package the deployed HTTPS PWA into an AAB using Bubblewrap/TWA.",
+        "The guide explicitly lists what the developer must supply (package name/applicationId, keystore, SHA-256 cert fingerprint) and where to place assetlinks.json.",
+        "The guide uses English for all instructions and does not assume external backend services beyond the already deployed HTTPS site."
+      ]
+    },
+    {
+      "id": "REQ-37",
+      "text": "Add an asset links JSON template file under the standard well-known location so that, once the correct package name and signing certificate fingerprint are inserted, Android can verify the TWA relationship for Play Store release.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "You can make this game into app to upload into play store"
+        ]
+      },
+      "acceptanceCriteria": [
+        "A template asset links file is added at the standard path \"/.well-known/assetlinks.json\" within the frontend public assets so it is served by the frontend hosting.",
+        "The packaging guide (REQ-36) explains how to edit the template with the correct package name and SHA-256 fingerprint after signing setup.",
+        "Requesting the asset links URL in a browser returns valid JSON content (even if placeholder values are present until filled)."
+      ]
+    }
+  ],
+  "constraints": [
+    "Do not modify any files under frontend/src/components/ui (read-only shadcn components).",
+    "Do not modify frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, or frontend/src/main.tsx (immutable paths).",
+    "Keep the backend as a single Motoko actor; no new backend services or external databases.",
+    "Use English for any user-facing text added or updated."
+  ],
+  "nonGoals": [
+    "Creating or managing a Google Play Developer account.",
+    "Submitting the app listing, screenshots, privacy policy hosting, or Play Console configuration beyond providing build/package instructions.",
+    "Adding third-party authentication providers (only Internet Identity is supported).",
+    "Implementing non-web native Android features (push notifications, background services, GPS, etc.)."
+  ],
+  "imageRequirements": {
+    "required": [
+      "Square app icon, snake-themed, high-contrast, centered on transparent or solid background (pwa-icon.dim_512x512.png)",
+      "Square app icon, snake-themed, simplified details for small sizes (pwa-icon.dim_192x192.png)",
+      "Maskable app icon, snake-themed with safe padding for Android adaptive masking (pwa-icon-maskable.dim_512x512.png)"
+    ],
+    "edits": []
+  },
+  "userProfileUpdate": {
+    "goalsToAdd": [],
+    "goalsToRemove": [],
+    "preferencesToAdd": [],
+    "preferencesToRemove": [],
+    "miscToAdd": [],
+    "miscToRemove": [],
+    "fieldsToSet": {},
+    "fieldsToDelete": []
+  }
+}

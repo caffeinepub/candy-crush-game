@@ -1,0 +1,462 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    :root {
+        --radius: 0.625rem;
+        
+        /* Snake-themed dark palette */
+        --background: 0.15 0.05 240;
+        --foreground: 0.95 0.02 120;
+        --card: 0.20 0.05 240;
+        --card-foreground: 0.95 0.02 120;
+        --popover: 0.20 0.05 240;
+        --popover-foreground: 0.95 0.02 120;
+        --primary: 0.65 0.20 145;
+        --primary-foreground: 0.98 0.02 120;
+        --secondary: 0.55 0.18 200;
+        --secondary-foreground: 0.98 0.02 120;
+        --muted: 0.25 0.05 240;
+        --muted-foreground: 0.60 0.05 120;
+        --accent: 0.70 0.22 145;
+        --accent-foreground: 0.15 0.05 240;
+        --destructive: 0.55 0.25 15;
+        --destructive-foreground: 0.98 0.02 120;
+        --border: 0.30 0.05 240;
+        --input: 0.30 0.05 240;
+        --ring: 0.65 0.20 145;
+        --chart-1: 0.65 0.20 145;
+        --chart-2: 0.55 0.18 200;
+        --chart-3: 0.70 0.22 145;
+        --chart-4: 0.60 0.20 180;
+        --chart-5: 0.68 0.18 160;
+    }
+
+    .dark {
+        --background: 0.12 0.05 240;
+        --foreground: 0.98 0.02 120;
+        --card: 0.18 0.05 240;
+        --card-foreground: 0.98 0.02 120;
+        --popover: 0.18 0.05 240;
+        --popover-foreground: 0.98 0.02 120;
+        --primary: 0.70 0.22 145;
+        --primary-foreground: 0.12 0.05 240;
+        --secondary: 0.25 0.05 240;
+        --secondary-foreground: 0.98 0.02 120;
+        --muted: 0.25 0.05 240;
+        --muted-foreground: 0.65 0.05 120;
+        --accent: 0.70 0.22 145;
+        --accent-foreground: 0.98 0.02 120;
+        --destructive: 0.60 0.25 15;
+        --destructive-foreground: 0.98 0.02 120;
+        --border: 0.28 0.05 240;
+        --input: 0.28 0.05 240;
+        --ring: 0.70 0.22 145;
+    }
+
+    * {
+        @apply border-border;
+    }
+    
+    body {
+        @apply bg-background text-foreground;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+    }
+}
+
+/* Game Screen Layout */
+.game-screen {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(135deg, oklch(0.15 0.08 240) 0%, oklch(0.18 0.10 200) 50%, oklch(0.16 0.08 180) 100%);
+    background-attachment: fixed;
+}
+
+.game-header {
+    background: oklch(var(--card) / 0.95);
+    border-bottom: 3px solid oklch(var(--primary));
+    box-shadow: 0 4px 12px oklch(0 0 0 / 0.3);
+    padding: 1rem 1.5rem;
+}
+
+.game-header-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.game-title {
+    font-size: 2rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, oklch(var(--primary)), oklch(var(--accent)));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 0;
+    letter-spacing: -0.02em;
+}
+
+.game-header-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.game-header-button {
+    border-radius: 12px;
+    border: 2px solid oklch(var(--border));
+    background: oklch(var(--background));
+    transition: all 0.2s;
+}
+
+.game-header-button:hover {
+    transform: scale(1.05);
+    border-color: oklch(var(--primary));
+}
+
+.game-main {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+    position: relative;
+}
+
+.game-container {
+    max-width: 600px;
+    width: 100%;
+}
+
+/* HUD */
+.game-hud {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding: 1.5rem;
+    background: oklch(var(--card) / 0.95);
+    border-radius: 20px;
+    border: 3px solid oklch(var(--primary) / 0.3);
+    box-shadow: 0 8px 24px oklch(0 0 0 / 0.3);
+}
+
+.game-hud-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.game-hud-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: oklch(var(--muted-foreground));
+}
+
+.game-hud-value {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: oklch(var(--primary));
+}
+
+/* Snake Game Board */
+.snake-board-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+}
+
+.snake-canvas {
+    border-radius: 16px;
+    border: 3px solid oklch(var(--primary) / 0.3);
+    box-shadow: 0 8px 24px oklch(0 0 0 / 0.3);
+    background: oklch(0.12 0.05 240);
+    max-width: 100%;
+    height: auto;
+}
+
+/* D-Pad Controls */
+.dpad-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+}
+
+.dpad-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 0.5rem;
+    width: fit-content;
+}
+
+.dpad-cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.dpad-cell-top {
+    grid-column: 2;
+    grid-row: 1;
+}
+
+.dpad-cell-left {
+    grid-column: 1;
+    grid-row: 2;
+}
+
+.dpad-cell-center {
+    grid-column: 2;
+    grid-row: 2;
+}
+
+.dpad-cell-right {
+    grid-column: 3;
+    grid-row: 2;
+}
+
+.dpad-cell-bottom {
+    grid-column: 2;
+    grid-row: 3;
+}
+
+.dpad-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 16px;
+    border: 3px solid oklch(var(--primary) / 0.5);
+    background: oklch(var(--card) / 0.95);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.dpad-button:hover:not(:disabled) {
+    background: oklch(var(--primary) / 0.2);
+    border-color: oklch(var(--primary));
+    transform: scale(1.05);
+}
+
+.dpad-button:active:not(:disabled) {
+    transform: scale(0.95);
+    background: oklch(var(--primary) / 0.3);
+}
+
+.dpad-button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* Instructions */
+.game-instructions {
+    padding: 1rem 1.5rem;
+    background: oklch(var(--card) / 0.95);
+    border-radius: 16px;
+    border: 2px solid oklch(var(--border));
+    text-align: center;
+}
+
+.game-instructions-text {
+    margin: 0;
+    font-size: 0.875rem;
+    color: oklch(var(--muted-foreground));
+    line-height: 1.5;
+}
+
+/* Overlays */
+.game-overlay {
+    position: fixed;
+    inset: 0;
+    background: oklch(0 0 0 / 0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+    animation: fade-in 0.3s ease-out;
+}
+
+.game-overlay-content {
+    background: oklch(var(--card));
+    padding: 3rem 2rem;
+    border-radius: 24px;
+    border: 4px solid oklch(var(--primary));
+    box-shadow: 0 20px 60px oklch(0 0 0 / 0.5);
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+    animation: scale-in 0.3s ease-out;
+}
+
+.game-overlay-icon {
+    margin: 0 auto 1.5rem;
+}
+
+.game-overlay-icon-success {
+    color: oklch(var(--accent));
+}
+
+.game-overlay-icon-fail {
+    color: oklch(var(--destructive));
+}
+
+.game-overlay-title {
+    font-size: 2rem;
+    font-weight: 800;
+    margin: 0 0 1rem;
+    color: oklch(var(--foreground));
+}
+
+.game-overlay-text {
+    font-size: 1.25rem;
+    margin: 0 0 2rem;
+    color: oklch(var(--muted-foreground));
+}
+
+.game-overlay-button {
+    border-radius: 16px;
+    font-weight: 700;
+    font-size: 1.125rem;
+    padding: 1.5rem 3rem;
+    background: oklch(var(--primary));
+    color: oklch(var(--primary-foreground));
+    border: none;
+    box-shadow: 0 4px 16px oklch(var(--primary) / 0.4);
+    transition: all 0.2s;
+}
+
+.game-overlay-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px oklch(var(--primary) / 0.6);
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes scale-in {
+    from {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Footer */
+.game-footer {
+    background: oklch(var(--card) / 0.95);
+    border-top: 2px solid oklch(var(--border));
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.game-footer-text {
+    margin: 0;
+    font-size: 0.875rem;
+    color: oklch(var(--muted-foreground));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+}
+
+.game-footer-link {
+    color: oklch(var(--primary));
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.2s;
+}
+
+.game-footer-link:hover {
+    color: oklch(var(--accent));
+    text-decoration: underline;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+    .game-title {
+        font-size: 1.5rem;
+    }
+    
+    .game-hud {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.75rem;
+        padding: 1rem;
+    }
+    
+    .game-hud-value {
+        font-size: 1.25rem;
+    }
+    
+    .snake-canvas {
+        max-width: 100%;
+        width: 100%;
+    }
+
+    .dpad-button {
+        width: 70px;
+        height: 70px;
+    }
+    
+    .game-overlay-content {
+        padding: 2rem 1.5rem;
+    }
+    
+    .game-overlay-title {
+        font-size: 1.5rem;
+    }
+    
+    .game-overlay-button {
+        padding: 1rem 2rem;
+        font-size: 1rem;
+    }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+    .game-header-button:hover {
+        transform: none;
+    }
+    
+    .game-header-button:active {
+        transform: scale(0.95);
+    }
+
+    .dpad-button:hover:not(:disabled) {
+        transform: none;
+        background: oklch(var(--card) / 0.95);
+        border-color: oklch(var(--primary) / 0.5);
+    }
+
+    .dpad-button:active:not(:disabled) {
+        transform: scale(0.92);
+        background: oklch(var(--primary) / 0.3);
+        border-color: oklch(var(--primary));
+    }
+}

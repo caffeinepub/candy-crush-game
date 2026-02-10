@@ -1,0 +1,98 @@
+{
+  "kind": "feature_evidence_report",
+  "features": [
+    {
+      "featureId": "feature-convert-the-snake-web-game-into-a-play-store-ready-progressive-web-app-pwa-by-adding-a-web-app-manifest-and-wiring-it-into-the-app-so-the-game-can-be-installed-and-launched-in-standalone-display-mode",
+      "featureTitle": "Convert the Snake web game into a Play-Store-ready Progressive Web App (PWA) by adding a web app manifest and wiring it into the app so the game can be installed and launched in standalone display mode.",
+      "files": [
+        "frontend/index.html",
+        "frontend/public/manifest.webmanifest"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-33"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-required-pwa-icon-assets-including-maskable-and-ensure-the-manifest-references-the-correct-icon-paths-so-android-chrome-installs-show-the-correct-launcher-icon",
+      "featureTitle": "Add required PWA icon assets (including maskable) and ensure the manifest references the correct icon paths so Android/Chrome installs show the correct launcher icon.",
+      "files": [
+        "frontend/public/manifest.webmanifest"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-34"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-a-service-worker-to-enable-basic-offline-support-for-the-snake-game-app-shell-static-assets-and-register-it-from-the-frontend-so-the-pwa-meets-typical-installability-expectations",
+      "featureTitle": "Add a service worker to enable basic offline support for the Snake game (app shell + static assets) and register it from the frontend so the PWA meets typical installability expectations.",
+      "files": [
+        "frontend/public/sw.js",
+        "frontend/src/App.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-35"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-create-a-play-store-packaging-guide-in-repo-that-documents-how-to-generate-an-android-app-bundle-aab-using-a-trusted-web-activity-twa-workflow-bubblewrap-including-the-required-values-that-must-be-filled-in-applicationid-package-name-signing-key-sha-256-fingerprint-asset-links",
+      "featureTitle": "Create a Play Store packaging guide in-repo that documents how to generate an Android App Bundle (AAB) using a Trusted Web Activity (TWA) workflow (Bubblewrap), including the required values that must be filled in (applicationId/package name, signing key, SHA-256 fingerprint, asset links).",
+      "files": [
+        "frontend/PLAY_STORE_TWA_GUIDE.md"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-36"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-an-asset-links-json-template-file-under-the-standard-well-known-location-so-that-once-the-correct-package-name-and-signing-certificate-fingerprint-are-inserted-android-can-verify-the-twa-relationship-for-play-store-release",
+      "featureTitle": "Add an asset links JSON template file under the standard well-known location so that, once the correct package name and signing certificate fingerprint are inserted, Android can verify the TWA relationship for Play Store release.",
+      "files": [
+        "frontend/PLAY_STORE_TWA_GUIDE.md",
+        "frontend/public/.well-known/assetlinks.json"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-37"
+      ],
+      "confidence": "high"
+    }
+  ]
+}

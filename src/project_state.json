@@ -1,308 +1,34 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 13,
-  "summary": "Shift project focus to building a realistic Snake game (grid-based world, fixed-timestep loop, responsive input, constrained food spawning, collisions, clear game states, render after logic), and additionally package the web game as an Android app suitable for Google Play Store upload (PWA/TWA wrapper and release bundle).",
+  "projectStateVersion": 3,
+  "summary": "New project",
   "architectural_notes": [],
   "known_issues": [
-    "Deployment/build process encountered an error/snags during deployment.",
-    "Snake build lacks visible on-screen arrow controls for controlling the snake (user expected tap/click arrows)."
+    "Game has many glitches/bugs that need fixing"
   ],
-  "isFixRequest": false,
-  "imageRequirements": "## Required Images\n- Square app icon, snake-themed, high-contrast, centered on transparent or solid background (pwa-icon.dim_512x512.png)\n- Square app icon, snake-themed, simplified details for small sizes (pwa-icon.dim_192x192.png)\n- Maskable app icon, snake-themed with safe padding for Android adaptive masking (pwa-icon-maskable.dim_512x512.png)",
+  "isFixRequest": true,
   "existing_features": [
     {
-      "id": "feature-create-the-core-match-3-game-screen-with-an-8x8-grid-and-a-persistent-game-hud-showing-score-moves-remaining-and-level-initialize-a-new-game-with-a-randomly-generated-board-of-candy-types",
-      "title": "Create the core match-3 game screen with an 8x8 grid and a persistent game HUD showing Score, Moves remaining, and Level; initialize a new game with a randomly generated board of candy types.",
+      "id": "feature-fix-snake-arena-movement-physics-glitches-by-correcting-the-snake-segment-follow-logic-so-segments-track-the-previous-segment-smoothly-no-jittering-teleporting-or-kinks-during-normal-play-turning-and-world-edge-wrap-around",
+      "title": "Fix Snake Arena movement/physics glitches by correcting the snake segment follow logic so segments track the previous segment smoothly (no jittering, teleporting, or kinks) during normal play, turning, and world-edge wrap-around.",
       "reqIds": [
         "REQ-1"
       ],
       "version": 1
     },
     {
-      "id": "feature-implement-mouse-drag-and-drop-swapping-between-two-adjacent-candies-up-down-left-right-only-and-reject-non-adjacent-swaps",
-      "title": "Implement mouse drag-and-drop swapping between two adjacent candies (up/down/left/right only) and reject non-adjacent swaps.",
+      "id": "feature-tune-the-default-player-snake-speed-so-it-is-reliably-medium-not-too-fast-and-not-too-slow-across-different-device-frame-rates-by-adjusting-the-snake-speed-constants-and-or-delta-time-scaling-in-the-snake-arena-loop",
+      "title": "Tune the default player snake speed so it is reliably “medium” (not too fast and not too slow) across different device frame rates by adjusting the snake speed constants and/or delta-time scaling in the Snake Arena loop.",
       "reqIds": [
         "REQ-2"
       ],
       "version": 1
     },
     {
-      "id": "feature-validate-swaps-so-a-swap-is-only-finalized-if-it-results-in-at-least-one-match-otherwise-animate-a-swap-back-to-the-original-positions-without-consuming-a-move",
-      "title": "Validate swaps so a swap is only finalized if it results in at least one match; otherwise animate a swap-back to the original positions without consuming a move.",
+      "id": "feature-fix-gameplay-glitches-related-to-pickup-generation-and-collection-consistency-by-ensuring-pickup-ids-are-unique-and-that-pickups-do-not-flicker-duplicate-unexpectedly-or-reappear-due-to-identifier-collisions-or-state-update-issues",
+      "title": "Fix gameplay glitches related to pickup generation and collection consistency by ensuring pickup IDs are unique and that pickups do not flicker, duplicate unexpectedly, or reappear due to identifier collisions or state update issues.",
       "reqIds": [
         "REQ-3"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-mobile-touch-support-to-swap-candies-via-swipe-gestures-touchstart-touchmove-touchend-mapping-swipes-to-adjacent-swaps-in-the-corresponding-direction",
-      "title": "Add mobile touch support to swap candies via swipe gestures (touchstart/touchmove/touchend), mapping swipes to adjacent swaps in the corresponding direction.",
-      "reqIds": [
-        "REQ-4"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-implement-match-detection-for-3-identical-candies-horizontally-and-vertically-and-resolve-matches-by-removing-matched-candies-and-awarding-score",
-      "title": "Implement match detection for 3+ identical candies horizontally and vertically, and resolve matches by removing matched candies and awarding score.",
-      "reqIds": [
-        "REQ-5"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-implement-special-candies-and-creation-rules-for-match-4-create-a-striped-candy-row-clear-or-column-clear-based-on-match-orientation-for-match-5-create-a-color-bomb-also-implement-wrapped-candy-creation-for-a-4-candy-wrapped-pattern-and-its-area-explosion-effect-when-activated",
-      "title": "Implement special candies and creation rules: for match-4 create a striped candy (row-clear or column-clear based on match orientation); for match-5 create a color bomb; also implement wrapped candy creation for a 4-candy wrapped pattern and its area explosion effect when activated.",
-      "reqIds": [
-        "REQ-6"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-implement-special-candy-activation-and-combo-interactions-including-striped-clears-a-full-row-column-color-bomb-clears-all-candies-of-a-chosen-color-wrapped-explodes-and-at-minimum-support-a-special-special-interaction-where-striped-striped-clears-two-full-lines",
-      "title": "Implement special candy activation and combo interactions, including: striped clears a full row/column; color bomb clears all candies of a chosen color; wrapped explodes; and at minimum support a special+special interaction where striped+striped clears two full lines.",
-      "reqIds": [
-        "REQ-7"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-implement-gravity-and-refill-after-clears-candies-fall-down-to-fill-empty-spaces-new-candies-spawn-at-the-top-continue-resolving-cascades-match-clear-gravity-refill-until-the-board-is-stable-no-immediate-matches",
-      "title": "Implement gravity and refill: after clears, candies fall down to fill empty spaces; new candies spawn at the top; continue resolving cascades (match -> clear -> gravity -> refill) until the board is stable (no immediate matches).",
-      "reqIds": [
-        "REQ-8"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-animations-for-swapping-match-removal-pop-explode-falling-candies-and-special-candy-effects-striped-sweep-wrapped-explosion-color-bomb-clear",
-      "title": "Add animations for swapping, match removal (“pop”/“explode”), falling candies, and special candy effects (striped sweep, wrapped explosion, color bomb clear).",
-      "reqIds": [
-        "REQ-9"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-sound-effects-and-user-controls-for-audio-play-sfx-for-swap-match-special-activation-level-completion-and-game-over-include-a-mute-unmute-toggle",
-      "title": "Add sound effects and user controls for audio: play SFX for swap, match, special activation, level completion, and game over; include a mute/unmute toggle.",
-      "reqIds": [
-        "REQ-10"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-implement-basic-progression-and-end-conditions-decrement-moves-on-valid-moves-when-moves-reach-0-show-a-game-over-overlay-with-final-score-and-a-restart-option-implement-a-simple-level-up-condition-and-level-completion-feedback",
-      "title": "Implement basic progression and end conditions: decrement Moves on valid moves; when Moves reach 0, show a Game Over overlay with final score and a restart option; implement a simple level-up condition and level completion feedback.",
-      "reqIds": [
-        "REQ-11"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-handle-edge-cases-ensure-match-detection-works-both-directions-detect-when-there-are-no-possible-moves-and-reshuffle-regenerate-the-board-while-keeping-gameplay-consistent",
-      "title": "Handle edge cases: ensure match detection works both directions; detect when there are no possible moves and reshuffle/regenerate the board while keeping gameplay consistent.",
-      "reqIds": [
-        "REQ-12"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-apply-a-cohesive-playful-candy-themed-visual-design-across-the-app-colors-typography-spacing-buttons-overlays-and-keep-the-styling-consistent-across-the-board-hud-and-modal-states-avoid-a-blue-purple-primary-palette",
-      "title": "Apply a cohesive, playful candy-themed visual design across the app (colors, typography, spacing, buttons, overlays) and keep the styling consistent across the board, HUD, and modal states; avoid a blue/purple primary palette.",
-      "reqIds": [
-        "REQ-13"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-the-generated-image-assets-candies-and-background-to-the-frontend-as-static-files-and-render-them-in-the-game-board-and-ui-without-fetching-them-through-the-backend",
-      "title": "Add the generated image assets (candies and background) to the frontend as static files and render them in the game board and UI without fetching them through the backend.",
-      "reqIds": [
-        "REQ-14"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-replace-the-in-game-candy-visuals-with-a-clearly-different-candy-style-by-updating-the-static-generated-image-assets-used-for-regular-candies-and-all-special-candies-striped-wrapped-color-bomb-while-keeping-the-sprite-sheet-dimensions-and-transparency-expectations-compatible-with-the-current-rendering-logic",
-      "title": "Replace the in-game candy visuals with a clearly different candy style by updating the static generated image assets used for regular candies and all special candies (striped, wrapped, color bomb), while keeping the sprite sheet dimensions and transparency expectations compatible with the current rendering logic.",
-      "reqIds": [
-        "REQ-15"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-update-the-frontend-asset-mapping-to-point-to-the-newly-generated-candy-asset-filenames-or-keep-the-existing-filenames-if-assets-are-overwritten-ensuring-the-game-board-renders-the-updated-candy-visuals-everywhere-candies-appear-board-swaps-clears-cascades-overlays-if-any",
-      "title": "Update the frontend asset mapping to point to the newly generated candy asset filenames (or keep the existing filenames if assets are overwritten), ensuring the game board renders the updated candy visuals everywhere candies appear (board, swaps, clears, cascades, overlays if any).",
-      "reqIds": [
-        "REQ-16"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-replace-the-current-match-3-gameplay-entrypoint-with-a-snake-game-ui-so-the-app-launches-directly-into-the-snake-experience-remove-candy-crush-specific-board-hud-instructions-from-the-main-screen-and-present-snake-screens-instead",
-      "title": "Replace the current match-3 gameplay entrypoint with a Snake game UI so the app launches directly into the Snake experience (remove Candy Crush-specific board/HUD/instructions from the main screen and present Snake screens instead).",
-      "reqIds": [
-        "REQ-17"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-implement-a-grid-based-snake-world-with-configurable-grid-width-height-and-a-clear-tile-size-concept-logic-operates-on-discrete-grid-cells-rendering-aligns-to-the-grid",
-      "title": "Implement a grid-based Snake world with configurable grid width/height and a clear tile size concept (logic operates on discrete grid cells; rendering aligns to the grid).",
-      "reqIds": [
-        "REQ-18"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-implement-a-fixed-timestep-game-loop-for-snake-tick-based-updates-at-a-defined-updates-per-second-rate-with-a-difficulty-mechanism-that-can-increase-speed-over-time-or-via-selectable-difficulty",
-      "title": "Implement a fixed-timestep game loop for Snake (tick-based updates at a defined updates-per-second rate) with a difficulty mechanism that can increase speed over time or via selectable difficulty.",
-      "reqIds": [
-        "REQ-19"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-implement-the-snake-data-model-as-an-ordered-list-of-grid-positions-and-movement-logic-that-on-each-tick-adds-a-new-head-in-the-current-direction-and-removes-the-tail-unless-the-snake-is-growing",
-      "title": "Implement the Snake data model as an ordered list of grid positions and movement logic that, on each tick, adds a new head in the current direction and removes the tail unless the snake is growing.",
-      "reqIds": [
-        "REQ-20"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-implement-responsive-input-handling-for-snake-keyboard-mobile-touch-controls-with-prevention-of-impossible-instant-reverse-turns-plus-input-buffering-so-quick-direction-changes-feel-responsive-and-apply-on-the-next-tick",
-      "title": "Implement responsive input handling for Snake (keyboard + mobile touch controls) with prevention of impossible instant reverse turns, plus input buffering so quick direction changes feel responsive and apply on the next tick.",
-      "reqIds": [
-        "REQ-21"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-implement-constrained-random-food-spawning-that-selects-an-empty-grid-cell-not-occupied-by-the-snake-plus-eating-detection-score-incrementing-and-immediate-respawn-of-food-after-eating",
-      "title": "Implement constrained-random food spawning that selects an empty grid cell not occupied by the snake, plus eating detection, score incrementing, and immediate respawn of food after eating.",
-      "reqIds": [
-        "REQ-22"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-implement-per-tick-collision-detection-for-wall-and-self-collisions-on-collision-transition-to-a-game-over-state-where-the-snake-freezes-and-the-ui-offers-restart-to-reset-the-game-cleanly",
-      "title": "Implement per-tick collision detection for wall and self collisions; on collision, transition to a Game Over state where the snake freezes and the UI offers restart to reset the game cleanly.",
-      "reqIds": [
-        "REQ-23"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-explicit-snake-game-states-at-minimum-menu-playing-paused-game-over-and-corresponding-ui-controls-start-pause-resume-restart-ensuring-rendering-reflects-state-cleanly-and-predictably",
-      "title": "Add explicit Snake game states (at minimum: Menu, Playing, Paused, Game Over) and corresponding UI controls (Start, Pause/Resume, Restart), ensuring rendering reflects state cleanly and predictably.",
-      "reqIds": [
-        "REQ-24"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-improve-realism-feel-via-smooth-rendering-aligned-to-discrete-grid-updates-e-g-segment-transition-animation-between-grid-cells-without-changing-the-underlying-tick-based-logic",
-      "title": "Improve realism/feel via smooth rendering aligned to discrete grid updates (e.g., segment transition animation between grid cells) without changing the underlying tick-based logic.",
-      "reqIds": [
-        "REQ-25"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-create-a-coherent-realistic-visual-theme-for-the-snake-game-arena-snake-food-ui-typography-colors-and-apply-it-consistently-across-menu-hud-pause-and-game-over-states",
-      "title": "Create a coherent, realistic visual theme for the Snake game (arena, snake, food, UI typography/colors) and apply it consistently across menu, HUD, pause, and game over states.",
-      "reqIds": [
-        "REQ-26"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-and-use-new-snake-visual-assets-as-static-files-do-not-fetch-images-through-the-backend-and-render-them-in-the-snake-game-for-the-snake-segments-and-food",
-      "title": "Add and use new Snake visual assets as static files (do not fetch images through the backend) and render them in the Snake game for the snake segments and food.",
-      "reqIds": [
-        "REQ-27"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-implement-a-snake-game-restart-action-that-resets-the-snake-session-to-a-clean-initial-state-snake-body-positions-direction-input-buffer-score-food-placement-speed-tick-timing-and-any-per-run-counters-without-requiring-a-page-refresh",
-      "title": "Implement a Snake game restart action that resets the Snake session to a clean initial state (snake body positions, direction, input buffer, score, food placement, speed/tick timing, and any per-run counters) without requiring a page refresh.",
-      "reqIds": [
-        "REQ-28"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-expose-the-snake-game-restart-action-in-the-snake-ui-using-english-user-facing-text-including-a-clearly-labeled-restart-control-on-the-snake-game-over-screen-and-any-other-non-playing-states-where-restarting-is-allowed-such-as-pause",
-      "title": "Expose the Snake game restart action in the Snake UI using English user-facing text, including a clearly labeled \"Restart\" control on the Snake Game Over screen (and any other non-playing states where restarting is allowed, such as Pause).",
-      "reqIds": [
-        "REQ-29"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-visible-on-screen-arrow-controls-a-d-pad-with-up-down-left-right-to-the-snake-game-ui-so-the-snake-can-be-controlled-without-a-keyboard-while-keeping-existing-keyboard-controls",
-      "title": "Add visible on-screen arrow controls (a D-pad with Up/Down/Left/Right) to the Snake game UI so the snake can be controlled without a keyboard, while keeping existing keyboard controls.",
-      "reqIds": [
-        "REQ-30"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-ensure-the-on-screen-arrow-controls-work-well-on-touch-devices-use-pointer-touch-friendly-interactions-prevent-unintended-page-scrolling-when-using-the-controls-and-provide-accessible-labels-for-each-direction-button-using-english-text",
-      "title": "Ensure the on-screen arrow controls work well on touch devices: use pointer/touch-friendly interactions, prevent unintended page scrolling when using the controls, and provide accessible labels for each direction button using English text.",
-      "reqIds": [
-        "REQ-31"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-update-the-snake-on-screen-instructions-text-to-mention-the-on-screen-arrow-controls-in-addition-to-keyboard-controls-using-english-user-facing-text",
-      "title": "Update the Snake on-screen instructions text to mention the on-screen arrow controls in addition to keyboard controls, using English user-facing text.",
-      "reqIds": [
-        "REQ-32"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-convert-the-snake-web-game-into-a-play-store-ready-progressive-web-app-pwa-by-adding-a-web-app-manifest-and-wiring-it-into-the-app-so-the-game-can-be-installed-and-launched-in-standalone-display-mode",
-      "title": "Convert the Snake web game into a Play-Store-ready Progressive Web App (PWA) by adding a web app manifest and wiring it into the app so the game can be installed and launched in standalone display mode.",
-      "reqIds": [
-        "REQ-33"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-required-pwa-icon-assets-including-maskable-and-ensure-the-manifest-references-the-correct-icon-paths-so-android-chrome-installs-show-the-correct-launcher-icon",
-      "title": "Add required PWA icon assets (including maskable) and ensure the manifest references the correct icon paths so Android/Chrome installs show the correct launcher icon.",
-      "reqIds": [
-        "REQ-34"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-a-service-worker-to-enable-basic-offline-support-for-the-snake-game-app-shell-static-assets-and-register-it-from-the-frontend-so-the-pwa-meets-typical-installability-expectations",
-      "title": "Add a service worker to enable basic offline support for the Snake game (app shell + static assets) and register it from the frontend so the PWA meets typical installability expectations.",
-      "reqIds": [
-        "REQ-35"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-create-a-play-store-packaging-guide-in-repo-that-documents-how-to-generate-an-android-app-bundle-aab-using-a-trusted-web-activity-twa-workflow-bubblewrap-including-the-required-values-that-must-be-filled-in-applicationid-package-name-signing-key-sha-256-fingerprint-asset-links",
-      "title": "Create a Play Store packaging guide in-repo that documents how to generate an Android App Bundle (AAB) using a Trusted Web Activity (TWA) workflow (Bubblewrap), including the required values that must be filled in (applicationId/package name, signing key, SHA-256 fingerprint, asset links).",
-      "reqIds": [
-        "REQ-36"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-an-asset-links-json-template-file-under-the-standard-well-known-location-so-that-once-the-correct-package-name-and-signing-certificate-fingerprint-are-inserted-android-can-verify-the-twa-relationship-for-play-store-release",
-      "title": "Add an asset links JSON template file under the standard well-known location so that, once the correct package name and signing certificate fingerprint are inserted, Android can verify the TWA relationship for Play Store release.",
-      "reqIds": [
-        "REQ-37"
       ],
       "version": 1
     }
@@ -310,109 +36,12 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Implement 8x8 match-3 board initialization with random candy types and game state (score/moves/level).",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-2",
-      "summary": "Add swap mechanics for adjacent candies via drag-and-drop (mouse) and validate moves.",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-3",
-      "summary": "Add mobile touch/swipe support to swap adjacent candies (up/down/left/right).",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-4",
-      "summary": "Implement match detection for 3+ in rows/columns and resolve matches (remove matched candies).",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-5",
-      "summary": "Implement special candies: striped (row/column clear), wrapped (area explosion), color bomb (clear all of a color), including creation rules for match-4/match-5 and combo interactions.",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-6",
-      "summary": "Implement gravity and refill: candies fall to fill gaps and new candies spawn at the top; loop until stable board.",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-7",
-      "summary": "Add animations for matches/removals, falling candies, and special candy activations (explosions/stripes).",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-8",
-      "summary": "Add sound effects for swap, match, special candy activations, level completion, and game over.",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-9",
-      "summary": "Handle edge cases: ensure match detection works both directions, validate swaps only when they result in a match, and detect/no-possible-moves state handling.",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-10",
-      "summary": "Change the candy visuals/assets to a different candy style/set (update candy icons used in the game).",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-11",
-      "summary": "Build core Snake game loop with grid-based world, fixed update tick rate, and game states (menu/playing/paused/game over) for a more realistic feel.",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-12",
-      "summary": "Implement snake data model as an ordered list of grid positions with movement logic (add new head each tick, remove tail unless growing) and prevent impossible instant-reverse turns.",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-13",
-      "summary": "Add food spawning with constrained randomness (only on empty grid cells), eating detection, growth, and scoring.",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-14",
-      "summary": "Implement collision detection each tick (wall + self collision) and trigger game-over state with restart/reset behavior.",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-15",
-      "summary": "Improve realism/feel: adjustable tick rate (difficulty), input buffering for responsive controls, and smooth rendering aligned to discrete grid updates.",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-16",
-      "summary": "Add on-screen arrow controls (D-pad/buttons) to control the Snake on mobile/touch and optionally desktop mouse/tap, in addition to keyboard input.",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-17",
-      "summary": "Package the Snake web game as an Android app for Google Play Store upload (prepare PWA requirements like manifest/icons/HTTPS and generate an Android App Bundle via TWA/Bubblewrap).",
+      "summary": "Adjust snake speed (currently medium; user wants different/faster speed)",
       "reqIds": [],
       "status": "pending"
     }
   ],
-  "gameProjectType": "2d",
-  "projectName": "Candy Crush Game",
+  "projectName": "Fix Snake Arena glitches and tune default snake speed to medium",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

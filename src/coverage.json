@@ -1,80 +1,52 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-10T10:05:16.201Z",
+  "generatedAt": "2026-02-11T04:26:28.173Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 5,
-    "implemented": 5,
+    "total": 3,
+    "implemented": 3,
     "items": [
       {
-        "id": "REQ-33",
-        "summary": "Convert the Snake web game into a Play-Store-ready Progressive Web App (PWA) by adding a web app manifest and wiring it into the app so the game can be installed and launched in standalone display mode.",
+        "id": "REQ-1",
+        "summary": "Fix Snake Arena movement/physics glitches by correcting the snake segment follow logic so segments track the previous segment smoothly (no jittering, teleporting, or kinks) during normal play, turning, and world-edge wrap-around.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/public/manifest.webmanifest",
-          "frontend/index.html"
+          "frontend/src/snake/logic.ts",
+          "frontend/src/snake/useSnakeGame.ts"
         ],
         "matchedFiles": [
-          "frontend/public/manifest.webmanifest",
-          "frontend/index.html"
+          "frontend/src/snake/logic.ts",
+          "frontend/src/snake/useSnakeGame.ts"
         ]
       },
       {
-        "id": "REQ-34",
-        "summary": "Add required PWA icon assets (including maskable) and ensure the manifest references the correct icon paths so Android/Chrome installs show the correct launcher icon.",
+        "id": "REQ-2",
+        "summary": "Tune the default player snake speed so it is reliably “medium” (not too fast and not too slow) across different device frame rates by adjusting the snake speed constants and/or delta-time scaling in the Snake Arena loop.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/public/assets/generated/pwa-icon.dim_192x192.png",
-          "frontend/public/assets/generated/pwa-icon.dim_512x512.png",
-          "frontend/public/assets/generated/pwa-icon-maskable.dim_512x512.png",
-          "frontend/public/manifest.webmanifest"
+          "frontend/src/snake/useSnakeGame.ts",
+          "frontend/src/snake/logic.ts"
         ],
         "matchedFiles": [
-          "frontend/public/assets/generated/pwa-icon.dim_192x192.png",
-          "frontend/public/assets/generated/pwa-icon.dim_512x512.png",
-          "frontend/public/assets/generated/pwa-icon-maskable.dim_512x512.png",
-          "frontend/public/manifest.webmanifest"
+          "frontend/src/snake/useSnakeGame.ts",
+          "frontend/src/snake/logic.ts"
         ]
       },
       {
-        "id": "REQ-35",
-        "summary": "Add a service worker to enable basic offline support for the Snake game (app shell + static assets) and register it from the frontend so the PWA meets typical installability expectations.",
+        "id": "REQ-3",
+        "summary": "Fix gameplay glitches related to pickup generation and collection consistency by ensuring pickup IDs are unique and that pickups do not flicker, duplicate unexpectedly, or reappear due to identifier collisions or state update issues.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/public/sw.js",
-          "frontend/src/App.tsx"
+          "frontend/src/snake/logic.ts",
+          "frontend/src/snake/useSnakeGame.ts"
         ],
         "matchedFiles": [
-          "frontend/public/sw.js",
-          "frontend/src/App.tsx"
-        ]
-      },
-      {
-        "id": "REQ-36",
-        "summary": "Create a Play Store packaging guide in-repo that documents how to generate an Android App Bundle (AAB) using a Trusted Web Activity (TWA) workflow (Bubblewrap), including the required values that must be filled in (applicationId/package name, signing key, SHA-256 fingerprint, asset links).",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/PLAY_STORE_TWA_GUIDE.md"
-        ],
-        "matchedFiles": [
-          "frontend/PLAY_STORE_TWA_GUIDE.md"
-        ]
-      },
-      {
-        "id": "REQ-37",
-        "summary": "Add an asset links JSON template file under the standard well-known location so that, once the correct package name and signing certificate fingerprint are inserted, Android can verify the TWA relationship for Play Store release.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/public/.well-known/assetlinks.json",
-          "frontend/PLAY_STORE_TWA_GUIDE.md"
-        ],
-        "matchedFiles": [
-          "frontend/public/.well-known/assetlinks.json",
-          "frontend/PLAY_STORE_TWA_GUIDE.md"
+          "frontend/src/snake/logic.ts",
+          "frontend/src/snake/useSnakeGame.ts"
         ]
       }
     ]
@@ -84,15 +56,8 @@
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/PLAY_STORE_TWA_GUIDE.md",
-    "frontend/index.html",
-    "frontend/public/.well-known/assetlinks.json",
-    "frontend/public/assets/generated/pwa-icon-maskable.dim_512x512.png",
-    "frontend/public/assets/generated/pwa-icon.dim_192x192.png",
-    "frontend/public/assets/generated/pwa-icon.dim_512x512.png",
-    "frontend/public/manifest.webmanifest",
-    "frontend/public/sw.js",
-    "frontend/src/App.tsx",
+    "frontend/src/snake/logic.ts",
+    "frontend/src/snake/useSnakeGame.ts",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

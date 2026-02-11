@@ -1,13 +1,11 @@
 # Specification
 
 ## Summary
-**Goal:** Prepare the existing Snake web game for Google Play distribution by making it installable as a PWA and documenting packaging into an Android App Bundle (AAB) via TWA (Bubblewrap).
+**Goal:** Fix Snake Arena gameplay glitches (snake movement/physics and pickups) and tune the default snake speed to a consistent medium across devices.
 
 **Planned changes:**
-- Add a web app manifest in frontend public assets, reference it from the HTML entry point, and ensure the install name is consistently “Snake Game” with standalone display mode and correct start/scope settings.
-- Add required PWA icon assets (including at least one maskable icon) and wire their paths into the manifest.
-- Add and register a service worker to provide basic offline support for the app shell and static assets so the game can load when offline after first visit.
-- Add an in-repo Play Store packaging guide describing how to generate an AAB using Bubblewrap/TWA, including the developer-supplied values (package name/applicationId, signing key, SHA-256 fingerprint, asset links).
-- Add a template `/.well-known/assetlinks.json` under frontend public assets and ensure it is served as valid JSON.
+- Correct snake segment follow logic to ensure smooth, consistent spacing during straight movement, turning, and world-edge wrap-around (eliminate jitter/teleporting/kinks).
+- Adjust the Snake Arena update loop speed handling (constants and/or delta-time scaling) so the default player speed is a stable “medium” and consistent across different frame rates while using the joystick.
+- Fix pickup generation/collection state issues by ensuring pickup IDs are unique and stable to prevent flicker, duplication, and incorrect reappearing; ensure collection applies exactly once per pickup.
 
-**User-visible outcome:** The Snake game can be installed on Android/Chrome as a standalone PWA with the correct “Snake Game” name and icon, can load offline after being visited once, and includes documentation/files needed to package it for Play Store release via TWA (Bubblewrap).
+**User-visible outcome:** Snake movement looks smooth and continuous (including turns and edge wrap), default speed feels medium and consistent across devices, and pickups spawn/collect reliably without flickering or duplicating.

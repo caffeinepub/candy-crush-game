@@ -1,29 +1,55 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-10T10:05:16.198Z",
-  "summary": "Implemented core PWA/TWA prep: added manifest, service worker + registration, assetlinks.json template, and a Play Store/TWA guide. One key gap is that the required icon image files themselves are not shown as added/committed in the diff (only referenced).",
+  "generatedAt": "2026-02-11T04:26:28.171Z",
+  "summary": "Diff shows changes aimed at speed consistency (deltaTime clamping, BASE_SPEED constant) and some groundwork for wrap-around distance and pickup ID uniqueness, but the truncated snippets do not provide enough evidence that the core snake segment follow logic and pickup ID usage/respawn identity issues are fully addressed end-to-end.",
   "missing_requirements": [
     {
-      "id": "REQ-34",
-      "requirement": "Add required PWA icon assets (including maskable) and ensure the manifest references the correct icon paths so Android/Chrome installs show the correct launcher icon.",
-      "reason": "The manifest and HTML reference icon URLs under /assets/generated, but the diff does not show the actual PNG icon files being added as static assets. Without committing these files, the icons cannot be loaded successfully by direct URL as required.",
+      "id": "REQ-1",
+      "requirement": "Fix Snake Arena movement/physics glitches by correcting the snake segment follow logic so segments track the previous segment smoothly (no jittering, teleporting, or kinks) during normal play, turning, and world-edge wrap-around.",
+      "reason": "The diff snippet shows new toroidalDistance() and wrapPosition() helpers, but does not show modifications to the actual segment-follow update algorithm (e.g., in updateSnakeMovement) that would guarantee smooth segment spacing and no jitter/teleporting, especially across wrap-around. The relevant movement function is not visible in the truncated content.",
       "evidence": [
-        "frontend/public/manifest.webmanifest (references /assets/generated/pwa-icon.dim_192x192.png, /assets/generated/pwa-icon.dim_512x512.png, /assets/generated/pwa-icon-maskable.dim_512x512.png)",
-        "frontend/index.html (references /assets/generated/pwa-icon.dim_192x192.png and /assets/generated/pwa-icon.dim_512x512.png)"
+        "frontend/src/snake/logic.ts (truncated; toroidalDistance/wrapPosition added but updateSnakeMovement changes not shown)"
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "requirement": "Fix gameplay glitches related to pickup generation and collection consistency by ensuring pickup IDs are unique and that pickups do not flicker, duplicate unexpectedly, or reappear due to identifier collisions or state update issues.",
+      "reason": "A global pickupIdCounter is introduced and reset on new game, but the diff summary does not show generatePickups() assigning IDs from this counter, nor any changes ensuring stability across respawns/state updates. Collision/collection logic is shown, but uniqueness and respawn/identity stability are not confirmed from the truncated view.",
+      "evidence": [
+        "frontend/src/snake/logic.ts (truncated; pickupIdCounter added/reset, but generatePickups implementation not shown)",
+        "frontend/src/snake/useSnakeGame.ts (truncated; collision/collection shown but not ID generation/respawn identity)"
       ]
     }
   ],
-  "hallucinated_features": [],
-  "confidence": 0.72,
+  "hallucinated_features": [
+    {
+      "description": "Turn-rate limiting to prevent instant 180-degree turns (MAX_TURN_RATE, applyTurnRateLimit) as an explicit new steering constraint.",
+      "reason": "REQ-1/REQ-2 request smoother movement/follow logic and frame-rate-consistent speed, but do not request introducing a new gameplay constraint on turning speed. This may be helpful, but it is not specified.",
+      "evidence": [
+        "frontend/src/snake/useSnakeGame.ts (MAX_TURN_RATE, applyTurnRateLimit, joystick angle limiting)"
+      ]
+    },
+    {
+      "description": "Updates to project_state.json tracking feature requests/status.",
+      "reason": "BuildRequest is about Snake Arena glitches and speed tuning; it does not request changes to meta/project tracking files.",
+      "evidence": [
+        "project_state.json"
+      ]
+    },
+    {
+      "description": "Updates to frontend-file-summaries.txt (generated file inventory/notes).",
+      "reason": "Not requested by the BuildRequest; appears unrelated to implementing the gameplay fixes.",
+      "evidence": [
+        "frontend-file-summaries.txt"
+      ]
+    }
+  ],
+  "confidence": 0.56,
   "changed_files": [
     "frontend-file-summaries.txt",
-    "frontend/PLAY_STORE_TWA_GUIDE.md",
-    "frontend/index.html",
-    "frontend/public/.well-known/assetlinks.json",
-    "frontend/public/manifest.webmanifest",
-    "frontend/public/sw.js",
-    "frontend/src/App.tsx",
+    "frontend/src/snake/logic.ts",
+    "frontend/src/snake/useSnakeGame.ts",
     "project_state.json"
   ]
 }

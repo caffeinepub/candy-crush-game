@@ -3,10 +3,11 @@ import { Play, RotateCcw } from 'lucide-react';
 
 interface GameOverOverlayProps {
   score: number;
+  length: number;
   onRestart: () => void;
 }
 
-export function GameOverOverlay({ score, onRestart }: GameOverOverlayProps) {
+export function GameOverOverlay({ score, length, onRestart }: GameOverOverlayProps) {
   return (
     <div className="game-overlay">
       <div className="game-overlay-content">
@@ -17,11 +18,14 @@ export function GameOverOverlay({ score, onRestart }: GameOverOverlayProps) {
             <line x1="9" y1="9" x2="15" y2="15" />
           </svg>
         </div>
-        <h2 className="game-overlay-title">Game Over!</h2>
-        <p className="game-overlay-text">Final Score: {score}</p>
+        <h2 className="game-overlay-title">Eliminated!</h2>
+        <div className="game-overlay-stats">
+          <p className="game-overlay-text">Final Score: <strong>{score}</strong></p>
+          <p className="game-overlay-text">Final Length: <strong>{length}</strong></p>
+        </div>
         <Button onClick={onRestart} className="game-overlay-button" size="lg">
           <RotateCcw className="mr-2" size={20} />
-          Restart
+          Play Again
         </Button>
       </div>
     </div>
@@ -73,8 +77,10 @@ export function IdleOverlay({ onStart }: IdleOverlayProps) {
             <polygon points="10 8 16 12 10 16 10 8" fill="currentColor" />
           </svg>
         </div>
-        <h2 className="game-overlay-title">Snake Game</h2>
-        <p className="game-overlay-text mb-4">Use arrow keys, WASD, or on-screen arrows to control the snake</p>
+        <h2 className="game-overlay-title">Snake Arena</h2>
+        <p className="game-overlay-text mb-4">
+          Steer with the joystick. Collect points to grow. Eliminate opponents by making them crash into your body!
+        </p>
         <Button onClick={onStart} className="game-overlay-button" size="lg">
           <Play className="mr-2" size={20} />
           Start Game

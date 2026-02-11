@@ -1,117 +1,68 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Snake Game PWA + TWA (Bubblewrap) readiness (frontend-only)",
+  "title": "Snake Arena: smooth segment following, frame-rate-stable medium speed, and stable pickup identities",
   "requirements": [
     {
-      "id": "REQ-33",
-      "summary": "Add and wire a web app manifest so the Snake game is installable and launches in standalone mode with consistent app naming.",
+      "id": "REQ-1",
+      "summary": "Correct snake segment follow logic to remove jitter/teleporting and handle wrap-around smoothly.",
       "acceptanceCriteria": [
-        "A valid web app manifest file is added under the frontend public assets and is served at runtime.",
-        "The manifest includes at minimum: name, short_name, start_url, scope, display=standalone, theme_color, background_color, and icons.",
-        "The manifest is referenced from the HTML entry point so browsers detect it as installable.",
-        "User-facing app name used for install is \"Snake Game\" (or a single consistent English name) rather than \"Candy Crush Game\".",
-        "The installed PWA launches directly into the Snake experience (current app behavior preserved)."
+        "During continuous movement, the snake body follows the head with consistent spacing and without visible jitter or sudden jumps.",
+        "Turning the snake does not cause segments to overlap, lag incorrectly, or detach visually from the body.",
+        "Wrapping around world boundaries (crossing x/y edges) does not produce segment snapping or discontinuities."
       ],
       "file_operations": [
         {
-          "path": "frontend/public/manifest.webmanifest",
-          "operation": "create",
-          "description": "Create a valid PWA manifest for \"Snake Game\" with display=standalone, start_url/scope pointing at the existing Snake app entry, theme_color/background_color aligned to the app theme, and icon references (filled/verified in REQ-34)."
+          "path": "frontend/src/snake/logic.ts",
+          "operation": "modify",
+          "description": "Fix the segment-follow implementation to use each segment’s own prior position (not the previous segment’s), maintain consistent SEGMENT_SPACING, and compute follow vectors using toroidal (wrap-aware) shortest deltas so edge wrap-around does not create long-distance snaps. Keep movement deterministic and smooth during straight motion and turns."
         },
         {
-          "path": "frontend/index.html",
+          "path": "frontend/src/snake/useSnakeGame.ts",
           "operation": "modify",
-          "description": "Wire the manifest into the HTML entry point (add the manifest link and relevant PWA meta such as theme-color) and change the document title from \"Candy Crush Game\" to the consistent install name \"Snake Game\" to match PWA install prompts."
+          "description": "Adjust the game loop integration as needed to support the corrected follow logic under wrap-around (e.g., ensure deltaTime clamping/step handling does not amplify segment jitter) while preserving current pause/restart behavior."
         }
       ]
     },
     {
-      "id": "REQ-34",
-      "summary": "Add required PWA icon assets (including maskable) and reference them correctly from the manifest.",
+      "id": "REQ-2",
+      "summary": "Tune default snake speed to a medium pace and make movement consistent across device frame rates.",
       "acceptanceCriteria": [
-        "At least one 192x192 and one 512x512 icon are available and referenced by the manifest.",
-        "At least one maskable icon is available and referenced by the manifest with purpose \"maskable\".",
-        "Icons are committed as static files and load successfully when requested directly by URL in the browser."
+        "The player snake movement speed feels consistent on both high-refresh and low-refresh devices (no unintended speed-ups/slow-downs).",
+        "Default speed is set to a medium pace and remains stable while steering with the joystick.",
+        "AI snakes continue to move and behave correctly at the tuned speed (no new collision or steering regressions)."
       ],
       "file_operations": [
         {
-          "path": "frontend/public/assets/generated/pwa-icon.dim_192x192.png",
-          "operation": "create",
-          "description": "Add the generated 192x192 PWA launcher icon as a static asset at this exact path."
-        },
-        {
-          "path": "frontend/public/assets/generated/pwa-icon.dim_512x512.png",
-          "operation": "create",
-          "description": "Add the generated 512x512 PWA launcher icon as a static asset at this exact path."
-        },
-        {
-          "path": "frontend/public/assets/generated/pwa-icon-maskable.dim_512x512.png",
-          "operation": "create",
-          "description": "Add the generated 512x512 maskable PWA icon as a static asset at this exact path."
-        },
-        {
-          "path": "frontend/public/manifest.webmanifest",
+          "path": "frontend/src/snake/useSnakeGame.ts",
           "operation": "modify",
-          "description": "Update the manifest icon list to reference: frontend/public/assets/generated/pwa-icon.dim_192x192.png, frontend/public/assets/generated/pwa-icon.dim_512x512.png, and frontend/public/assets/generated/pwa-icon-maskable.dim_512x512.png (with purpose \"maskable\"), ensuring paths/sizes/types are correct."
+          "description": "Update the Snake Arena loop timing to be frame-rate independent (e.g., clamp large deltaTime values and/or use a fixed-step accumulator) so the effective movement per real-world second is stable on both low- and high-refresh displays."
+        },
+        {
+          "path": "frontend/src/snake/logic.ts",
+          "operation": "modify",
+          "description": "Retune BASE_SPEED (and any related speed constants/scaling) to a reliable medium default when combined with the updated delta-time handling, ensuring both the player and AI snakes move correctly at the new baseline."
         }
       ]
     },
     {
-      "id": "REQ-35",
-      "summary": "Add a service worker for basic offline support and register it from the client at runtime.",
+      "id": "REQ-3",
+      "summary": "Stabilize pickup generation/collection by guaranteeing unique pickup IDs and preventing ID-collision-driven flicker/duplication.",
       "acceptanceCriteria": [
-        "A service worker is present and registered in the client at runtime.",
-        "With the service worker active, a previously loaded session can start the app while offline and still render the Snake UI (app shell) without a blank page.",
-        "No backend calls are required for app startup; the game remains playable as it is today."
+        "Pickups maintain stable identity during a play session (no duplicate IDs leading to rendering/state inconsistencies).",
+        "Collecting pickups reliably increases score and length exactly once per pickup collected.",
+        "Pickup respawn logic maintains the intended pickup count behavior without sudden mass duplication or disappearance."
       ],
       "file_operations": [
         {
-          "path": "frontend/public/sw.js",
-          "operation": "create",
-          "description": "Implement a service worker that precaches the app shell and core static assets needed to render the Snake UI and uses a safe caching strategy so the app can load while offline after an initial online visit."
+          "path": "frontend/src/snake/logic.ts",
+          "operation": "modify",
+          "description": "Replace the current pickup ID scheme with a collision-resistant unique ID generator that remains unique across multiple generatePickups calls in the same session. Update pickup generation to avoid accidental identifier reuse during respawns."
         },
         {
-          "path": "frontend/src/App.tsx",
+          "path": "frontend/src/snake/useSnakeGame.ts",
           "operation": "modify",
-          "description": "Register the service worker (frontend/public/sw.js) at runtime (e.g., on mount) without modifying immutable files, and ensure registration failures do not break game startup."
-        }
-      ]
-    },
-    {
-      "id": "REQ-36",
-      "summary": "Add an in-repo guide explaining how to package the deployed HTTPS PWA into an Android App Bundle (AAB) using Bubblewrap/TWA.",
-      "acceptanceCriteria": [
-        "Documentation exists in the repository describing step-by-step how to package the deployed HTTPS PWA into an AAB using Bubblewrap/TWA.",
-        "The guide explicitly lists what the developer must supply (package name/applicationId, keystore, SHA-256 cert fingerprint) and where to place assetlinks.json.",
-        "The guide uses English for all instructions and does not assume external backend services beyond the already deployed HTTPS site."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/PLAY_STORE_TWA_GUIDE.md",
-          "operation": "create",
-          "description": "Create an English Bubblewrap/TWA packaging guide covering prerequisites, required values to supply (applicationId/package name, signing key/keystore, SHA-256 cert fingerprint), how to generate an AAB, and how the deployed HTTPS PWA URL and Digital Asset Links are used for verification."
-        }
-      ]
-    },
-    {
-      "id": "REQ-37",
-      "summary": "Add a Digital Asset Links (assetlinks.json) template under the standard well-known location and document how to fill it in for TWA verification.",
-      "acceptanceCriteria": [
-        "A template asset links file is added at the standard path \"/.well-known/assetlinks.json\" within the frontend public assets so it is served by the frontend hosting.",
-        "The packaging guide (REQ-36) explains how to edit the template with the correct package name and SHA-256 fingerprint after signing setup.",
-        "Requesting the asset links URL in a browser returns valid JSON content (even if placeholder values are present until filled)."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/public/.well-known/assetlinks.json",
-          "operation": "create",
-          "description": "Add a valid JSON template for Digital Asset Links at the standard well-known path, using clearly marked placeholder values for the Android package name and SHA-256 signing certificate fingerprint."
-        },
-        {
-          "path": "frontend/PLAY_STORE_TWA_GUIDE.md",
-          "operation": "modify",
-          "description": "Add/extend a section explaining how to update frontend/public/.well-known/assetlinks.json with the real package name and SHA-256 fingerprint, and where it must be hosted so Android can verify the TWA relationship."
+          "description": "Update pickup respawn and state update flow to align with the new pickup ID generation, ensuring respawn adds only the required number of pickups and that a pickup can only be collected once (no double-awards due to state inconsistencies)."
         }
       ]
     }

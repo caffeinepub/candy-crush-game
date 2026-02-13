@@ -127,8 +127,8 @@ export default function SnakeCanvas({
         }
       }
 
-      // Draw subtle grid overlay (no hard boundaries)
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+      // Draw very subtle grid overlay (minimal visual clutter)
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
       ctx.lineWidth = 1;
       const gridSize = 50;
       const gridStartX = Math.floor((camera.x - viewWidth / 2) / gridSize) * gridSize;
@@ -272,123 +272,142 @@ export default function SnakeCanvas({
       // Draw pickups with wrapping
       state.pickups.forEach((pickup) => {
         const screen = worldToScreen(pickup.position.x, pickup.position.y);
-        const renderSize = getPickupRenderSize(pickup.type);
-        const size = renderSize * zoom;
+        const size = getPickupRenderSize(pickup.type);
 
         if (pickup.type === 'coin') {
-          // Draw coin
           if (coinImage.complete) {
             ctx.drawImage(
               coinImage,
-              screen.x - size / 2,
-              screen.y - size / 2,
-              size,
-              size
+              screen.x - (size * zoom) / 2,
+              screen.y - (size * zoom) / 2,
+              size * zoom,
+              size * zoom
             );
           }
         } else {
-          // Draw food sprite
+          const sprite = getFoodSprite(pickup.type);
           if (foodSpritesImage.complete) {
-            const sprite = getFoodSprite(pickup.id);
             ctx.drawImage(
               foodSpritesImage,
               sprite.x,
               sprite.y,
               sprite.width,
               sprite.height,
-              screen.x - size / 2,
-              screen.y - size / 2,
-              size,
-              size
+              screen.x - (size * zoom) / 2,
+              screen.y - (size * zoom) / 2,
+              size * zoom,
+              size * zoom
             );
           }
         }
 
-        // Handle wrapping
-        const margin = renderSize;
+        // Handle wrapping for pickups
+        const margin = size;
         if (pickup.position.x < margin) {
           const wrapScreen = worldToScreen(pickup.position.x + worldWidth, pickup.position.y);
           if (pickup.type === 'coin' && coinImage.complete) {
-            ctx.drawImage(coinImage, wrapScreen.x - size / 2, wrapScreen.y - size / 2, size, size);
+            ctx.drawImage(
+              coinImage,
+              wrapScreen.x - (size * zoom) / 2,
+              wrapScreen.y - (size * zoom) / 2,
+              size * zoom,
+              size * zoom
+            );
           } else if (foodSpritesImage.complete) {
-            const sprite = getFoodSprite(pickup.id);
+            const sprite = getFoodSprite(pickup.type);
             ctx.drawImage(
               foodSpritesImage,
               sprite.x,
               sprite.y,
               sprite.width,
               sprite.height,
-              wrapScreen.x - size / 2,
-              wrapScreen.y - size / 2,
-              size,
-              size
+              wrapScreen.x - (size * zoom) / 2,
+              wrapScreen.y - (size * zoom) / 2,
+              size * zoom,
+              size * zoom
             );
           }
         }
         if (pickup.position.x > worldWidth - margin) {
           const wrapScreen = worldToScreen(pickup.position.x - worldWidth, pickup.position.y);
           if (pickup.type === 'coin' && coinImage.complete) {
-            ctx.drawImage(coinImage, wrapScreen.x - size / 2, wrapScreen.y - size / 2, size, size);
+            ctx.drawImage(
+              coinImage,
+              wrapScreen.x - (size * zoom) / 2,
+              wrapScreen.y - (size * zoom) / 2,
+              size * zoom,
+              size * zoom
+            );
           } else if (foodSpritesImage.complete) {
-            const sprite = getFoodSprite(pickup.id);
+            const sprite = getFoodSprite(pickup.type);
             ctx.drawImage(
               foodSpritesImage,
               sprite.x,
               sprite.y,
               sprite.width,
               sprite.height,
-              wrapScreen.x - size / 2,
-              wrapScreen.y - size / 2,
-              size,
-              size
+              wrapScreen.x - (size * zoom) / 2,
+              wrapScreen.y - (size * zoom) / 2,
+              size * zoom,
+              size * zoom
             );
           }
         }
         if (pickup.position.y < margin) {
           const wrapScreen = worldToScreen(pickup.position.x, pickup.position.y + worldHeight);
           if (pickup.type === 'coin' && coinImage.complete) {
-            ctx.drawImage(coinImage, wrapScreen.x - size / 2, wrapScreen.y - size / 2, size, size);
+            ctx.drawImage(
+              coinImage,
+              wrapScreen.x - (size * zoom) / 2,
+              wrapScreen.y - (size * zoom) / 2,
+              size * zoom,
+              size * zoom
+            );
           } else if (foodSpritesImage.complete) {
-            const sprite = getFoodSprite(pickup.id);
+            const sprite = getFoodSprite(pickup.type);
             ctx.drawImage(
               foodSpritesImage,
               sprite.x,
               sprite.y,
               sprite.width,
               sprite.height,
-              wrapScreen.x - size / 2,
-              wrapScreen.y - size / 2,
-              size,
-              size
+              wrapScreen.x - (size * zoom) / 2,
+              wrapScreen.y - (size * zoom) / 2,
+              size * zoom,
+              size * zoom
             );
           }
         }
         if (pickup.position.y > worldHeight - margin) {
           const wrapScreen = worldToScreen(pickup.position.x, pickup.position.y - worldHeight);
           if (pickup.type === 'coin' && coinImage.complete) {
-            ctx.drawImage(coinImage, wrapScreen.x - size / 2, wrapScreen.y - size / 2, size, size);
+            ctx.drawImage(
+              coinImage,
+              wrapScreen.x - (size * zoom) / 2,
+              wrapScreen.y - (size * zoom) / 2,
+              size * zoom,
+              size * zoom
+            );
           } else if (foodSpritesImage.complete) {
-            const sprite = getFoodSprite(pickup.id);
+            const sprite = getFoodSprite(pickup.type);
             ctx.drawImage(
               foodSpritesImage,
               sprite.x,
               sprite.y,
               sprite.width,
               sprite.height,
-              wrapScreen.x - size / 2,
-              wrapScreen.y - size / 2,
-              size,
-              size
+              wrapScreen.x - (size * zoom) / 2,
+              wrapScreen.y - (size * zoom) / 2,
+              size * zoom,
+              size * zoom
             );
           }
         }
       });
 
-      // Continue loop
       rafRef.current = requestAnimationFrame(render);
     };
 
-    // Start render loop
     rafRef.current = requestAnimationFrame(render);
 
     return () => {
@@ -396,16 +415,7 @@ export default function SnakeCanvas({
         cancelAnimationFrame(rafRef.current);
       }
     };
-  }, []); // Empty deps: render loop reads from refs
+  }, []);
 
-  return (
-    <canvas
-      ref={canvasRef}
-      className="snake-canvas"
-      style={{
-        width: '100%',
-        height: '100%',
-      }}
-    />
-  );
+  return <canvas ref={canvasRef} className="snake-canvas" />;
 }

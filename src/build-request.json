@@ -1,64 +1,75 @@
 {
   "kind": "build_request",
-  "title": "Increase gameplay screen to medium size (Snake Arena)",
+  "title": "Adjust Snake gameplay to match reference image with more open space",
   "priority": "normal",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "Increase the Snake Arena gameplay area from the current small appearance to a medium-sized layout by updating the responsive sizing rules for the main gameplay container (the element with classes `game-container snake-game-container`) so it uses more of the available viewport on typical desktop/tablet screens while still fitting fully within the viewport.",
+      "text": "Match the gameplay framing to the uploaded reference screenshots by increasing the amount of visible empty arena space around the player during Snake gameplay (i.e., zoom the camera out so the snake occupies a smaller portion of the screen).",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-4"
+          "msg-6"
         ],
         "quotes": [
-          "You make so small make medium size screen"
+          "Make like this game and there was so many space in this game image make like this"
         ]
       },
       "acceptanceCriteria": [
-        "On desktop-sized viewports (e.g., ~1366×768 and larger), the gameplay container renders noticeably larger than before (medium-sized) while still fully visible without requiring scrolling.",
-        "On mobile viewports (<=768px), the layout remains stable and does not overflow the viewport; the game container still fits within the visible area.",
-        "The gameplay container keeps a sensible game aspect ratio (currently 16:9) and does not become excessively small due to the aspect-ratio constraint."
+        "During gameplay, the camera shows noticeably more arena area around the player than before (snake appears smaller on screen).",
+        "No visual stretching occurs; canvas remains crisp and correctly scaled on different device pixel ratios.",
+        "Gameplay remains playable (snake speed/controls unchanged) after the zoom/framing adjustment."
       ]
     },
     {
       "id": "REQ-2",
-      "text": "Ensure the canvas viewport measurement and rendering scale correctly after the gameplay container size changes (so the `SnakeCanvas` continues to receive accurate `viewportWidth/viewportHeight` values from `useCanvasViewport` and the rendered canvas is crisp and fills the container).",
+      "text": "Update the Snake gameplay UI layout to feel more like the reference screenshots by reducing on-screen visual clutter and preserving a clean, spacious playfield (e.g., keep HUD elements compact and out of the center area, and avoid heavy frames that visually shrink the arena).",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-4"
+          "msg-6"
         ],
         "quotes": [
-          "You make so small make medium size screen"
+          "Make like this game and there was so many space in this game image make like this"
         ]
       },
       "acceptanceCriteria": [
-        "After resizing the gameplay container, the canvas fills the game board container with no letterboxing gaps caused by mismatched width/height styles.",
-        "Resizing the browser window updates the canvas dimensions appropriately (no stale sizing), and performance does not degrade due to excessive resize re-renders."
+        "HUD panels do not obstruct the central play area; they stay anchored to screen edges/corners.",
+        "The playfield visually reads as a large open arena (no thick borders or heavy container styling that makes the arena feel boxed-in).",
+        "Layout remains responsive on mobile and desktop without overlapping critical controls (joystick, overlays, HUD)."
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "text": "Apply a cohesive visual theme aligned with the reference screenshots: a clean arcade arena with a flat/mostly-uniform blue field and subtle texture, with minimalistic, lightweight UI chrome used consistently across gameplay screens.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-6"
+        ],
+        "quotes": [
+          "Make like this game and there was so many space in this game image make like this"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Gameplay background reads as predominantly blue with subtle texture/grain; it does not look overly dark or busy.",
+        "UI elements (HUD, overlays, buttons) use consistent styling and do not visually dominate the arena.",
+        "No user-facing text is introduced in a language other than English."
       ]
     }
   ],
   "constraints": [
-    "Do not edit any files under frontend/src/components/ui (read-only).",
-    "Do not modify the Internet Identity / actor hooks located in frontend immutablePaths."
+    "Do not edit files under frontend/src/components/ui (compose existing shadcn components instead).",
+    "Do not modify frontend/src/hooks/useInternetIdentity.ts(x), frontend/src/hooks/useActor.ts, or frontend/src/main.tsx (immutable paths).",
+    "Backend is single-actor Motoko; do not add additional backend services."
   ],
   "nonGoals": [
-    "Do not add new gameplay features, controls, levels, missions, or UI panels beyond resizing.",
-    "Do not introduce backend logic or persistence changes (backend remains unchanged)."
+    "Adding new game modes, new controls, multiplayer, or networking.",
+    "Implementing third-party authentication or external APIs.",
+    "Changing core Snake game rules, scoring, or mission logic beyond what is necessary to achieve the requested spacious visual framing."
   ],
   "imageRequirements": {
     "required": [],
     "edits": []
-  },
-  "userProfileUpdate": {
-    "goalsToAdd": [],
-    "goalsToRemove": [],
-    "preferencesToAdd": [],
-    "preferencesToRemove": [],
-    "miscToAdd": [],
-    "miscToRemove": [],
-    "fieldsToSet": {},
-    "fieldsToDelete": []
   }
 }

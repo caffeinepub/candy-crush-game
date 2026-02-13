@@ -1,4 +1,4 @@
-import { useRef, useEffect, useCallback } from 'react';
+import { useRef, useEffect } from 'react';
 import { useSnakeGame } from './useSnakeGame';
 import SnakeCanvas from './SnakeCanvas';
 import SnakeMainMenu from './SnakeMainMenu';
@@ -16,7 +16,8 @@ import { Pause, Play, RotateCcw, Maximize, Minimize, Smartphone } from 'lucide-r
 import { useFullscreen } from '@/hooks/useFullscreen';
 import { Heart } from 'lucide-react';
 
-const ZOOM = 1.2;
+// Reduced zoom for more spacious view
+const ZOOM = 0.6;
 
 export default function SnakeScreen() {
   const { 
@@ -122,53 +123,46 @@ export default function SnakeScreen() {
 
   return (
     <div className="game-screen game-screen-gameplay" data-orientation={isLandscape ? 'landscape' : 'portrait'}>
-      {/* Header */}
-      <header className="game-header">
-        <div className="game-header-content">
-          <h1 className="game-title">Snake Arena</h1>
-          <div className="game-header-actions">
-            {gameState.status === 'playing' || gameState.status === 'paused' ? (
-              <>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={togglePause}
-                  className="game-header-button"
-                  aria-label={gameState.status === 'playing' ? 'Pause' : 'Resume'}
-                >
-                  {gameState.status === 'playing' ? <Pause size={20} /> : <Play size={20} />}
-                </Button>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={restartGame}
-                  className="game-header-button"
-                  aria-label="Restart"
-                >
-                  <RotateCcw size={20} />
-                </Button>
-              </>
-            ) : null}
-            {isSupported && (
+      {/* Main Game Area - Full screen during gameplay */}
+      <main className="game-main game-main-fullscreen">
+        <div className="game-container snake-game-container snake-game-container-fullscreen">
+          {/* Rotate to Landscape Overlay */}
+          <RotateToLandscapeOverlay visible={!isLandscape} />
+
+          {/* In-game controls overlay (top-right corner) */}
+          {(gameState.status === 'playing' || gameState.status === 'paused') && (
+            <div className="snake-controls-overlay">
               <Button
                 variant="outline"
                 size="icon"
-                onClick={toggleFullscreen}
-                className="game-header-button"
-                aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
+                onClick={togglePause}
+                className="snake-control-button"
+                aria-label={gameState.status === 'playing' ? 'Pause' : 'Resume'}
               >
-                {isFullscreen ? <Minimize size={20} /> : <Maximize size={20} />}
+                {gameState.status === 'playing' ? <Pause size={18} /> : <Play size={18} />}
               </Button>
-            )}
-          </div>
-        </div>
-      </header>
-
-      {/* Main Game Area */}
-      <main className="game-main">
-        <div className="game-container snake-game-container">
-          {/* Rotate to Landscape Overlay */}
-          <RotateToLandscapeOverlay visible={!isLandscape} />
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={restartGame}
+                className="snake-control-button"
+                aria-label="Restart"
+              >
+                <RotateCcw size={18} />
+              </Button>
+              {isSupported && (
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={toggleFullscreen}
+                  className="snake-control-button"
+                  aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
+                >
+                  {isFullscreen ? <Minimize size={18} /> : <Maximize size={18} />}
+                </Button>
+              )}
+            </div>
+          )}
 
           {/* HUD Overlays */}
           {(gameState.status === 'playing' || gameState.status === 'paused') && (
@@ -185,8 +179,8 @@ export default function SnakeScreen() {
                   className="snake-tilt-button"
                   aria-label="Toggle tilt controls"
                 >
-                  <Smartphone size={16} className="mr-1" />
-                  Tilt: {tiltEnabled ? 'On' : 'Off'}
+                  <Smartphone size={14} className="mr-1" />
+                  Tilt
                 </Button>
                 {tiltError && (
                   <div className="snake-tilt-error">{tiltError}</div>
@@ -233,23 +227,6 @@ export default function SnakeScreen() {
           {missionCompleteVisible && <SnakeMissionCompleteOverlay />}
         </div>
       </main>
-
-      {/* Footer */}
-      <footer className="game-footer">
-        <p className="game-footer-text">
-          © {new Date().getFullYear()} Built with <Heart size={14} className="inline text-red-500" fill="currentColor" /> using{' '}
-          <a
-            href={`https://caffeine.ai/?utm_source=Caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(
-              typeof window !== 'undefined' ? window.location.hostname : 'snake-arena'
-            )}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="game-footer-link"
-          >
-            caffeine.ai
-          </a>
-        </p>
-      </footer>
     </div>
   );
 }

@@ -1,41 +1,88 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Resize Snake Arena gameplay container to medium and keep canvas viewport scaling accurate",
+  "title": "Snake gameplay: zoomed-out framing and cleaner blue arena UI",
   "requirements": [
     {
       "id": "REQ-1",
-      "summary": "Increase the Snake Arena gameplay container to a medium-sized responsive layout that uses more viewport space on desktop/tablet while still fully fitting within the viewport and maintaining 16:9.",
+      "summary": "Zoom the Snake gameplay camera out to show more empty arena space around the player while keeping DPR-crisp canvas rendering.",
       "acceptanceCriteria": [
-        "On desktop-sized viewports (e.g., ~1366×768 and larger), the gameplay container renders noticeably larger than before (medium-sized) while still fully visible without requiring scrolling.",
-        "On mobile viewports (<=768px), the layout remains stable and does not overflow the viewport; the game container still fits within the visible area.",
-        "The gameplay container keeps a sensible game aspect ratio (currently 16:9) and does not become excessively small due to the aspect-ratio constraint."
+        "During gameplay, the camera shows noticeably more arena area around the player than before (snake appears smaller on screen).",
+        "No visual stretching occurs; canvas remains crisp and correctly scaled on different device pixel ratios.",
+        "Gameplay remains playable (snake speed/controls unchanged) after the zoom/framing adjustment."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/index.css",
+          "path": "frontend/src/snake/SnakeScreen.tsx",
           "operation": "modify",
-          "description": "Update the responsive sizing rules for the `.game-container.snake-game-container` (and any necessary gameplay layout wrappers such as `.game-screen-gameplay .game-main`) so the 16:9 container scales up to a medium size on desktop/tablet (using viewport-based max sizing / clamps) while guaranteeing it always fits fully within the visible viewport (no scrollbars) and remains stable on mobile breakpoints."
+          "description": "Reduce gameplay zoom (currently the ZOOM constant) and, if needed, make zoom responsive to viewport size so the arena shows more open space without affecting movement logic. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/snake/SnakeCanvas.tsx",
+          "operation": "modify",
+          "description": "Audit the camera/view calculations that use zoom (viewWidth/viewHeight, worldToScreen) to ensure the zoom-out change preserves crisp DPR scaling and avoids any stretching artifacts; keep snake speed/controls unchanged. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/snake/SnakeMinimap.tsx",
+          "operation": "modify",
+          "description": "Ensure minimap viewport indicator stays accurate after the zoom change (it currently receives zoom from SnakeScreen) so the displayed visible region matches the new framing. Verify the component's usage instructions before implementing."
         }
       ]
     },
     {
       "id": "REQ-2",
-      "summary": "Ensure canvas viewport measurement and rendering remain accurate and crisp after the gameplay container size increase, with efficient resize handling.",
+      "summary": "Clean up the Snake gameplay layout to maximize readable playfield space and keep HUD/controls compact and edge-anchored.",
       "acceptanceCriteria": [
-        "After resizing the gameplay container, the canvas fills the game board container with no letterboxing gaps caused by mismatched width/height styles.",
-        "Resizing the browser window updates the canvas dimensions appropriately (no stale sizing), and performance does not degrade due to excessive resize re-renders."
+        "HUD panels do not obstruct the central play area; they stay anchored to screen edges/corners.",
+        "The playfield visually reads as a large open arena (no thick borders or heavy container styling that makes the arena feel boxed-in).",
+        "Layout remains responsive on mobile and desktop without overlapping critical controls (joystick, overlays, HUD)."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/snake/useCanvasViewport.ts",
+          "path": "frontend/src/snake/SnakeScreen.tsx",
           "operation": "modify",
-          "description": "Adjust viewport measurement to be robust after the container resize changes: round container rect dimensions consistently, and throttle/merge ResizeObserver + window resize/orientation updates (e.g., via requestAnimationFrame scheduling) to avoid excessive re-renders while still updating promptly on real size changes."
+          "description": "Rework gameplay chrome so it does not consume vertical layout space (e.g., move pause/restart/fullscreen controls into an in-arena corner overlay instead of a full-width header; avoid heavy framing around the playfield). Continue using the existing shadcn-ui Button component for controls (do not edit files under frontend/src/components/ui). Verify the component's usage instructions before implementing."
         },
+        {
+          "path": "frontend/src/snake/SnakeHUD.tsx",
+          "operation": "modify",
+          "description": "Make HUD more compact and less obtrusive: reduce panel padding/typography, consider collapsing/shortening the leaderboard presentation, and remove/avoid heavyweight panel background images that visually shrink the arena. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/index.css",
+          "operation": "modify",
+          "description": "Adjust gameplay layout CSS to reduce visual clutter: soften/remove thick borders/shadows around the gameplay container, tighten HUD sizing, and refine responsive positioning to prevent overlaps with joystick/boosters/minimap across breakpoints. Verify the component's usage instructions before implementing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "summary": "Apply a cohesive arcade-blue arena theme with subtle texture and consistent lightweight UI styling across Snake gameplay screens.",
+      "acceptanceCriteria": [
+        "Gameplay background reads as predominantly blue with subtle texture/grain; it does not look overly dark or busy.",
+        "UI elements (HUD, overlays, buttons) use consistent styling and do not visually dominate the arena.",
+        "No user-facing text is introduced in a language other than English."
+      ],
+      "file_operations": [
         {
           "path": "frontend/src/snake/SnakeCanvas.tsx",
           "operation": "modify",
-          "description": "Ensure the canvas element visually fills its parent container without gaps by aligning CSS sizing with the container (e.g., prefer `width: 100%` / `height: 100%` via class styling and avoid mismatches from inline pixel styles), while keeping the backing store sized from `canvasWidth/canvasHeight` for DPR-crisp rendering."
+          "description": "Tune the arena rendering for a clean blue field with subtle texture: adjust background tiling usage and/or soften any over-strong overlays (e.g., grid opacity) so the field remains predominantly blue and uncluttered. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/snake/SnakeOverlays.tsx",
+          "operation": "modify",
+          "description": "Align pause/game-over overlays with the minimal lightweight chrome style (subtle translucency, consistent radius/typography) without introducing non-English text. Continue using existing shadcn-ui components (e.g., Button) without modifying frontend/src/components/ui. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/index.css",
+          "operation": "modify",
+          "description": "Unify Snake gameplay styling tokens and classes for a minimal arcade-blue look: lightweight panel backgrounds, consistent corner radius, and restrained shadows so UI does not dominate the arena. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/snake/wzAssets.ts",
+          "operation": "modify",
+          "description": "If needed for the new minimal chrome approach, stop relying on heavy HUD frame assets by adjusting which generated assets are referenced for HUD/minimap styling (keeping the arena background tile as the primary texture). Verify the component's usage instructions before implementing."
         }
       ]
     }

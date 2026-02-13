@@ -1,26 +1,32 @@
 {
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
-  "summary": "New project",
+  "summary": "Create a game that matches a provided reference image/style, with a spacious layout.",
   "architectural_notes": [],
-  "known_issues": [
-    "Current screen size appears too small; user requests medium size"
-  ],
-  "isFixRequest": true,
+  "known_issues": [],
+  "isFixRequest": false,
   "existing_features": [
     {
-      "id": "feature-increase-the-snake-arena-gameplay-area-from-the-current-small-appearance-to-a-medium-sized-layout-by-updating-the-responsive-sizing-rules-for-the-main-gameplay-container-the-element-with-classes-game-container-snake-game-container-so-it-uses-more-of-the-available-viewport-on-typical-desktop-tablet-screens-while-still-fitting-fully-within-the-viewport",
-      "title": "Increase the Snake Arena gameplay area from the current small appearance to a medium-sized layout by updating the responsive sizing rules for the main gameplay container (the element with classes `game-container snake-game-container`) so it uses more of the available viewport on typical desktop/tablet screens while still fitting fully within the viewport.",
+      "id": "feature-match-the-gameplay-framing-to-the-uploaded-reference-screenshots-by-increasing-the-amount-of-visible-empty-arena-space-around-the-player-during-snake-gameplay-i-e-zoom-the-camera-out-so-the-snake-occupies-a-smaller-portion-of-the-screen",
+      "title": "Match the gameplay framing to the uploaded reference screenshots by increasing the amount of visible empty arena space around the player during Snake gameplay (i.e., zoom the camera out so the snake occupies a smaller portion of the screen).",
       "reqIds": [
         "REQ-1"
       ],
       "version": 1
     },
     {
-      "id": "feature-ensure-the-canvas-viewport-measurement-and-rendering-scale-correctly-after-the-gameplay-container-size-changes-so-the-snakecanvas-continues-to-receive-accurate-viewportwidth-viewportheight-values-from-usecanvasviewport-and-the-rendered-canvas-is-crisp-and-fills-the-container",
-      "title": "Ensure the canvas viewport measurement and rendering scale correctly after the gameplay container size changes (so the `SnakeCanvas` continues to receive accurate `viewportWidth/viewportHeight` values from `useCanvasViewport` and the rendered canvas is crisp and fills the container).",
+      "id": "feature-update-the-snake-gameplay-ui-layout-to-feel-more-like-the-reference-screenshots-by-reducing-on-screen-visual-clutter-and-preserving-a-clean-spacious-playfield-e-g-keep-hud-elements-compact-and-out-of-the-center-area-and-avoid-heavy-frames-that-visually-shrink-the-arena",
+      "title": "Update the Snake gameplay UI layout to feel more like the reference screenshots by reducing on-screen visual clutter and preserving a clean, spacious playfield (e.g., keep HUD elements compact and out of the center area, and avoid heavy frames that visually shrink the arena).",
       "reqIds": [
         "REQ-2"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-apply-a-cohesive-visual-theme-aligned-with-the-reference-screenshots-a-clean-arcade-arena-with-a-flat-mostly-uniform-blue-field-and-subtle-texture-with-minimalistic-lightweight-ui-chrome-used-consistently-across-gameplay-screens",
+      "title": "Apply a cohesive visual theme aligned with the reference screenshots: a clean arcade arena with a flat/mostly-uniform blue field and subtle texture, with minimalistic, lightweight UI chrome used consistently across gameplay screens.",
+      "reqIds": [
+        "REQ-3"
       ],
       "version": 1
     }
@@ -28,12 +34,12 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Adjust the app/game screen size from small to a medium size for better viewing",
+      "summary": "Recreate/build a game to match the provided reference image, emphasizing a spacious layout/large empty space as in the image.",
       "reqIds": [],
       "status": "pending"
     }
   ],
-  "projectName": "Increase gameplay screen to medium size (Snake Arena)",
+  "projectName": "Adjust Snake gameplay to match reference image with more open space",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

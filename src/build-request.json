@@ -1,72 +1,51 @@
 {
   "kind": "build_request",
-  "title": "Fix Snake Arena glitches and tune default snake speed to medium",
+  "title": "Increase gameplay screen to medium size (Snake Arena)",
   "priority": "normal",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "Fix Snake Arena movement/physics glitches by correcting the snake segment follow logic so segments track the previous segment smoothly (no jittering, teleporting, or kinks) during normal play, turning, and world-edge wrap-around.",
+      "text": "Increase the Snake Arena gameplay area from the current small appearance to a medium-sized layout by updating the responsive sizing rules for the main gameplay container (the element with classes `game-container snake-game-container`) so it uses more of the available viewport on typical desktop/tablet screens while still fitting fully within the viewport.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-6"
+          "msg-4"
         ],
         "quotes": [
-          "In this game there was so many glitches so please fix all the glitches"
+          "You make so small make medium size screen"
         ]
       },
       "acceptanceCriteria": [
-        "During continuous movement, the snake body follows the head with consistent spacing and without visible jitter or sudden jumps.",
-        "Turning the snake does not cause segments to overlap, lag incorrectly, or detach visually from the body.",
-        "Wrapping around world boundaries (crossing x/y edges) does not produce segment snapping or discontinuities."
+        "On desktop-sized viewports (e.g., ~1366×768 and larger), the gameplay container renders noticeably larger than before (medium-sized) while still fully visible without requiring scrolling.",
+        "On mobile viewports (<=768px), the layout remains stable and does not overflow the viewport; the game container still fits within the visible area.",
+        "The gameplay container keeps a sensible game aspect ratio (currently 16:9) and does not become excessively small due to the aspect-ratio constraint."
       ]
     },
     {
       "id": "REQ-2",
-      "text": "Tune the default player snake speed so it is reliably “medium” (not too fast and not too slow) across different device frame rates by adjusting the snake speed constants and/or delta-time scaling in the Snake Arena loop.",
+      "text": "Ensure the canvas viewport measurement and rendering scale correctly after the gameplay container size changes (so the `SnakeCanvas` continues to receive accurate `viewportWidth/viewportHeight` values from `useCanvasViewport` and the rendered canvas is crisp and fills the container).",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-6"
+          "msg-4"
         ],
         "quotes": [
-          "and the speed of snake is not very the speed of snake is medium"
+          "You make so small make medium size screen"
         ]
       },
       "acceptanceCriteria": [
-        "The player snake movement speed feels consistent on both high-refresh and low-refresh devices (no unintended speed-ups/slow-downs).",
-        "Default speed is set to a medium pace and remains stable while steering with the joystick.",
-        "AI snakes continue to move and behave correctly at the tuned speed (no new collision or steering regressions)."
-      ]
-    },
-    {
-      "id": "REQ-3",
-      "text": "Fix gameplay glitches related to pickup generation and collection consistency by ensuring pickup IDs are unique and that pickups do not flicker, duplicate unexpectedly, or reappear due to identifier collisions or state update issues.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-6"
-        ],
-        "quotes": [
-          "In this game there was so many glitches so please fix all the glitches"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Pickups maintain stable identity during a play session (no duplicate IDs leading to rendering/state inconsistencies).",
-        "Collecting pickups reliably increases score and length exactly once per pickup collected.",
-        "Pickup respawn logic maintains the intended pickup count behavior without sudden mass duplication or disappearance."
+        "After resizing the gameplay container, the canvas fills the game board container with no letterboxing gaps caused by mismatched width/height styles.",
+        "Resizing the browser window updates the canvas dimensions appropriately (no stale sizing), and performance does not degrade due to excessive resize re-renders."
       ]
     }
   ],
   "constraints": [
-    "Do not edit files under frontend/src/components/ui (read-only shadcn components).",
-    "Do not edit frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, or frontend/src/main.tsx (immutable paths).",
-    "Backend remains a single Motoko actor; avoid backend changes unless strictly required for these glitch fixes."
+    "Do not edit any files under frontend/src/components/ui (read-only).",
+    "Do not modify the Internet Identity / actor hooks located in frontend immutablePaths."
   ],
   "nonGoals": [
-    "Add new game modes, levels, or multiplayer/real-time features.",
-    "Add new authentication methods beyond existing project capabilities.",
-    "Redesign the entire UI/visual theme (only fix functional glitches and speed tuning)."
+    "Do not add new gameplay features, controls, levels, missions, or UI panels beyond resizing.",
+    "Do not introduce backend logic or persistence changes (backend remains unchanged)."
   ],
   "imageRequirements": {
     "required": [],

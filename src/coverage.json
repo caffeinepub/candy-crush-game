@@ -1,52 +1,37 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-11T04:26:28.173Z",
+  "generatedAt": "2026-02-13T13:31:43.126Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 3,
-    "implemented": 3,
+    "total": 2,
+    "implemented": 2,
     "items": [
       {
         "id": "REQ-1",
-        "summary": "Fix Snake Arena movement/physics glitches by correcting the snake segment follow logic so segments track the previous segment smoothly (no jittering, teleporting, or kinks) during normal play, turning, and world-edge wrap-around.",
+        "summary": "Increase the Snake Arena gameplay area from the current small appearance to a medium-sized layout by updating the responsive sizing rules for the main gameplay container (the element with classes `game-container snake-game-container`) so it uses more of the available viewport on typical desktop/tablet screens while still fitting fully within the viewport.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/snake/logic.ts",
-          "frontend/src/snake/useSnakeGame.ts"
+          "frontend/src/index.css"
         ],
         "matchedFiles": [
-          "frontend/src/snake/logic.ts",
-          "frontend/src/snake/useSnakeGame.ts"
+          "frontend/src/index.css"
         ]
       },
       {
         "id": "REQ-2",
-        "summary": "Tune the default player snake speed so it is reliably “medium” (not too fast and not too slow) across different device frame rates by adjusting the snake speed constants and/or delta-time scaling in the Snake Arena loop.",
+        "summary": "Ensure the canvas viewport measurement and rendering scale correctly after the gameplay container size changes (so the `SnakeCanvas` continues to receive accurate `viewportWidth/viewportHeight` values from `useCanvasViewport` and the rendered canvas is crisp and fills the container).",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/snake/useSnakeGame.ts",
-          "frontend/src/snake/logic.ts"
+          "frontend/src/snake/useCanvasViewport.ts",
+          "frontend/src/snake/SnakeCanvas.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/snake/useSnakeGame.ts",
-          "frontend/src/snake/logic.ts"
-        ]
-      },
-      {
-        "id": "REQ-3",
-        "summary": "Fix gameplay glitches related to pickup generation and collection consistency by ensuring pickup IDs are unique and that pickups do not flicker, duplicate unexpectedly, or reappear due to identifier collisions or state update issues.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/snake/logic.ts",
-          "frontend/src/snake/useSnakeGame.ts"
-        ],
-        "matchedFiles": [
-          "frontend/src/snake/logic.ts",
-          "frontend/src/snake/useSnakeGame.ts"
+          "frontend/src/snake/useCanvasViewport.ts",
+          "frontend/src/snake/SnakeCanvas.tsx"
         ]
       }
     ]
@@ -56,8 +41,10 @@
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/snake/logic.ts",
-    "frontend/src/snake/useSnakeGame.ts",
+    "frontend/src/index.css",
+    "frontend/src/snake/SnakeCanvas.tsx",
+    "frontend/src/snake/useCanvasViewport.ts",
+    "frontend/src/snake/wzAssets.ts",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

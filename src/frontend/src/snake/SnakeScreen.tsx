@@ -1,15 +1,41 @@
-import { useEffect } from 'react';
+import { useRef, useEffect, useCallback } from 'react';
 import { useSnakeGame } from './useSnakeGame';
 import SnakeCanvas from './SnakeCanvas';
-import { GameOverOverlay, PauseOverlay, IdleOverlay } from './SnakeOverlays';
+import SnakeMainMenu from './SnakeMainMenu';
+import SnakeHUD from './SnakeHUD';
+import SnakeMinimap from './SnakeMinimap';
+import SnakeBoosters from './SnakeBoosters';
+import SnakeMissionCompleteOverlay from './SnakeMissionCompleteOverlay';
+import { GameOverOverlay, PauseOverlay } from './SnakeOverlays';
 import Joystick from './Joystick';
+import RotateToLandscapeOverlay from './RotateToLandscapeOverlay';
+import { useLandscapeOrientation } from './useLandscapeOrientation';
+import { useCanvasViewport } from './useCanvasViewport';
 import { Button } from '@/components/ui/button';
-import { Pause, Play, RotateCcw, Heart, Maximize, Minimize } from 'lucide-react';
+import { Pause, Play, RotateCcw, Maximize, Minimize, Smartphone } from 'lucide-react';
 import { useFullscreen } from '@/hooks/useFullscreen';
+import { Heart } from 'lucide-react';
+
+const ZOOM = 1.2;
 
 export default function SnakeScreen() {
-  const { gameState, startGame, pauseGame, resumeGame, restartGame, setJoystickAngle } = useSnakeGame();
+  const { 
+    gameState, 
+    startGame, 
+    pauseGame, 
+    resumeGame, 
+    restartGame, 
+    setJoystickAngle, 
+    setKeyboardAngle,
+    missionCompleteVisible,
+    tiltEnabled,
+    toggleTilt,
+    tiltError,
+  } = useSnakeGame();
   const { isFullscreen, isSupported, toggleFullscreen } = useFullscreen();
+  const isLandscape = useLandscapeOrientation();
+  const playfieldRef = useRef<HTMLDivElement>(null);
+  const viewport = useCanvasViewport(playfieldRef);
 
   const togglePause = () => {
     if (gameState.status === 'playing') {
@@ -19,8 +45,83 @@ export default function SnakeScreen() {
     }
   };
 
+  // Keyboard controls (Arrow keys + WASD)
+  useEffect(() => {
+    const keysPressed = new Set<string>();
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (gameState.status !== 'playing') return;
+      
+      const key = e.key.toLowerCase();
+      if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright', 'w', 'a', 's', 'd'].includes(key)) {
+        e.preventDefault();
+        keysPressed.add(key);
+        updateKeyboardAngle();
+      }
+    };
+
+    const handleKeyUp = (e: KeyboardEvent) => {
+      const key = e.key.toLowerCase();
+      if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright', 'w', 'a', 's', 'd'].includes(key)) {
+        keysPressed.delete(key);
+        updateKeyboardAngle();
+      }
+    };
+
+    const updateKeyboardAngle = () => {
+      let dx = 0;
+      let dy = 0;
+
+      if (keysPressed.has('arrowup') || keysPressed.has('w')) dy -= 1;
+      if (keysPressed.has('arrowdown') || keysPressed.has('s')) dy += 1;
+      if (keysPressed.has('arrowleft') || keysPressed.has('a')) dx -= 1;
+      if (keysPressed.has('arrowright') || keysPressed.has('d')) dx += 1;
+
+      if (dx !== 0 || dy !== 0) {
+        const angle = Math.atan2(dy, dx);
+        setKeyboardAngle(angle);
+      } else {
+        setKeyboardAngle(null);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+    };
+  }, [gameState.status, setKeyboardAngle]);
+
+  // Show main menu
+  if (gameState.status === 'menu') {
+    return (
+      <div className="game-screen">
+        <SnakeMainMenu onStartGame={startGame} />
+        
+        {/* Footer */}
+        <footer className="game-footer">
+          <p className="game-footer-text">
+            © {new Date().getFullYear()} Built with <Heart size={14} className="inline text-red-500" fill="currentColor" /> using{' '}
+            <a
+              href={`https://caffeine.ai/?utm_source=Caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(
+                typeof window !== 'undefined' ? window.location.hostname : 'snake-arena'
+              )}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="game-footer-link"
+            >
+              caffeine.ai
+            </a>
+          </p>
+        </footer>
+      </div>
+    );
+  }
+
   return (
-    <div className="game-screen">
+    <div className="game-screen game-screen-gameplay" data-orientation={isLandscape ? 'landscape' : 'portrait'}>
       {/* Header */}
       <header className="game-header">
         <div className="game-header-content">
@@ -65,65 +166,81 @@ export default function SnakeScreen() {
 
       {/* Main Game Area */}
       <main className="game-main">
-        <div className="game-container">
-          {/* HUD */}
-          <div className="game-hud snake-hud">
-            <div className="game-hud-item">
-              <span className="game-hud-label">Score</span>
-              <span className="game-hud-value">{gameState.player.score}</span>
-            </div>
-            <div className="game-hud-item">
-              <span className="game-hud-label">Length</span>
-              <span className="game-hud-value">{gameState.player.segments.length}</span>
-            </div>
-            <div className="game-hud-item">
-              <span className="game-hud-label">Rank</span>
-              <span className="game-hud-value">
-                {[gameState.player, ...gameState.aiSnakes]
-                  .filter(s => s.alive)
-                  .sort((a, b) => b.score - a.score)
-                  .findIndex(s => s.id === gameState.player.id) + 1}
-              </span>
-            </div>
-          </div>
+        <div className="game-container snake-game-container">
+          {/* Rotate to Landscape Overlay */}
+          <RotateToLandscapeOverlay visible={!isLandscape} />
+
+          {/* HUD Overlays */}
+          {(gameState.status === 'playing' || gameState.status === 'paused') && (
+            <>
+              <SnakeHUD gameState={gameState} viewportWidth={viewport.width} viewportHeight={viewport.height} zoom={ZOOM} />
+              <SnakeMinimap gameState={gameState} viewportWidth={viewport.width} viewportHeight={viewport.height} zoom={ZOOM} />
+              
+              {/* Tilt Control Toggle */}
+              <div className="snake-tilt-toggle">
+                <Button
+                  variant={tiltEnabled ? "default" : "outline"}
+                  size="sm"
+                  onClick={toggleTilt}
+                  className="snake-tilt-button"
+                  aria-label="Toggle tilt controls"
+                >
+                  <Smartphone size={16} className="mr-1" />
+                  Tilt: {tiltEnabled ? 'On' : 'Off'}
+                </Button>
+                {tiltError && (
+                  <div className="snake-tilt-error">{tiltError}</div>
+                )}
+              </div>
+            </>
+          )}
 
           {/* Game Board */}
-          <div className="game-board-container snake-board-container">
-            <SnakeCanvas gameState={gameState} />
+          <div ref={playfieldRef} className="game-board-container snake-board-container">
+            <SnakeCanvas 
+              gameState={gameState} 
+              viewportWidth={viewport.width}
+              viewportHeight={viewport.height}
+              canvasWidth={viewport.canvasWidth}
+              canvasHeight={viewport.canvasHeight}
+              dpr={viewport.dpr}
+              zoom={ZOOM}
+            />
           </div>
+
+          {/* Boosters */}
+          {(gameState.status === 'playing' || gameState.status === 'paused') && (
+            <SnakeBoosters />
+          )}
 
           {/* Joystick Control */}
-          <Joystick
-            onAngleChange={setJoystickAngle}
-            disabled={gameState.status !== 'playing'}
-          />
-
-          {/* Instructions */}
-          <div className="game-instructions">
-            <p className="game-instructions-text">
-              <strong>Controls:</strong> Use the joystick to steer your snake. Collect points to grow. Eliminate other snakes by making them hit your body!
-            </p>
+          <div className="snake-joystick">
+            <Joystick
+              onAngleChange={setJoystickAngle}
+              disabled={gameState.status !== 'playing'}
+            />
           </div>
-        </div>
 
-        {/* Overlays */}
-        {gameState.status === 'idle' && <IdleOverlay onStart={startGame} />}
-        {gameState.status === 'paused' && (
-          <PauseOverlay onResume={resumeGame} onRestart={restartGame} />
-        )}
-        {gameState.status === 'gameOver' && (
-          <GameOverOverlay score={gameState.player.score} length={gameState.player.segments.length} onRestart={restartGame} />
-        )}
+          {/* Overlays */}
+          {gameState.status === 'paused' && <PauseOverlay onAction={resumeGame} />}
+          {gameState.status === 'gameOver' && (
+            <GameOverOverlay
+              onAction={restartGame}
+              score={gameState.player.score}
+              length={gameState.player.segments.length}
+            />
+          )}
+          {missionCompleteVisible && <SnakeMissionCompleteOverlay />}
+        </div>
       </main>
 
       {/* Footer */}
       <footer className="game-footer">
         <p className="game-footer-text">
-          © {new Date().getFullYear()}. Built with{' '}
-          <Heart className="inline-block w-4 h-4 text-red-500 fill-current" /> using{' '}
+          © {new Date().getFullYear()} Built with <Heart size={14} className="inline text-red-500" fill="currentColor" /> using{' '}
           <a
             href={`https://caffeine.ai/?utm_source=Caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(
-              window.location.hostname
+              typeof window !== 'undefined' ? window.location.hostname : 'snake-arena'
             )}`}
             target="_blank"
             rel="noopener noreferrer"

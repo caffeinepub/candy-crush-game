@@ -2,11 +2,10 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-fix-snake-arena-movement-physics-glitches-by-correcting-the-snake-segment-follow-logic-so-segments-track-the-previous-segment-smoothly-no-jittering-teleporting-or-kinks-during-normal-play-turning-and-world-edge-wrap-around",
-      "featureTitle": "Fix Snake Arena movement/physics glitches by correcting the snake segment follow logic so segments track the previous segment smoothly (no jittering, teleporting, or kinks) during normal play, turning, and world-edge wrap-around.",
+      "featureId": "feature-increase-the-snake-arena-gameplay-area-from-the-current-small-appearance-to-a-medium-sized-layout-by-updating-the-responsive-sizing-rules-for-the-main-gameplay-container-the-element-with-classes-game-container-snake-game-container-so-it-uses-more-of-the-available-viewport-on-typical-desktop-tablet-screens-while-still-fitting-fully-within-the-viewport",
+      "featureTitle": "Increase the Snake Arena gameplay area from the current small appearance to a medium-sized layout by updating the responsive sizing rules for the main gameplay container (the element with classes `game-container snake-game-container`) so it uses more of the available viewport on typical desktop/tablet screens while still fitting fully within the viewport.",
       "files": [
-        "frontend/src/snake/logic.ts",
-        "frontend/src/snake/useSnakeGame.ts"
+        "frontend/src/index.css"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -21,11 +20,11 @@
       "confidence": "high"
     },
     {
-      "featureId": "feature-tune-the-default-player-snake-speed-so-it-is-reliably-medium-not-too-fast-and-not-too-slow-across-different-device-frame-rates-by-adjusting-the-snake-speed-constants-and-or-delta-time-scaling-in-the-snake-arena-loop",
-      "featureTitle": "Tune the default player snake speed so it is reliably “medium” (not too fast and not too slow) across different device frame rates by adjusting the snake speed constants and/or delta-time scaling in the Snake Arena loop.",
+      "featureId": "feature-ensure-the-canvas-viewport-measurement-and-rendering-scale-correctly-after-the-gameplay-container-size-changes-so-the-snakecanvas-continues-to-receive-accurate-viewportwidth-viewportheight-values-from-usecanvasviewport-and-the-rendered-canvas-is-crisp-and-fills-the-container",
+      "featureTitle": "Ensure the canvas viewport measurement and rendering scale correctly after the gameplay container size changes (so the `SnakeCanvas` continues to receive accurate `viewportWidth/viewportHeight` values from `useCanvasViewport` and the rendered canvas is crisp and fills the container).",
       "files": [
-        "frontend/src/snake/logic.ts",
-        "frontend/src/snake/useSnakeGame.ts"
+        "frontend/src/snake/SnakeCanvas.tsx",
+        "frontend/src/snake/useCanvasViewport.ts"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -36,25 +35,6 @@
       ],
       "testIds": [
         "REQ-2"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-fix-gameplay-glitches-related-to-pickup-generation-and-collection-consistency-by-ensuring-pickup-ids-are-unique-and-that-pickups-do-not-flicker-duplicate-unexpectedly-or-reappear-due-to-identifier-collisions-or-state-update-issues",
-      "featureTitle": "Fix gameplay glitches related to pickup generation and collection consistency by ensuring pickup IDs are unique and that pickups do not flicker, duplicate unexpectedly, or reappear due to identifier collisions or state update issues.",
-      "files": [
-        "frontend/src/snake/logic.ts",
-        "frontend/src/snake/useSnakeGame.ts"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-3"
       ],
       "confidence": "high"
     }

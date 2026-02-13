@@ -13,9 +13,10 @@ export const PICKUP_COUNT = 300;
 
 // Pickup configuration
 export const PICKUP_CONFIG: Record<PickupType, { radius: number; value: number; growth: number; weight: number }> = {
-  small: { radius: 4, value: 1, growth: 0.5, weight: 0.7 },
-  medium: { radius: 7, value: 3, growth: 1.5, weight: 0.25 },
+  small: { radius: 4, value: 1, growth: 0.5, weight: 0.5 },
+  medium: { radius: 7, value: 3, growth: 1.5, weight: 0.2 },
   large: { radius: 11, value: 10, growth: 4, weight: 0.05 },
+  coin: { radius: 8, value: 0, growth: 0, weight: 0.25 },
 };
 
 // Unique ID counter for pickups
@@ -103,9 +104,16 @@ export function createInitialState(): SnakeGameState {
     player,
     aiSnakes,
     pickups,
-    status: 'idle',
+    status: 'menu',
     worldSize: { width: WORLD_WIDTH, height: WORLD_HEIGHT },
     camera: { x: player.segments[0].x, y: player.segments[0].y },
+    coins: 0,
+    mission: {
+      coinsCollected: 0,
+      coinsTarget: 5,
+      timeRemaining: 300, // 5 minutes in seconds
+      isComplete: false,
+    },
   };
 }
 
@@ -170,8 +178,13 @@ export function generatePickups(count: number, snakes: Snake[]): Pickup[] {
 
 function getRandomPickupType(): PickupType {
   const rand = Math.random();
-  if (rand < PICKUP_CONFIG.small.weight) return 'small';
-  if (rand < PICKUP_CONFIG.small.weight + PICKUP_CONFIG.medium.weight) return 'medium';
+  const smallWeight = PICKUP_CONFIG.small.weight;
+  const mediumWeight = PICKUP_CONFIG.medium.weight;
+  const coinWeight = PICKUP_CONFIG.coin.weight;
+  
+  if (rand < smallWeight) return 'small';
+  if (rand < smallWeight + mediumWeight) return 'medium';
+  if (rand < smallWeight + mediumWeight + coinWeight) return 'coin';
   return 'large';
 }
 
@@ -221,7 +234,8 @@ export function checkPickupCollision(snake: Snake, pickups: Pickup[]): { collect
   const remaining: Pickup[] = [];
 
   pickups.forEach(pickup => {
-    if (distance(head, pickup.position) < HEAD_RADIUS + pickup.radius) {
+    const { dist } = toroidalDistance(head, pickup.position);
+    if (dist < HEAD_RADIUS + pickup.radius) {
       collected.push(pickup);
     } else {
       remaining.push(pickup);
@@ -263,10 +277,11 @@ export function checkSnakeCollisions(snakes: Snake[]): { eliminated: string[]; t
     snakes.forEach(other => {
       if (!other.alive || snake.id === other.id) return;
 
-      // Check head collision with other's body (skip head)
+      // Check head collision with other's body (skip head) using toroidal distance
       for (let i = 3; i < other.segments.length; i++) {
         const segment = other.segments[i];
-        if (distance(head, segment) < HEAD_RADIUS * 1.5) {
+        const { dist } = toroidalDistance(head, segment);
+        if (dist < HEAD_RADIUS * 1.5) {
           if (!eliminated.includes(snake.id)) {
             eliminated.push(snake.id);
             transfers.push({
@@ -290,12 +305,13 @@ export function updateAI(snake: Snake, pickups: Pickup[], allSnakes: Snake[]): S
   const head = snake.segments[0];
   let targetAngle = snake.angle;
 
-  // Find nearest pickup
+  // Find nearest pickup (prefer non-coin pickups for AI) using toroidal distance
   let nearestPickup: Pickup | undefined;
   let nearestDist = Infinity;
 
   pickups.forEach(pickup => {
-    const dist = distance(head, pickup.position);
+    if (pickup.type === 'coin') return; // AI ignores coins
+    const { dist } = toroidalDistance(head, pickup.position);
     if (dist < nearestDist && dist < 400) {
       nearestDist = dist;
       nearestPickup = pickup;
@@ -303,8 +319,7 @@ export function updateAI(snake: Snake, pickups: Pickup[], allSnakes: Snake[]): S
   });
 
   if (nearestPickup) {
-    const dx = nearestPickup.position.x - head.x;
-    const dy = nearestPickup.position.y - head.y;
+    const { dx, dy } = toroidalDistance(head, nearestPickup.position);
     targetAngle = Math.atan2(dy, dx);
   } else {
     // Wander
@@ -313,17 +328,15 @@ export function updateAI(snake: Snake, pickups: Pickup[], allSnakes: Snake[]): S
     }
   }
 
-  // Avoid other snakes
+  // Avoid other snakes using toroidal distance
   allSnakes.forEach(other => {
     if (other.id === snake.id || !other.alive) return;
     
     other.segments.forEach((seg, i) => {
       if (i < 3) return; // Skip head area
-      const dist = distance(head, seg);
+      const { dx, dy, dist } = toroidalDistance(head, seg);
       if (dist < 150) {
-        const dx = head.x - seg.x;
-        const dy = head.y - seg.y;
-        const avoidAngle = Math.atan2(dy, dx);
+        const avoidAngle = Math.atan2(-dy, -dx);
         const weight = 1 - (dist / 150);
         targetAngle = lerpAngle(targetAngle, avoidAngle, weight * 0.5);
       }

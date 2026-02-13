@@ -1,68 +1,41 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Snake Arena: smooth segment following, frame-rate-stable medium speed, and stable pickup identities",
+  "title": "Resize Snake Arena gameplay container to medium and keep canvas viewport scaling accurate",
   "requirements": [
     {
       "id": "REQ-1",
-      "summary": "Correct snake segment follow logic to remove jitter/teleporting and handle wrap-around smoothly.",
+      "summary": "Increase the Snake Arena gameplay container to a medium-sized responsive layout that uses more viewport space on desktop/tablet while still fully fitting within the viewport and maintaining 16:9.",
       "acceptanceCriteria": [
-        "During continuous movement, the snake body follows the head with consistent spacing and without visible jitter or sudden jumps.",
-        "Turning the snake does not cause segments to overlap, lag incorrectly, or detach visually from the body.",
-        "Wrapping around world boundaries (crossing x/y edges) does not produce segment snapping or discontinuities."
+        "On desktop-sized viewports (e.g., ~1366×768 and larger), the gameplay container renders noticeably larger than before (medium-sized) while still fully visible without requiring scrolling.",
+        "On mobile viewports (<=768px), the layout remains stable and does not overflow the viewport; the game container still fits within the visible area.",
+        "The gameplay container keeps a sensible game aspect ratio (currently 16:9) and does not become excessively small due to the aspect-ratio constraint."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/snake/logic.ts",
+          "path": "frontend/src/index.css",
           "operation": "modify",
-          "description": "Fix the segment-follow implementation to use each segment’s own prior position (not the previous segment’s), maintain consistent SEGMENT_SPACING, and compute follow vectors using toroidal (wrap-aware) shortest deltas so edge wrap-around does not create long-distance snaps. Keep movement deterministic and smooth during straight motion and turns."
-        },
-        {
-          "path": "frontend/src/snake/useSnakeGame.ts",
-          "operation": "modify",
-          "description": "Adjust the game loop integration as needed to support the corrected follow logic under wrap-around (e.g., ensure deltaTime clamping/step handling does not amplify segment jitter) while preserving current pause/restart behavior."
+          "description": "Update the responsive sizing rules for the `.game-container.snake-game-container` (and any necessary gameplay layout wrappers such as `.game-screen-gameplay .game-main`) so the 16:9 container scales up to a medium size on desktop/tablet (using viewport-based max sizing / clamps) while guaranteeing it always fits fully within the visible viewport (no scrollbars) and remains stable on mobile breakpoints."
         }
       ]
     },
     {
       "id": "REQ-2",
-      "summary": "Tune default snake speed to a medium pace and make movement consistent across device frame rates.",
+      "summary": "Ensure canvas viewport measurement and rendering remain accurate and crisp after the gameplay container size increase, with efficient resize handling.",
       "acceptanceCriteria": [
-        "The player snake movement speed feels consistent on both high-refresh and low-refresh devices (no unintended speed-ups/slow-downs).",
-        "Default speed is set to a medium pace and remains stable while steering with the joystick.",
-        "AI snakes continue to move and behave correctly at the tuned speed (no new collision or steering regressions)."
+        "After resizing the gameplay container, the canvas fills the game board container with no letterboxing gaps caused by mismatched width/height styles.",
+        "Resizing the browser window updates the canvas dimensions appropriately (no stale sizing), and performance does not degrade due to excessive resize re-renders."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/snake/useSnakeGame.ts",
+          "path": "frontend/src/snake/useCanvasViewport.ts",
           "operation": "modify",
-          "description": "Update the Snake Arena loop timing to be frame-rate independent (e.g., clamp large deltaTime values and/or use a fixed-step accumulator) so the effective movement per real-world second is stable on both low- and high-refresh displays."
+          "description": "Adjust viewport measurement to be robust after the container resize changes: round container rect dimensions consistently, and throttle/merge ResizeObserver + window resize/orientation updates (e.g., via requestAnimationFrame scheduling) to avoid excessive re-renders while still updating promptly on real size changes."
         },
         {
-          "path": "frontend/src/snake/logic.ts",
+          "path": "frontend/src/snake/SnakeCanvas.tsx",
           "operation": "modify",
-          "description": "Retune BASE_SPEED (and any related speed constants/scaling) to a reliable medium default when combined with the updated delta-time handling, ensuring both the player and AI snakes move correctly at the new baseline."
-        }
-      ]
-    },
-    {
-      "id": "REQ-3",
-      "summary": "Stabilize pickup generation/collection by guaranteeing unique pickup IDs and preventing ID-collision-driven flicker/duplication.",
-      "acceptanceCriteria": [
-        "Pickups maintain stable identity during a play session (no duplicate IDs leading to rendering/state inconsistencies).",
-        "Collecting pickups reliably increases score and length exactly once per pickup collected.",
-        "Pickup respawn logic maintains the intended pickup count behavior without sudden mass duplication or disappearance."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/snake/logic.ts",
-          "operation": "modify",
-          "description": "Replace the current pickup ID scheme with a collision-resistant unique ID generator that remains unique across multiple generatePickups calls in the same session. Update pickup generation to avoid accidental identifier reuse during respawns."
-        },
-        {
-          "path": "frontend/src/snake/useSnakeGame.ts",
-          "operation": "modify",
-          "description": "Update pickup respawn and state update flow to align with the new pickup ID generation, ensuring respawn adds only the required number of pickups and that a pickup can only be collected once (no double-awards due to state inconsistencies)."
+          "description": "Ensure the canvas element visually fills its parent container without gaps by aligning CSS sizing with the container (e.g., prefer `width: 100%` / `height: 100%` via class styling and avoid mismatches from inline pixel styles), while keeping the backing store sized from `canvasWidth/canvasHeight` for DPR-crisp rendering."
         }
       ]
     }

@@ -5,9 +5,9 @@ export interface Vector2 {
   y: number;
 }
 
-export type GameStatus = 'idle' | 'playing' | 'paused' | 'gameOver';
+export type GameStatus = 'menu' | 'idle' | 'playing' | 'paused' | 'gameOver';
 
-export type PickupType = 'small' | 'medium' | 'large';
+export type PickupType = 'small' | 'medium' | 'large' | 'coin';
 
 export interface Pickup {
   id: string;
@@ -34,6 +34,13 @@ export interface Snake {
   };
 }
 
+export interface MissionState {
+  coinsCollected: number;
+  coinsTarget: number;
+  timeRemaining: number;
+  isComplete: boolean;
+}
+
 export interface SnakeGameState {
   player: Snake;
   aiSnakes: Snake[];
@@ -41,4 +48,6 @@ export interface SnakeGameState {
   status: GameStatus;
   worldSize: { width: number; height: number };
   camera: { x: number; y: number };
+  coins: number;
+  mission: MissionState;
 }

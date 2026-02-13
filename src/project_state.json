@@ -4,31 +4,23 @@
   "summary": "New project",
   "architectural_notes": [],
   "known_issues": [
-    "Game has many glitches/bugs that need fixing"
+    "Current screen size appears too small; user requests medium size"
   ],
   "isFixRequest": true,
   "existing_features": [
     {
-      "id": "feature-fix-snake-arena-movement-physics-glitches-by-correcting-the-snake-segment-follow-logic-so-segments-track-the-previous-segment-smoothly-no-jittering-teleporting-or-kinks-during-normal-play-turning-and-world-edge-wrap-around",
-      "title": "Fix Snake Arena movement/physics glitches by correcting the snake segment follow logic so segments track the previous segment smoothly (no jittering, teleporting, or kinks) during normal play, turning, and world-edge wrap-around.",
+      "id": "feature-increase-the-snake-arena-gameplay-area-from-the-current-small-appearance-to-a-medium-sized-layout-by-updating-the-responsive-sizing-rules-for-the-main-gameplay-container-the-element-with-classes-game-container-snake-game-container-so-it-uses-more-of-the-available-viewport-on-typical-desktop-tablet-screens-while-still-fitting-fully-within-the-viewport",
+      "title": "Increase the Snake Arena gameplay area from the current small appearance to a medium-sized layout by updating the responsive sizing rules for the main gameplay container (the element with classes `game-container snake-game-container`) so it uses more of the available viewport on typical desktop/tablet screens while still fitting fully within the viewport.",
       "reqIds": [
         "REQ-1"
       ],
       "version": 1
     },
     {
-      "id": "feature-tune-the-default-player-snake-speed-so-it-is-reliably-medium-not-too-fast-and-not-too-slow-across-different-device-frame-rates-by-adjusting-the-snake-speed-constants-and-or-delta-time-scaling-in-the-snake-arena-loop",
-      "title": "Tune the default player snake speed so it is reliably “medium” (not too fast and not too slow) across different device frame rates by adjusting the snake speed constants and/or delta-time scaling in the Snake Arena loop.",
+      "id": "feature-ensure-the-canvas-viewport-measurement-and-rendering-scale-correctly-after-the-gameplay-container-size-changes-so-the-snakecanvas-continues-to-receive-accurate-viewportwidth-viewportheight-values-from-usecanvasviewport-and-the-rendered-canvas-is-crisp-and-fills-the-container",
+      "title": "Ensure the canvas viewport measurement and rendering scale correctly after the gameplay container size changes (so the `SnakeCanvas` continues to receive accurate `viewportWidth/viewportHeight` values from `useCanvasViewport` and the rendered canvas is crisp and fills the container).",
       "reqIds": [
         "REQ-2"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-fix-gameplay-glitches-related-to-pickup-generation-and-collection-consistency-by-ensuring-pickup-ids-are-unique-and-that-pickups-do-not-flicker-duplicate-unexpectedly-or-reappear-due-to-identifier-collisions-or-state-update-issues",
-      "title": "Fix gameplay glitches related to pickup generation and collection consistency by ensuring pickup IDs are unique and that pickups do not flicker, duplicate unexpectedly, or reappear due to identifier collisions or state update issues.",
-      "reqIds": [
-        "REQ-3"
       ],
       "version": 1
     }
@@ -36,12 +28,12 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Adjust snake speed (currently medium; user wants different/faster speed)",
+      "summary": "Adjust the app/game screen size from small to a medium size for better viewing",
       "reqIds": [],
       "status": "pending"
     }
   ],
-  "projectName": "Fix Snake Arena glitches and tune default snake speed to medium",
+  "projectName": "Increase gameplay screen to medium size (Snake Arena)",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

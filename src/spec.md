@@ -1,11 +1,10 @@
 # Specification
 
 ## Summary
-**Goal:** Fix Snake Arena gameplay glitches (snake movement/physics and pickups) and tune the default snake speed to a consistent medium across devices.
+**Goal:** Make the Snake Arena gameplay area appear medium-sized on desktop/tablet while still fitting fully within the viewport, and keep canvas sizing/rendering accurate after the change.
 
 **Planned changes:**
-- Correct snake segment follow logic to ensure smooth, consistent spacing during straight movement, turning, and world-edge wrap-around (eliminate jitter/teleporting/kinks).
-- Adjust the Snake Arena update loop speed handling (constants and/or delta-time scaling) so the default player speed is a stable “medium” and consistent across different frame rates while using the joystick.
-- Fix pickup generation/collection state issues by ensuring pickup IDs are unique and stable to prevent flicker, duplication, and incorrect reappearing; ensure collection applies exactly once per pickup.
+- Update responsive sizing rules for the main gameplay container (`.game-container.snake-game-container`) so it uses more of the available viewport on typical desktop/tablet screens while maintaining a sensible (16:9) aspect ratio and staying fully visible without scrolling.
+- Ensure `useCanvasViewport` / `SnakeCanvas` continue to receive accurate `viewportWidth/viewportHeight` and that the canvas scales crisply to fill the resized container, including correct updates on browser resize.
 
-**User-visible outcome:** Snake movement looks smooth and continuous (including turns and edge wrap), default speed feels medium and consistent across devices, and pickups spawn/collect reliably without flickering or duplicating.
+**User-visible outcome:** On desktop/tablet, the Snake Arena game board looks noticeably larger (medium-sized) while still fully fitting on-screen; on mobile it remains stable and non-overflowing, and the canvas stays crisp and correctly sized when resizing the window.

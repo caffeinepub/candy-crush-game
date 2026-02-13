@@ -16,11 +16,19 @@ export default function Joystick({ onAngleChange, disabled = false }: JoystickPr
   const containerRef = useRef<HTMLDivElement>(null);
   const isDraggingRef = useRef(false);
   const steeringFilterRef = useRef(new SteeringFilter());
+  const pointerIdRef = useRef<number | null>(null);
 
-  const handleStart = (clientX: number, clientY: number) => {
+  const handleStart = (clientX: number, clientY: number, pointerId: number) => {
     if (disabled) return;
     isDraggingRef.current = true;
+    pointerIdRef.current = pointerId;
     setIsActive(true);
+    
+    // Capture pointer to continue tracking even if it leaves the element
+    if (containerRef.current) {
+      containerRef.current.setPointerCapture(pointerId);
+    }
+    
     updateThumbPosition(clientX, clientY);
   };
 
@@ -32,6 +40,7 @@ export default function Joystick({ onAngleChange, disabled = false }: JoystickPr
   const handleEnd = () => {
     if (!isDraggingRef.current) return;
     isDraggingRef.current = false;
+    pointerIdRef.current = null;
     setIsActive(false);
     setThumbPosition({ x: 0, y: 0 });
     steeringFilterRef.current.reset();
@@ -67,72 +76,71 @@ export default function Joystick({ onAngleChange, disabled = false }: JoystickPr
     const filteredAngle = steeringFilterRef.current.process(normalizedDx, normalizedDy);
     
     // Only emit angle change if filter returned a new value
-    if (filteredAngle !== null) {
+    if (filteredAngle !== null && !disabled) {
       onAngleChange(filteredAngle);
     }
   };
 
   useEffect(() => {
-    const handlePointerMove = (e: PointerEvent) => {
-      if (isDraggingRef.current) {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const onPointerDown = (e: PointerEvent) => {
+      e.preventDefault();
+      handleStart(e.clientX, e.clientY, e.pointerId);
+    };
+
+    const onPointerMove = (e: PointerEvent) => {
+      if (pointerIdRef.current === e.pointerId) {
         e.preventDefault();
         handleMove(e.clientX, e.clientY);
       }
     };
 
-    const handlePointerUp = (e: PointerEvent) => {
-      if (isDraggingRef.current) {
+    const onPointerUp = (e: PointerEvent) => {
+      if (pointerIdRef.current === e.pointerId) {
         e.preventDefault();
         handleEnd();
       }
     };
 
-    const handlePointerCancel = (e: PointerEvent) => {
-      if (isDraggingRef.current) {
-        e.preventDefault();
+    const onPointerCancel = (e: PointerEvent) => {
+      if (pointerIdRef.current === e.pointerId) {
         handleEnd();
       }
     };
 
-    // Add listeners to window for tracking outside the element
-    window.addEventListener('pointermove', handlePointerMove);
-    window.addEventListener('pointerup', handlePointerUp);
-    window.addEventListener('pointercancel', handlePointerCancel);
+    container.addEventListener('pointerdown', onPointerDown);
+    window.addEventListener('pointermove', onPointerMove);
+    window.addEventListener('pointerup', onPointerUp);
+    window.addEventListener('pointercancel', onPointerCancel);
 
     return () => {
-      window.removeEventListener('pointermove', handlePointerMove);
-      window.removeEventListener('pointerup', handlePointerUp);
-      window.removeEventListener('pointercancel', handlePointerCancel);
+      container.removeEventListener('pointerdown', onPointerDown);
+      window.removeEventListener('pointermove', onPointerMove);
+      window.removeEventListener('pointerup', onPointerUp);
+      window.removeEventListener('pointercancel', onPointerCancel);
     };
   }, [disabled]);
 
-  const handlePointerDown = (e: React.PointerEvent) => {
-    if (disabled) return;
-    e.preventDefault();
-    
-    // Capture pointer for reliable tracking
-    if (containerRef.current) {
-      (e.target as HTMLElement).setPointerCapture(e.pointerId);
-    }
-    
-    handleStart(e.clientX, e.clientY);
-  };
-
   return (
-    <div className="joystick-container">
+    <div
+      ref={containerRef}
+      className={`joystick-container ${isActive ? 'active' : ''} ${disabled ? 'disabled' : ''}`}
+      style={{
+        width: JOYSTICK_SIZE,
+        height: JOYSTICK_SIZE,
+        position: 'relative',
+        touchAction: 'none',
+      }}
+    >
+      <div className="joystick-base" />
       <div
-        ref={containerRef}
-        className={`joystick-base ${isActive ? 'joystick-active' : ''} ${disabled ? 'joystick-disabled' : ''}`}
-        onPointerDown={handlePointerDown}
-        style={{ touchAction: 'none' }} // Prevent default touch behaviors
-      >
-        <div
-          className="joystick-thumb"
-          style={{
-            transform: `translate(${thumbPosition.x}px, ${thumbPosition.y}px)`,
-          }}
-        />
-      </div>
+        className="joystick-thumb"
+        style={{
+          transform: `translate(${thumbPosition.x}px, ${thumbPosition.y}px)`,
+        }}
+      />
     </div>
   );
 }

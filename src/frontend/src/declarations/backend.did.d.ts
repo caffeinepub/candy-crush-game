@@ -10,7 +10,55 @@ import type { ActorMethod } from '@icp-sdk/core/agent';
 import type { IDL } from '@icp-sdk/core/candid';
 import type { Principal } from '@icp-sdk/core/principal';
 
-export interface _SERVICE {}
+export interface Coordinate { 'x' : bigint, 'y' : bigint }
+export type Direction = { 'Up' : null } |
+  { 'Down' : null } |
+  { 'Left' : null } |
+  { 'Right' : null };
+export interface GameSnapshot {
+  'timer' : bigint,
+  'food' : Coordinate,
+  'worldSize' : Coordinate,
+  'snacks' : Array<Coordinate>,
+  'snakes' : Array<Snake>,
+  'timeRemaining' : bigint,
+}
+export interface MultiplayerRoom {
+  'lastStateUpdateTimestamp' : { 'Stopped' : null } |
+    { 'InProgress' : bigint },
+  'isActive' : boolean,
+  'currentTime' : bigint,
+  'players' : Array<[string, string]>,
+  'roomId' : string,
+  'worldState' : GameSnapshot,
+}
+export interface Player {
+  'username' : string,
+  'score' : bigint,
+  'snake' : [] | [Snake],
+}
+export interface Snake {
+  'direction' : Direction,
+  'body' : Array<Coordinate>,
+  'score' : bigint,
+}
+export interface _SERVICE {
+  'checkRoomExists' : ActorMethod<[string], boolean>,
+  'containsText' : ActorMethod<[bigint], string>,
+  'createRoom' : ActorMethod<[string], string>,
+  'getAllRooms' : ActorMethod<[], Array<[string, MultiplayerRoom]>>,
+  'getRoomParticipants' : ActorMethod<[string], Array<Player>>,
+  'getRoomState' : ActorMethod<[string], [] | [MultiplayerRoom]>,
+  'getState' : ActorMethod<[string], GameSnapshot>,
+  'getTimeRemaining' : ActorMethod<[string], bigint>,
+  'joinRoom' : ActorMethod<
+    [string, string],
+    { 'AlreadyJoined' : null } |
+      { 'Success' : GameSnapshot } |
+      { 'RoomNotFoundOrInactive' : null }
+  >,
+  'toggleTimer' : ActorMethod<[string], boolean>,
+}
 export declare const idlService: IDL.ServiceClass;
 export declare const idlInitArgs: IDL.Type[];
 export declare const idlFactory: IDL.InterfaceFactory;

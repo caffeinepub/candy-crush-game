@@ -1,88 +1,63 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Snake gameplay: zoomed-out framing and cleaner blue arena UI",
+  "title": "Multiplayer join-by-code UI improvements, in-game room code panel, and remove right-side coin HUD",
   "requirements": [
     {
       "id": "REQ-1",
-      "summary": "Zoom the Snake gameplay camera out to show more empty arena space around the player while keeping DPR-crisp canvas rendering.",
+      "summary": "Add/ensure a clearly visible Multiplayer “Join with Code” flow in the main menu with validation and existing join behavior.",
       "acceptanceCriteria": [
-        "During gameplay, the camera shows noticeably more arena area around the player than before (snake appears smaller on screen).",
-        "No visual stretching occurs; canvas remains crisp and correctly scaled on different device pixel ratios.",
-        "Gameplay remains playable (snake speed/controls unchanged) after the zoom/framing adjustment."
+        "On the Multiplayer tab in the main menu, there is an input to enter a room code and a Join action button.",
+        "The Join action triggers the existing multiplayer join logic and transitions into multiplayer mode on success.",
+        "If the code is empty/invalid, the Join action is disabled or shows a clear validation message in English."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/snake/SnakeScreen.tsx",
+          "path": "frontend/src/snake/SnakeMainMenu.tsx",
           "operation": "modify",
-          "description": "Reduce gameplay zoom (currently the ZOOM constant) and, if needed, make zoom responsive to viewport size so the arena shows more open space without affecting movement logic. Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/snake/SnakeCanvas.tsx",
-          "operation": "modify",
-          "description": "Audit the camera/view calculations that use zoom (viewWidth/viewHeight, worldToScreen) to ensure the zoom-out change preserves crisp DPR scaling and avoids any stretching artifacts; keep snake speed/controls unchanged. Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/snake/SnakeMinimap.tsx",
-          "operation": "modify",
-          "description": "Ensure minimap viewport indicator stays accurate after the zoom change (it currently receives zoom from SnakeScreen) so the displayed visible region matches the new framing. Verify the component's usage instructions before implementing."
+          "description": "Improve the Multiplayer tab’s “Join with Code” section: keep the existing join logic wiring, add clear client-side validation (empty/invalid format), normalize input (trim/uppercasing/optional MP- prefix handling), and ensure an English validation message is shown when invalid. Use shadcn-ui components (Input, Button, Label, Card/Tabs) to keep the join flow prominent and consistent. Verify the component's usage instructions before implementing."
         }
       ]
     },
     {
       "id": "REQ-2",
-      "summary": "Clean up the Snake gameplay layout to maximize readable playfield space and keep HUD/controls compact and edge-anchored.",
+      "summary": "Show the active multiplayer room code in-game with a persistent panel and copy-to-clipboard feedback.",
       "acceptanceCriteria": [
-        "HUD panels do not obstruct the central play area; they stay anchored to screen edges/corners.",
-        "The playfield visually reads as a large open arena (no thick borders or heavy container styling that makes the arena feel boxed-in).",
-        "Layout remains responsive on mobile and desktop without overlapping critical controls (joystick, overlays, HUD)."
+        "When in multiplayer gameplay, a \"Room Code\" panel is visible and shows the active room code.",
+        "The room code panel includes a copy-to-clipboard action with clear feedback (e.g., copied state).",
+        "The room code panel remains visible in both landscape and portrait (unless an intentional full-screen blocking overlay is shown)."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/snake/SnakeScreen.tsx",
+          "path": "frontend/src/snake/multiplayer/MultiplayerRoomCodePanel.tsx",
           "operation": "modify",
-          "description": "Rework gameplay chrome so it does not consume vertical layout space (e.g., move pause/restart/fullscreen controls into an in-arena corner overlay instead of a full-width header; avoid heavy framing around the playfield). Continue using the existing shadcn-ui Button component for controls (do not edit files under frontend/src/components/ui). Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/snake/SnakeHUD.tsx",
-          "operation": "modify",
-          "description": "Make HUD more compact and less obtrusive: reduce panel padding/typography, consider collapsing/shortening the leaderboard presentation, and remove/avoid heavyweight panel background images that visually shrink the arena. Verify the component's usage instructions before implementing."
+          "description": "Enhance the existing room code panel to provide clearer copy-to-clipboard feedback (e.g., temporary “Copied” text and/or accessible aria-live status) and handle clipboard errors gracefully while keeping the panel readable and persistent. Use shadcn-ui Button for the copy action. Verify the component's usage instructions before implementing."
         },
         {
           "path": "frontend/src/index.css",
           "operation": "modify",
-          "description": "Adjust gameplay layout CSS to reduce visual clutter: soften/remove thick borders/shadows around the gameplay container, tighten HUD sizing, and refine responsive positioning to prevent overlaps with joystick/boosters/minimap across breakpoints. Verify the component's usage instructions before implementing."
+          "description": "Adjust/verify the room code panel styling so it remains readable and visible across orientations (including portrait), without being obscured by other overlays/controls except intentional full-screen blocking overlays."
         }
       ]
     },
     {
       "id": "REQ-3",
-      "summary": "Apply a cohesive arcade-blue arena theme with subtle texture and consistent lightweight UI styling across Snake gameplay screens.",
+      "summary": "Remove the right-side coin HUD panel/image from single-player gameplay while keeping other HUD elements intact.",
       "acceptanceCriteria": [
-        "Gameplay background reads as predominantly blue with subtle texture/grain; it does not look overly dark or busy.",
-        "UI elements (HUD, overlays, buttons) use consistent styling and do not visually dominate the arena.",
-        "No user-facing text is introduced in a language other than English."
+        "The standalone coin counter HUD panel on the right side is no longer rendered in single-player gameplay.",
+        "No coin icon/coin-image panel appears on the right side after the change (as seen in the provided screenshot).",
+        "Leaderboard and mission HUD (if present) continue to render correctly and are not overlapped by leftover spacing/styling."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/snake/SnakeCanvas.tsx",
+          "path": "frontend/src/snake/SnakeHUD.tsx",
           "operation": "modify",
-          "description": "Tune the arena rendering for a clean blue field with subtle texture: adjust background tiling usage and/or soften any over-strong overlays (e.g., grid opacity) so the field remains predominantly blue and uncluttered. Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/snake/SnakeOverlays.tsx",
-          "operation": "modify",
-          "description": "Align pause/game-over overlays with the minimal lightweight chrome style (subtle translucency, consistent radius/typography) without introducing non-English text. Continue using existing shadcn-ui components (e.g., Button) without modifying frontend/src/components/ui. Verify the component's usage instructions before implementing."
+          "description": "Remove (or conditionally suppress) rendering of the right/top coin counter HUD panel in single-player gameplay, leaving the leaderboard and mission HUD unchanged and functional."
         },
         {
           "path": "frontend/src/index.css",
           "operation": "modify",
-          "description": "Unify Snake gameplay styling tokens and classes for a minimal arcade-blue look: lightweight panel backgrounds, consistent corner radius, and restrained shadows so UI does not dominate the arena. Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/snake/wzAssets.ts",
-          "operation": "modify",
-          "description": "If needed for the new minimal chrome approach, stop relying on heavy HUD frame assets by adjusting which generated assets are referenced for HUD/minimap styling (keeping the arena background tile as the primary texture). Verify the component's usage instructions before implementing."
+          "description": "Update HUD layout styles as needed to ensure removing the coin HUD does not leave awkward spacing or cause overlap with other HUD elements (leaderboard/mission) and that the right-side area remains clean."
         }
       ]
     }

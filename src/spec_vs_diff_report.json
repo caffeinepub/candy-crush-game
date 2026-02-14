@@ -1,19 +1,51 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-13T15:17:47.602Z",
-  "summary": "The diff implements a zoomed-out gameplay camera via a reduced zoom constant and canvas rendering that accounts for DPR, and it introduces a blue-themed visual style and compact HUD/overlay components. Based on the truncated CSS, edge-anchored/low-clutter layout appears intended, but exact positioning/heaviness of frames cannot be fully verified from the provided diff excerpts.",
-  "missing_requirements": [],
-  "hallucinated_features": [],
-  "confidence": 0.63,
+  "generatedAt": "2026-02-14T11:41:07.040Z",
+  "summary": "REQ-3 appears implemented by removing the standalone right-side coin HUD panel from SnakeHUD and related styling. REQ-1 is partially evidenced (join code state/validation and join handler exist), but the diff truncation prevents confirming the actual Multiplayer tab UI elements (input + Join button) are rendered. REQ-2 adds a Room Code panel component with copy-to-clipboard feedback, but there is no evidence it is actually rendered during multiplayer gameplay.",
+  "missing_requirements": [
+    {
+      "id": "REQ-1",
+      "requirement": "On the Multiplayer tab in the main menu, show an input to enter a room code and a Join action button.",
+      "reason": "Logic for join code, validation, and joining exists, but the provided diff for the menu JSX is truncated before confirming the actual rendered UI (input + Join button) within the Multiplayer tab.",
+      "evidence": [
+        "frontend/src/snake/SnakeMainMenu.tsx (truncated)"
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "requirement": "Display the current multiplayer room code in-game in a persistent panel during multiplayer gameplay, including copy-to-clipboard action with feedback.",
+      "reason": "A MultiplayerRoomCodePanel component with copy feedback is added, but the diff summary does not show it being imported/used in the in-game multiplayer HUD/gameplay screen, so persistence/visibility during gameplay cannot be confirmed.",
+      "evidence": [
+        "frontend/src/snake/multiplayer/MultiplayerRoomCodePanel.tsx",
+        "frontend/src/snake/SnakeHUD.tsx",
+        "frontend/src/index.css (mentions room code panel styling but not usage)"
+      ]
+    }
+  ],
+  "hallucinated_features": [
+    {
+      "description": "Copy invite URL action in the main menu (buildInviteURL + clipboard copy + copied state).",
+      "reason": "BuildRequest requires a Join-with-Code flow and in-game room code copy; it does not request generating/copying an invite URL from the menu.",
+      "evidence": [
+        "frontend/src/snake/SnakeMainMenu.tsx (truncated)"
+      ]
+    },
+    {
+      "description": "Menu-specific light theme CSS variables (e.g., --menu-background/foreground/card/etc.).",
+      "reason": "Not explicitly requested by the BuildRequest; appears to be additional styling work beyond the specified UI changes.",
+      "evidence": [
+        "frontend/src/index.css"
+      ]
+    }
+  ],
+  "confidence": 0.62,
   "changed_files": [
     "frontend-file-summaries.txt",
     "frontend/src/index.css",
-    "frontend/src/snake/SnakeCanvas.tsx",
     "frontend/src/snake/SnakeHUD.tsx",
-    "frontend/src/snake/SnakeMinimap.tsx",
-    "frontend/src/snake/SnakeOverlays.tsx",
-    "frontend/src/snake/SnakeScreen.tsx",
+    "frontend/src/snake/SnakeMainMenu.tsx",
+    "frontend/src/snake/multiplayer/MultiplayerRoomCodePanel.tsx",
     "project_state.json"
   ]
 }

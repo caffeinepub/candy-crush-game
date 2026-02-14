@@ -2,12 +2,10 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-match-the-gameplay-framing-to-the-uploaded-reference-screenshots-by-increasing-the-amount-of-visible-empty-arena-space-around-the-player-during-snake-gameplay-i-e-zoom-the-camera-out-so-the-snake-occupies-a-smaller-portion-of-the-screen",
-      "featureTitle": "Match the gameplay framing to the uploaded reference screenshots by increasing the amount of visible empty arena space around the player during Snake gameplay (i.e., zoom the camera out so the snake occupies a smaller portion of the screen).",
+      "featureId": "feature-ensure-the-main-menu-includes-a-clearly-visible-multiplayer-join-with-code-flow-so-a-player-can-enter-a-room-code-and-join-another-player-s-room",
+      "featureTitle": "Ensure the main menu includes a clearly visible multiplayer \"Join with Code\" flow so a player can enter a room code and join another player’s room.",
       "files": [
-        "frontend/src/snake/SnakeCanvas.tsx",
-        "frontend/src/snake/SnakeMinimap.tsx",
-        "frontend/src/snake/SnakeScreen.tsx"
+        "frontend/src/snake/SnakeMainMenu.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -22,12 +20,11 @@
       "confidence": "high"
     },
     {
-      "featureId": "feature-update-the-snake-gameplay-ui-layout-to-feel-more-like-the-reference-screenshots-by-reducing-on-screen-visual-clutter-and-preserving-a-clean-spacious-playfield-e-g-keep-hud-elements-compact-and-out-of-the-center-area-and-avoid-heavy-frames-that-visually-shrink-the-arena",
-      "featureTitle": "Update the Snake gameplay UI layout to feel more like the reference screenshots by reducing on-screen visual clutter and preserving a clean, spacious playfield (e.g., keep HUD elements compact and out of the center area, and avoid heavy frames that visually shrink the arena).",
+      "featureId": "feature-display-the-current-multiplayer-room-code-in-game-during-multiplayer-gameplay-in-a-persistent-readable-panel-so-players-can-see-share-the-room-code-at-any-time",
+      "featureTitle": "Display the current multiplayer room code in-game (during multiplayer gameplay) in a persistent, readable panel so players can see/share the room code at any time.",
       "files": [
         "frontend/src/index.css",
-        "frontend/src/snake/SnakeHUD.tsx",
-        "frontend/src/snake/SnakeScreen.tsx"
+        "frontend/src/snake/multiplayer/MultiplayerRoomCodePanel.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -42,12 +39,11 @@
       "confidence": "high"
     },
     {
-      "featureId": "feature-apply-a-cohesive-visual-theme-aligned-with-the-reference-screenshots-a-clean-arcade-arena-with-a-flat-mostly-uniform-blue-field-and-subtle-texture-with-minimalistic-lightweight-ui-chrome-used-consistently-across-gameplay-screens",
-      "featureTitle": "Apply a cohesive visual theme aligned with the reference screenshots: a clean arcade arena with a flat/mostly-uniform blue field and subtle texture, with minimalistic, lightweight UI chrome used consistently across gameplay screens.",
+      "featureId": "feature-remove-the-right-side-coin-photo-image-from-the-gameplay-ui-the-right-top-coin-hud-panel-while-keeping-other-hud-elements-functional",
+      "featureTitle": "Remove the right-side coin photo/image from the gameplay UI (the right/top coin HUD panel), while keeping other HUD elements functional.",
       "files": [
         "frontend/src/index.css",
-        "frontend/src/snake/SnakeCanvas.tsx",
-        "frontend/src/snake/SnakeOverlays.tsx"
+        "frontend/src/snake/SnakeHUD.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",

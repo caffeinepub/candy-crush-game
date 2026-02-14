@@ -89,10 +89,402 @@ export class ExternalBlob {
         return this;
     }
 }
-export interface backendInterface {
+export interface Player {
+    username: string;
+    score: bigint;
+    snake?: Snake;
 }
+export interface GameSnapshot {
+    timer: bigint;
+    food: Coordinate;
+    worldSize: Coordinate;
+    snacks: Array<Coordinate>;
+    snakes: Array<Snake>;
+    timeRemaining: bigint;
+}
+export interface Coordinate {
+    x: bigint;
+    y: bigint;
+}
+export interface Snake {
+    direction: Direction;
+    body: Array<Coordinate>;
+    score: bigint;
+}
+export interface MultiplayerRoom {
+    lastStateUpdateTimestamp: {
+        __kind__: "Stopped";
+        Stopped: null;
+    } | {
+        __kind__: "InProgress";
+        InProgress: bigint;
+    };
+    isActive: boolean;
+    currentTime: bigint;
+    players: Array<[string, string]>;
+    roomId: string;
+    worldState: GameSnapshot;
+}
+export enum Direction {
+    Up = "Up",
+    Down = "Down",
+    Left = "Left",
+    Right = "Right"
+}
+export interface backendInterface {
+    checkRoomExists(roomId: string): Promise<boolean>;
+    containsText(times: bigint): Promise<string>;
+    createRoom(username: string): Promise<string>;
+    getAllRooms(): Promise<Array<[string, MultiplayerRoom]>>;
+    getRoomParticipants(roomId: string): Promise<Array<Player>>;
+    getRoomState(roomId: string): Promise<MultiplayerRoom | null>;
+    getState(_roomId: string): Promise<GameSnapshot>;
+    getTimeRemaining(_roomId: string): Promise<bigint>;
+    joinRoom(roomId: string, playerName: string): Promise<{
+        __kind__: "AlreadyJoined";
+        AlreadyJoined: null;
+    } | {
+        __kind__: "Success";
+        Success: GameSnapshot;
+    } | {
+        __kind__: "RoomNotFoundOrInactive";
+        RoomNotFoundOrInactive: null;
+    }>;
+    toggleTimer(roomId: string): Promise<boolean>;
+}
+import type { Coordinate as _Coordinate, Direction as _Direction, GameSnapshot as _GameSnapshot, MultiplayerRoom as _MultiplayerRoom, Player as _Player, Snake as _Snake } from "./declarations/backend.did.d.ts";
 export class Backend implements backendInterface {
     constructor(private actor: ActorSubclass<_SERVICE>, private _uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, private _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, private processError?: (error: unknown) => never){}
+    async checkRoomExists(arg0: string): Promise<boolean> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.checkRoomExists(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.checkRoomExists(arg0);
+            return result;
+        }
+    }
+    async containsText(arg0: bigint): Promise<string> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.containsText(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.containsText(arg0);
+            return result;
+        }
+    }
+    async createRoom(arg0: string): Promise<string> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.createRoom(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.createRoom(arg0);
+            return result;
+        }
+    }
+    async getAllRooms(): Promise<Array<[string, MultiplayerRoom]>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getAllRooms();
+                return from_candid_vec_n1(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getAllRooms();
+            return from_candid_vec_n1(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async getRoomParticipants(arg0: string): Promise<Array<Player>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getRoomParticipants(arg0);
+                return from_candid_vec_n13(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getRoomParticipants(arg0);
+            return from_candid_vec_n13(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async getRoomState(arg0: string): Promise<MultiplayerRoom | null> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getRoomState(arg0);
+                return from_candid_opt_n17(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getRoomState(arg0);
+            return from_candid_opt_n17(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async getState(arg0: string): Promise<GameSnapshot> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getState(arg0);
+                return from_candid_GameSnapshot_n6(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getState(arg0);
+            return from_candid_GameSnapshot_n6(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async getTimeRemaining(arg0: string): Promise<bigint> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getTimeRemaining(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getTimeRemaining(arg0);
+            return result;
+        }
+    }
+    async joinRoom(arg0: string, arg1: string): Promise<{
+        __kind__: "AlreadyJoined";
+        AlreadyJoined: null;
+    } | {
+        __kind__: "Success";
+        Success: GameSnapshot;
+    } | {
+        __kind__: "RoomNotFoundOrInactive";
+        RoomNotFoundOrInactive: null;
+    }> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.joinRoom(arg0, arg1);
+                return from_candid_variant_n18(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.joinRoom(arg0, arg1);
+            return from_candid_variant_n18(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async toggleTimer(arg0: string): Promise<boolean> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.toggleTimer(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.toggleTimer(arg0);
+            return result;
+        }
+    }
+}
+function from_candid_Direction_n11(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _Direction): Direction {
+    return from_candid_variant_n12(_uploadFile, _downloadFile, value);
+}
+function from_candid_GameSnapshot_n6(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _GameSnapshot): GameSnapshot {
+    return from_candid_record_n7(_uploadFile, _downloadFile, value);
+}
+function from_candid_MultiplayerRoom_n3(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _MultiplayerRoom): MultiplayerRoom {
+    return from_candid_record_n4(_uploadFile, _downloadFile, value);
+}
+function from_candid_Player_n14(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _Player): Player {
+    return from_candid_record_n15(_uploadFile, _downloadFile, value);
+}
+function from_candid_Snake_n9(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _Snake): Snake {
+    return from_candid_record_n10(_uploadFile, _downloadFile, value);
+}
+function from_candid_opt_n16(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [_Snake]): Snake | null {
+    return value.length === 0 ? null : from_candid_Snake_n9(_uploadFile, _downloadFile, value[0]);
+}
+function from_candid_opt_n17(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [_MultiplayerRoom]): MultiplayerRoom | null {
+    return value.length === 0 ? null : from_candid_MultiplayerRoom_n3(_uploadFile, _downloadFile, value[0]);
+}
+function from_candid_record_n10(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+    direction: _Direction;
+    body: Array<_Coordinate>;
+    score: bigint;
+}): {
+    direction: Direction;
+    body: Array<Coordinate>;
+    score: bigint;
+} {
+    return {
+        direction: from_candid_Direction_n11(_uploadFile, _downloadFile, value.direction),
+        body: value.body,
+        score: value.score
+    };
+}
+function from_candid_record_n15(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+    username: string;
+    score: bigint;
+    snake: [] | [_Snake];
+}): {
+    username: string;
+    score: bigint;
+    snake?: Snake;
+} {
+    return {
+        username: value.username,
+        score: value.score,
+        snake: record_opt_to_undefined(from_candid_opt_n16(_uploadFile, _downloadFile, value.snake))
+    };
+}
+function from_candid_record_n4(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+    lastStateUpdateTimestamp: {
+        Stopped: null;
+    } | {
+        InProgress: bigint;
+    };
+    isActive: boolean;
+    currentTime: bigint;
+    players: Array<[string, string]>;
+    roomId: string;
+    worldState: _GameSnapshot;
+}): {
+    lastStateUpdateTimestamp: {
+        __kind__: "Stopped";
+        Stopped: null;
+    } | {
+        __kind__: "InProgress";
+        InProgress: bigint;
+    };
+    isActive: boolean;
+    currentTime: bigint;
+    players: Array<[string, string]>;
+    roomId: string;
+    worldState: GameSnapshot;
+} {
+    return {
+        lastStateUpdateTimestamp: from_candid_variant_n5(_uploadFile, _downloadFile, value.lastStateUpdateTimestamp),
+        isActive: value.isActive,
+        currentTime: value.currentTime,
+        players: value.players,
+        roomId: value.roomId,
+        worldState: from_candid_GameSnapshot_n6(_uploadFile, _downloadFile, value.worldState)
+    };
+}
+function from_candid_record_n7(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+    timer: bigint;
+    food: _Coordinate;
+    worldSize: _Coordinate;
+    snacks: Array<_Coordinate>;
+    snakes: Array<_Snake>;
+    timeRemaining: bigint;
+}): {
+    timer: bigint;
+    food: Coordinate;
+    worldSize: Coordinate;
+    snacks: Array<Coordinate>;
+    snakes: Array<Snake>;
+    timeRemaining: bigint;
+} {
+    return {
+        timer: value.timer,
+        food: value.food,
+        worldSize: value.worldSize,
+        snacks: value.snacks,
+        snakes: from_candid_vec_n8(_uploadFile, _downloadFile, value.snakes),
+        timeRemaining: value.timeRemaining
+    };
+}
+function from_candid_tuple_n2(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [string, _MultiplayerRoom]): [string, MultiplayerRoom] {
+    return [
+        value[0],
+        from_candid_MultiplayerRoom_n3(_uploadFile, _downloadFile, value[1])
+    ];
+}
+function from_candid_variant_n12(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+    Up: null;
+} | {
+    Down: null;
+} | {
+    Left: null;
+} | {
+    Right: null;
+}): Direction {
+    return "Up" in value ? Direction.Up : "Down" in value ? Direction.Down : "Left" in value ? Direction.Left : "Right" in value ? Direction.Right : value;
+}
+function from_candid_variant_n18(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+    AlreadyJoined: null;
+} | {
+    Success: _GameSnapshot;
+} | {
+    RoomNotFoundOrInactive: null;
+}): {
+    __kind__: "AlreadyJoined";
+    AlreadyJoined: null;
+} | {
+    __kind__: "Success";
+    Success: GameSnapshot;
+} | {
+    __kind__: "RoomNotFoundOrInactive";
+    RoomNotFoundOrInactive: null;
+} {
+    return "AlreadyJoined" in value ? {
+        __kind__: "AlreadyJoined",
+        AlreadyJoined: value.AlreadyJoined
+    } : "Success" in value ? {
+        __kind__: "Success",
+        Success: from_candid_GameSnapshot_n6(_uploadFile, _downloadFile, value.Success)
+    } : "RoomNotFoundOrInactive" in value ? {
+        __kind__: "RoomNotFoundOrInactive",
+        RoomNotFoundOrInactive: value.RoomNotFoundOrInactive
+    } : value;
+}
+function from_candid_variant_n5(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+    Stopped: null;
+} | {
+    InProgress: bigint;
+}): {
+    __kind__: "Stopped";
+    Stopped: null;
+} | {
+    __kind__: "InProgress";
+    InProgress: bigint;
+} {
+    return "Stopped" in value ? {
+        __kind__: "Stopped",
+        Stopped: value.Stopped
+    } : "InProgress" in value ? {
+        __kind__: "InProgress",
+        InProgress: value.InProgress
+    } : value;
+}
+function from_candid_vec_n1(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Array<[string, _MultiplayerRoom]>): Array<[string, MultiplayerRoom]> {
+    return value.map((x)=>from_candid_tuple_n2(_uploadFile, _downloadFile, x));
+}
+function from_candid_vec_n13(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Array<_Player>): Array<Player> {
+    return value.map((x)=>from_candid_Player_n14(_uploadFile, _downloadFile, x));
+}
+function from_candid_vec_n8(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Array<_Snake>): Array<Snake> {
+    return value.map((x)=>from_candid_Snake_n9(_uploadFile, _downloadFile, x));
 }
 export interface CreateActorOptions {
     agent?: Agent;

@@ -1,72 +1,70 @@
 {
   "kind": "build_request",
-  "title": "Adjust Snake gameplay to match reference image with more open space",
+  "title": "Add multiplayer room code join UI and remove right-side coin HUD panel",
   "priority": "normal",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "Match the gameplay framing to the uploaded reference screenshots by increasing the amount of visible empty arena space around the player during Snake gameplay (i.e., zoom the camera out so the snake occupies a smaller portion of the screen).",
+      "text": "Ensure the main menu includes a clearly visible multiplayer \"Join with Code\" flow so a player can enter a room code and join another player’s room.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-6"
+          "msg-4"
         ],
         "quotes": [
-          "Make like this game and there was so many space in this game image make like this"
+          "In this photo there was no room code to join another player"
         ]
       },
       "acceptanceCriteria": [
-        "During gameplay, the camera shows noticeably more arena area around the player than before (snake appears smaller on screen).",
-        "No visual stretching occurs; canvas remains crisp and correctly scaled on different device pixel ratios.",
-        "Gameplay remains playable (snake speed/controls unchanged) after the zoom/framing adjustment."
+        "On the Multiplayer tab in the main menu, there is an input to enter a room code and a Join action button.",
+        "The Join action triggers the existing multiplayer join logic and transitions into multiplayer mode on success.",
+        "If the code is empty/invalid, the Join action is disabled or shows a clear validation message in English."
       ]
     },
     {
       "id": "REQ-2",
-      "text": "Update the Snake gameplay UI layout to feel more like the reference screenshots by reducing on-screen visual clutter and preserving a clean, spacious playfield (e.g., keep HUD elements compact and out of the center area, and avoid heavy frames that visually shrink the arena).",
+      "text": "Display the current multiplayer room code in-game (during multiplayer gameplay) in a persistent, readable panel so players can see/share the room code at any time.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-6"
+          "msg-4"
         ],
         "quotes": [
-          "Make like this game and there was so many space in this game image make like this"
+          "In this photo there was no room code to join another player"
         ]
       },
       "acceptanceCriteria": [
-        "HUD panels do not obstruct the central play area; they stay anchored to screen edges/corners.",
-        "The playfield visually reads as a large open arena (no thick borders or heavy container styling that makes the arena feel boxed-in).",
-        "Layout remains responsive on mobile and desktop without overlapping critical controls (joystick, overlays, HUD)."
+        "When in multiplayer gameplay, a \"Room Code\" panel is visible and shows the active room code.",
+        "The room code panel includes a copy-to-clipboard action with clear feedback (e.g., copied state).",
+        "The room code panel remains visible in both landscape and portrait (unless an intentional full-screen blocking overlay is shown)."
       ]
     },
     {
       "id": "REQ-3",
-      "text": "Apply a cohesive visual theme aligned with the reference screenshots: a clean arcade arena with a flat/mostly-uniform blue field and subtle texture, with minimalistic, lightweight UI chrome used consistently across gameplay screens.",
+      "text": "Remove the right-side coin photo/image from the gameplay UI (the right/top coin HUD panel), while keeping other HUD elements functional.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-6"
+          "msg-4"
         ],
         "quotes": [
-          "Make like this game and there was so many space in this game image make like this"
+          "remove the right side photo of coin"
         ]
       },
       "acceptanceCriteria": [
-        "Gameplay background reads as predominantly blue with subtle texture/grain; it does not look overly dark or busy.",
-        "UI elements (HUD, overlays, buttons) use consistent styling and do not visually dominate the arena.",
-        "No user-facing text is introduced in a language other than English."
+        "The standalone coin counter HUD panel on the right side is no longer rendered in single-player gameplay.",
+        "No coin icon/coin-image panel appears on the right side after the change (as seen in the provided screenshot).",
+        "Leaderboard and mission HUD (if present) continue to render correctly and are not overlapped by leftover spacing/styling."
       ]
     }
   ],
   "constraints": [
-    "Do not edit files under frontend/src/components/ui (compose existing shadcn components instead).",
-    "Do not modify frontend/src/hooks/useInternetIdentity.ts(x), frontend/src/hooks/useActor.ts, or frontend/src/main.tsx (immutable paths).",
-    "Backend is single-actor Motoko; do not add additional backend services."
+    "Do not edit files under frontend/src/components/ui (Shadcn components); compose them instead.",
+    "Backend must remain a single Motoko actor (no new backend services)."
   ],
   "nonGoals": [
-    "Adding new game modes, new controls, multiplayer, or networking.",
-    "Implementing third-party authentication or external APIs.",
-    "Changing core Snake game rules, scoring, or mission logic beyond what is necessary to achieve the requested spacious visual framing."
+    "Changing game logic, scoring, missions, or coin mechanics.",
+    "Adding real-time chat or external integrations for multiplayer invites."
   ],
   "imageRequirements": {
     "required": [],

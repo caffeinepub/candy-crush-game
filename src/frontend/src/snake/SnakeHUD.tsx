@@ -6,9 +6,10 @@ interface SnakeHUDProps {
   viewportWidth: number;
   viewportHeight: number;
   zoom: number;
+  isMultiplayer?: boolean;
 }
 
-export default function SnakeHUD({ gameState, viewportWidth, viewportHeight, zoom }: SnakeHUDProps) {
+export default function SnakeHUD({ gameState, viewportWidth, viewportHeight, zoom, isMultiplayer = false }: SnakeHUDProps) {
   // Sort leaderboard by score
   const leaderboard = [
     { name: 'You', score: gameState.player.score, isPlayer: true },
@@ -86,14 +87,6 @@ export default function SnakeHUD({ gameState, viewportWidth, viewportHeight, zoo
           </div>
         </div>
       )}
-
-      {/* Coin Counter - Compact */}
-      <div className="snake-hud-coins">
-        <div className="snake-hud-panel snake-hud-coins-panel" style={{ backgroundImage: `url(${WZ_ASSETS.hudPanelDark})` }}>
-          <img src={WZ_ASSETS.coinIcon} alt="Coins" className="snake-hud-coin-icon" />
-          <span className="snake-hud-coins-value">{gameState.coins}</span>
-        </div>
-      </div>
     </>
   );
 }

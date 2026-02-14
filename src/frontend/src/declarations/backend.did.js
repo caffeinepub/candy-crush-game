@@ -8,10 +8,140 @@
 
 import { IDL } from '@icp-sdk/core/candid';
 
-export const idlService = IDL.Service({});
+export const Coordinate = IDL.Record({ 'x' : IDL.Nat, 'y' : IDL.Nat });
+export const Direction = IDL.Variant({
+  'Up' : IDL.Null,
+  'Down' : IDL.Null,
+  'Left' : IDL.Null,
+  'Right' : IDL.Null,
+});
+export const Snake = IDL.Record({
+  'direction' : Direction,
+  'body' : IDL.Vec(Coordinate),
+  'score' : IDL.Nat,
+});
+export const GameSnapshot = IDL.Record({
+  'timer' : IDL.Int,
+  'food' : Coordinate,
+  'worldSize' : Coordinate,
+  'snacks' : IDL.Vec(Coordinate),
+  'snakes' : IDL.Vec(Snake),
+  'timeRemaining' : IDL.Int,
+});
+export const MultiplayerRoom = IDL.Record({
+  'lastStateUpdateTimestamp' : IDL.Variant({
+    'Stopped' : IDL.Null,
+    'InProgress' : IDL.Int,
+  }),
+  'isActive' : IDL.Bool,
+  'currentTime' : IDL.Int,
+  'players' : IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text)),
+  'roomId' : IDL.Text,
+  'worldState' : GameSnapshot,
+});
+export const Player = IDL.Record({
+  'username' : IDL.Text,
+  'score' : IDL.Nat,
+  'snake' : IDL.Opt(Snake),
+});
+
+export const idlService = IDL.Service({
+  'checkRoomExists' : IDL.Func([IDL.Text], [IDL.Bool], ['query']),
+  'containsText' : IDL.Func([IDL.Nat], [IDL.Text], ['query']),
+  'createRoom' : IDL.Func([IDL.Text], [IDL.Text], []),
+  'getAllRooms' : IDL.Func(
+      [],
+      [IDL.Vec(IDL.Tuple(IDL.Text, MultiplayerRoom))],
+      ['query'],
+    ),
+  'getRoomParticipants' : IDL.Func([IDL.Text], [IDL.Vec(Player)], ['query']),
+  'getRoomState' : IDL.Func([IDL.Text], [IDL.Opt(MultiplayerRoom)], ['query']),
+  'getState' : IDL.Func([IDL.Text], [GameSnapshot], ['query']),
+  'getTimeRemaining' : IDL.Func([IDL.Text], [IDL.Nat], ['query']),
+  'joinRoom' : IDL.Func(
+      [IDL.Text, IDL.Text],
+      [
+        IDL.Variant({
+          'AlreadyJoined' : IDL.Null,
+          'Success' : GameSnapshot,
+          'RoomNotFoundOrInactive' : IDL.Null,
+        }),
+      ],
+      [],
+    ),
+  'toggleTimer' : IDL.Func([IDL.Text], [IDL.Bool], []),
+});
 
 export const idlInitArgs = [];
 
-export const idlFactory = ({ IDL }) => { return IDL.Service({}); };
+export const idlFactory = ({ IDL }) => {
+  const Coordinate = IDL.Record({ 'x' : IDL.Nat, 'y' : IDL.Nat });
+  const Direction = IDL.Variant({
+    'Up' : IDL.Null,
+    'Down' : IDL.Null,
+    'Left' : IDL.Null,
+    'Right' : IDL.Null,
+  });
+  const Snake = IDL.Record({
+    'direction' : Direction,
+    'body' : IDL.Vec(Coordinate),
+    'score' : IDL.Nat,
+  });
+  const GameSnapshot = IDL.Record({
+    'timer' : IDL.Int,
+    'food' : Coordinate,
+    'worldSize' : Coordinate,
+    'snacks' : IDL.Vec(Coordinate),
+    'snakes' : IDL.Vec(Snake),
+    'timeRemaining' : IDL.Int,
+  });
+  const MultiplayerRoom = IDL.Record({
+    'lastStateUpdateTimestamp' : IDL.Variant({
+      'Stopped' : IDL.Null,
+      'InProgress' : IDL.Int,
+    }),
+    'isActive' : IDL.Bool,
+    'currentTime' : IDL.Int,
+    'players' : IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text)),
+    'roomId' : IDL.Text,
+    'worldState' : GameSnapshot,
+  });
+  const Player = IDL.Record({
+    'username' : IDL.Text,
+    'score' : IDL.Nat,
+    'snake' : IDL.Opt(Snake),
+  });
+  
+  return IDL.Service({
+    'checkRoomExists' : IDL.Func([IDL.Text], [IDL.Bool], ['query']),
+    'containsText' : IDL.Func([IDL.Nat], [IDL.Text], ['query']),
+    'createRoom' : IDL.Func([IDL.Text], [IDL.Text], []),
+    'getAllRooms' : IDL.Func(
+        [],
+        [IDL.Vec(IDL.Tuple(IDL.Text, MultiplayerRoom))],
+        ['query'],
+      ),
+    'getRoomParticipants' : IDL.Func([IDL.Text], [IDL.Vec(Player)], ['query']),
+    'getRoomState' : IDL.Func(
+        [IDL.Text],
+        [IDL.Opt(MultiplayerRoom)],
+        ['query'],
+      ),
+    'getState' : IDL.Func([IDL.Text], [GameSnapshot], ['query']),
+    'getTimeRemaining' : IDL.Func([IDL.Text], [IDL.Nat], ['query']),
+    'joinRoom' : IDL.Func(
+        [IDL.Text, IDL.Text],
+        [
+          IDL.Variant({
+            'AlreadyJoined' : IDL.Null,
+            'Success' : GameSnapshot,
+            'RoomNotFoundOrInactive' : IDL.Null,
+          }),
+        ],
+        [],
+      ),
+    'toggleTimer' : IDL.Func([IDL.Text], [IDL.Bool], []),
+  });
+};
 
 export const init = ({ IDL }) => { return []; };

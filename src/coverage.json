@@ -1,7 +1,7 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-13T15:17:47.605Z",
+  "generatedAt": "2026-02-14T11:41:07.043Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
@@ -12,47 +12,38 @@
     "items": [
       {
         "id": "REQ-1",
-        "summary": "Match the gameplay framing to the uploaded reference screenshots by increasing the amount of visible empty arena space around the player during Snake gameplay (i.e., zoom the camera out so the snake occupies a smaller portion of the screen).",
+        "summary": "Ensure the main menu includes a clearly visible multiplayer \"Join with Code\" flow so a player can enter a room code and join another player’s room.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/snake/SnakeScreen.tsx",
-          "frontend/src/snake/SnakeCanvas.tsx",
-          "frontend/src/snake/SnakeMinimap.tsx"
+          "frontend/src/snake/SnakeMainMenu.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/snake/SnakeScreen.tsx",
-          "frontend/src/snake/SnakeCanvas.tsx",
-          "frontend/src/snake/SnakeMinimap.tsx"
+          "frontend/src/snake/SnakeMainMenu.tsx"
         ]
       },
       {
         "id": "REQ-2",
-        "summary": "Update the Snake gameplay UI layout to feel more like the reference screenshots by reducing on-screen visual clutter and preserving a clean, spacious playfield (e.g., keep HUD elements compact and out of the center area, and avoid heavy frames that visually shrink the arena).",
+        "summary": "Display the current multiplayer room code in-game (during multiplayer gameplay) in a persistent, readable panel so players can see/share the room code at any time.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/snake/SnakeScreen.tsx",
-          "frontend/src/snake/SnakeHUD.tsx",
+          "frontend/src/snake/multiplayer/MultiplayerRoomCodePanel.tsx",
           "frontend/src/index.css"
         ],
         "matchedFiles": [
-          "frontend/src/snake/SnakeScreen.tsx",
-          "frontend/src/snake/SnakeHUD.tsx",
+          "frontend/src/snake/multiplayer/MultiplayerRoomCodePanel.tsx",
           "frontend/src/index.css"
         ]
       },
       {
         "id": "REQ-3",
-        "summary": "Apply a cohesive visual theme aligned with the reference screenshots: a clean arcade arena with a flat/mostly-uniform blue field and subtle texture, with minimalistic, lightweight UI chrome used consistently across gameplay screens.",
+        "summary": "Remove the right-side coin photo/image from the gameplay UI (the right/top coin HUD panel), while keeping other HUD elements functional.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/snake/SnakeCanvas.tsx",
-          "frontend/src/snake/SnakeOverlays.tsx",
-          "frontend/src/index.css",
-          "frontend/src/snake/wzAssets.ts"
+          "frontend/src/snake/SnakeHUD.tsx",
+          "frontend/src/index.css"
         ],
         "matchedFiles": [
-          "frontend/src/snake/SnakeCanvas.tsx",
-          "frontend/src/snake/SnakeOverlays.tsx",
+          "frontend/src/snake/SnakeHUD.tsx",
           "frontend/src/index.css"
         ]
       }
@@ -64,11 +55,9 @@
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
     "frontend/src/index.css",
-    "frontend/src/snake/SnakeCanvas.tsx",
     "frontend/src/snake/SnakeHUD.tsx",
-    "frontend/src/snake/SnakeMinimap.tsx",
-    "frontend/src/snake/SnakeOverlays.tsx",
-    "frontend/src/snake/SnakeScreen.tsx",
+    "frontend/src/snake/SnakeMainMenu.tsx",
+    "frontend/src/snake/multiplayer/MultiplayerRoomCodePanel.tsx",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
-import SnakeScreen from './snake/SnakeScreen';
+import HillClimbApp from './hillclimb/HillClimbApp';
 import { Toaster } from '@/components/ui/sonner';
+import { ThemeProvider } from 'next-themes';
 
 export default function App() {
   useEffect(() => {
@@ -20,9 +21,9 @@ export default function App() {
   }, []);
 
   return (
-    <>
-      <SnakeScreen />
+    <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
+      <HillClimbApp />
       <Toaster />
-    </>
+    </ThemeProvider>
   );
 }

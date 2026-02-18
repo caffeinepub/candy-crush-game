@@ -1,63 +1,156 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Multiplayer join-by-code UI improvements, in-game room code panel, and remove right-side coin HUD",
+  "title": "Hill Climb Offline: Photo Gallery with unlocks + responsive drive controls fix",
   "requirements": [
     {
       "id": "REQ-1",
-      "summary": "Add/ensure a clearly visible Multiplayer “Join with Code” flow in the main menu with validation and existing join behavior.",
+      "summary": "Add an in-game Photo Gallery screen with thumbnails showing locked/unlocked state, free first photo, tap-to-view or tap-to-unlock prompt.",
       "acceptanceCriteria": [
-        "On the Multiplayer tab in the main menu, there is an input to enter a room code and a Join action button.",
-        "The Join action triggers the existing multiplayer join logic and transitions into multiplayer mode on success.",
-        "If the code is empty/invalid, the Join action is disabled or shows a clear validation message in English."
+        "A new Photo Gallery entry point exists in the Hill Climb UI (e.g., accessible from Main Menu and/or Garage) and is visible without logging in.",
+        "Gallery shows a grid/list of photo thumbnails with a clear locked/unlocked state.",
+        "Photo #1 is unlocked on first launch (fresh localStorage) without requiring coins or any action.",
+        "Tapping an unlocked photo opens a full-screen (or modal) viewer with a close/back control.",
+        "Tapping a locked photo opens an unlock confirmation UI that explains the unlock action and its cost/requirements.",
+        "After unlocking a photo, it immediately becomes viewable and remains unlocked after page refresh (local persistence)."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/snake/SnakeMainMenu.tsx",
+          "path": "frontend/src/hillclimb/screens/PhotoGalleryScreen.tsx",
+          "operation": "create",
+          "description": "Create a Photo Gallery screen that renders a thumbnail grid with locked overlays, opens an in-screen modal/overlay viewer for unlocked photos, and shows an unlock confirmation overlay for locked photos. Use shadcn-ui components (e.g., Button, Card) to match existing Hill Climb UI; Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/hillclimb/HillClimbApp.tsx",
           "operation": "modify",
-          "description": "Improve the Multiplayer tab’s “Join with Code” section: keep the existing join logic wiring, add clear client-side validation (empty/invalid format), normalize input (trim/uppercasing/optional MP- prefix handling), and ensure an English validation message is shown when invalid. Use shadcn-ui components (Input, Button, Label, Card/Tabs) to keep the join flow prominent and consistent. Verify the component's usage instructions before implementing."
+          "description": "Add a new screen state for the Photo Gallery and wire navigation handlers to open/close it, passing the current progression state (coins + unlocked photos) and unlock action callbacks."
+        },
+        {
+          "path": "frontend/src/hillclimb/screens/MainMenuScreen.tsx",
+          "operation": "modify",
+          "description": "Add a visible Photo Gallery entry button in the main menu that navigates to the new gallery screen (no login required). Use shadcn-ui Button for consistent styling; Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/index.css",
+          "operation": "modify",
+          "description": "Add/adjust Hill Climb gallery layout styles (thumbnail grid, locked badge/overlay, viewer overlay sizing) using existing global styling entry point."
         }
       ]
     },
     {
       "id": "REQ-2",
-      "summary": "Show the active multiplayer room code in-game with a persistent panel and copy-to-clipboard feedback.",
+      "summary": "Persist photo unlock state offline via localStorage by extending the existing Hill Climb progression storage model.",
       "acceptanceCriteria": [
-        "When in multiplayer gameplay, a \"Room Code\" panel is visible and shows the active room code.",
-        "The room code panel includes a copy-to-clipboard action with clear feedback (e.g., copied state).",
-        "The room code panel remains visible in both landscape and portrait (unless an intentional full-screen blocking overlay is shown)."
+        "Unlock state is persisted using the same localStorage strategy used by Hill Climb progression (see frontend/src/hillclimb/progression/storage.ts).",
+        "On a fresh install, only the first photo is marked unlocked by default; others are locked.",
+        "Unlocking a photo updates the stored state and is reflected correctly after reload.",
+        "No network connection is required to use the Photo Gallery or unlock/view photos."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/snake/multiplayer/MultiplayerRoomCodePanel.tsx",
+          "path": "frontend/src/hillclimb/progression/storage.ts",
           "operation": "modify",
-          "description": "Enhance the existing room code panel to provide clearer copy-to-clipboard feedback (e.g., temporary “Copied” text and/or accessible aria-live status) and handle clipboard errors gracefully while keeping the panel readable and persistent. Use shadcn-ui Button for the copy action. Verify the component's usage instructions before implementing."
+          "description": "Extend the GameState model to include photo unlock state (e.g., an array/map of unlocked gallery photo IDs), ensure load-time migration for older stored states, and default-initialize Photo #1 as unlocked on fresh localStorage."
         },
         {
-          "path": "frontend/src/index.css",
+          "path": "frontend/src/hillclimb/HillClimbApp.tsx",
           "operation": "modify",
-          "description": "Adjust/verify the room code panel styling so it remains readable and visible across orientations (including portrait), without being obscured by other overlays/controls except intentional full-screen blocking overlays."
+          "description": "Initialize and manage the photo unlock state as part of the in-memory gameState and ensure it is saved via the existing saveGameState effect when updated."
         }
       ]
     },
     {
       "id": "REQ-3",
-      "summary": "Remove the right-side coin HUD panel/image from single-player gameplay while keeping other HUD elements intact.",
+      "summary": "Integrate photo unlocking with the coin balance: show costs, block unlock on insufficient coins, deduct coins on confirm, and persist changes.",
       "acceptanceCriteria": [
-        "The standalone coin counter HUD panel on the right side is no longer rendered in single-player gameplay.",
-        "No coin icon/coin-image panel appears on the right side after the change (as seen in the provided screenshot).",
-        "Leaderboard and mission HUD (if present) continue to render correctly and are not overlapped by leftover spacing/styling."
+        "Unlock UI shows the coin cost for locked photos.",
+        "If coin balance is insufficient, the unlock action is disabled and cannot complete.",
+        "If coin balance is sufficient and the user confirms, coin balance is reduced by the unlock cost and the photo becomes unlocked.",
+        "Coin deduction and photo unlock persist after refresh."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/snake/SnakeHUD.tsx",
+          "path": "frontend/src/hillclimb/screens/PhotoGalleryScreen.tsx",
           "operation": "modify",
-          "description": "Remove (or conditionally suppress) rendering of the right/top coin counter HUD panel in single-player gameplay, leaving the leaderboard and mission HUD unchanged and functional."
+          "description": "Implement coin-cost display for each locked photo, disable/guard unlock confirmation when coins are insufficient, and trigger the provided unlock callback to atomically update coins + unlocked state. Use shadcn-ui Button/Card to present unlock confirmation UI; Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/hillclimb/HillClimbApp.tsx",
+          "operation": "modify",
+          "description": "Add an onPhotoUnlocked handler that checks affordability (defensive), deducts coins, updates unlocked photos in gameState, and relies on existing persistence to store the result."
+        }
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "summary": "Fix drive controls so throttle/brake reliably register at run start on touch and desktop, with no stuck-pressed states.",
+      "acceptanceCriteria": [
+        "On mobile/touch devices, pressing and holding the on-screen throttle button reliably increases vehicle movement (distance starts increasing) during a run.",
+        "Releasing throttle reliably stops acceleration (vehicle eventually slows due to physics).",
+        "Brake button reliably applies braking effect while held.",
+        "Controls remain responsive even if the pointer is canceled or moves off the button (no “stuck pressed” state).",
+        "Desktop keyboard controls (ArrowRight/D for throttle, ArrowLeft/A for brake) continue to work as before."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/hillclimb/ui/DriveControls.tsx",
+          "operation": "modify",
+          "description": "Harden pointer handling by using pointer capture on press and handling pointercancel/lostpointercapture to always release throttle/brake; keep existing desktop behavior unchanged. Use existing shadcn-ui Button wrapper without modifying any files under frontend/src/components/ui; Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/hillclimb/screens/GameplayScreen.tsx",
+          "operation": "modify",
+          "description": "Add a safety reset for input state on window blur/visibility change and when gameplay unmounts/ends to prevent stuck throttle/brake across lifecycle transitions."
         },
         {
           "path": "frontend/src/index.css",
           "operation": "modify",
-          "description": "Update HUD layout styles as needed to ensure removing the coin HUD does not leave awkward spacing or cause overlap with other HUD elements (leaderboard/mission) and that the right-side area remains clean."
+          "description": "Ensure control buttons remain touch-friendly and do not lose press state due to browser gestures (confirm/adjust touch-action and related styles on the control buttons if needed using existing CSS entry point)."
+        }
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "summary": "Add curated static gallery photos as frontend assets and reference them from the Photo Gallery UI with offline caching.",
+      "acceptanceCriteria": [
+        "Gallery photos are stored as static files under frontend/public/assets/generated and are referenced by URL from the frontend.",
+        "Thumbnails and full-size viewing use these static assets and load offline (service worker caching continues to work)."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/public/assets/generated/gallery-photo-01-free.dim_1024x1024.png",
+          "operation": "create",
+          "description": "Add the generated static gallery image asset for Photo #1 (free)."
+        },
+        {
+          "path": "frontend/public/assets/generated/gallery-photo-02-locked.dim_1024x1024.png",
+          "operation": "create",
+          "description": "Add the generated static gallery image asset for Photo #2 (locked)."
+        },
+        {
+          "path": "frontend/public/assets/generated/gallery-photo-03-locked.dim_1024x1024.png",
+          "operation": "create",
+          "description": "Add the generated static gallery image asset for Photo #3 (locked)."
+        },
+        {
+          "path": "frontend/public/assets/generated/gallery-photo-04-locked.dim_1024x1024.png",
+          "operation": "create",
+          "description": "Add the generated static gallery image asset for Photo #4 (locked)."
+        },
+        {
+          "path": "frontend/src/hillclimb/assets.ts",
+          "operation": "modify",
+          "description": "Add exported paths for the new gallery images so the gallery UI can reference them consistently (no backend routing)."
+        },
+        {
+          "path": "frontend/public/sw.js",
+          "operation": "modify",
+          "description": "Add the four gallery image URLs to the pre-cache list so they are available offline under the existing service worker caching approach."
+        },
+        {
+          "path": "frontend/src/hillclimb/screens/PhotoGalleryScreen.tsx",
+          "operation": "modify",
+          "description": "Wire the gallery UI to use the static asset paths for thumbnails and full-size viewing (using the same files, no backend)."
         }
       ]
     }

@@ -23,6 +23,12 @@ export interface GameSnapshot {
   'snakes' : Array<Snake>,
   'timeRemaining' : bigint,
 }
+export interface GameState {
+  'coinBalance' : bigint,
+  'dailyClaimHistory' : Array<string>,
+  'upgradeLevels' : bigint,
+  'unlockedVehicles' : Array<string>,
+}
 export interface MultiplayerRoom {
   'lastStateUpdateTimestamp' : { 'Stopped' : null } |
     { 'InProgress' : bigint },
@@ -42,21 +48,33 @@ export interface Snake {
   'body' : Array<Coordinate>,
   'score' : bigint,
 }
+export interface UserProfile { 'username' : string, 'gameState' : GameState }
+export type UserRole = { 'admin' : null } |
+  { 'user' : null } |
+  { 'guest' : null };
 export interface _SERVICE {
+  '_initializeAccessControlWithSecret' : ActorMethod<[string], undefined>,
+  'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
   'checkRoomExists' : ActorMethod<[string], boolean>,
-  'containsText' : ActorMethod<[bigint], string>,
   'createRoom' : ActorMethod<[string], string>,
   'getAllRooms' : ActorMethod<[], Array<[string, MultiplayerRoom]>>,
+  'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
+  'getCallerUserRole' : ActorMethod<[], UserRole>,
+  'getGameState' : ActorMethod<[], GameState>,
   'getRoomParticipants' : ActorMethod<[string], Array<Player>>,
   'getRoomState' : ActorMethod<[string], [] | [MultiplayerRoom]>,
   'getState' : ActorMethod<[string], GameSnapshot>,
   'getTimeRemaining' : ActorMethod<[string], bigint>,
+  'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
+  'isCallerAdmin' : ActorMethod<[], boolean>,
   'joinRoom' : ActorMethod<
     [string, string],
     { 'AlreadyJoined' : null } |
       { 'Success' : GameSnapshot } |
       { 'RoomNotFoundOrInactive' : null }
   >,
+  'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
+  'saveGameState' : ActorMethod<[GameState], undefined>,
   'toggleTimer' : ActorMethod<[string], boolean>,
 }
 export declare const idlService: IDL.ServiceClass;

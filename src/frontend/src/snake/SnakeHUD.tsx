@@ -28,12 +28,12 @@ export default function SnakeHUD({ gameState, viewportWidth, viewportHeight, zoo
 
   return (
     <>
-      {/* Leaderboard - Compact */}
+      {/* Leaderboard - Compact (top 3) */}
       <div className="snake-hud-leaderboard">
         <div className="snake-hud-panel" style={{ backgroundImage: `url(${WZ_ASSETS.hudPanelDark})` }}>
           <div className="snake-hud-panel-title">Top Players</div>
           <div className="snake-hud-leaderboard-list">
-            {leaderboard.slice(0, 5).map((entry, i) => (
+            {leaderboard.slice(0, 3).map((entry, i) => (
               <div
                 key={i}
                 className={`snake-hud-leaderboard-item ${entry.isPlayer ? 'player' : ''}`}

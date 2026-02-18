@@ -10,15 +10,28 @@ export interface SpriteRect {
 // Food sprite sheet layout (4x4 grid in 1024x1024)
 const FOOD_SPRITE_SIZE = 256;
 const FOOD_SPRITES: SpriteRect[] = [
-  { x: 0, y: 0, width: FOOD_SPRITE_SIZE, height: FOOD_SPRITE_SIZE },       // bread
-  { x: FOOD_SPRITE_SIZE, y: 0, width: FOOD_SPRITE_SIZE, height: FOOD_SPRITE_SIZE },       // cheese
-  { x: FOOD_SPRITE_SIZE * 2, y: 0, width: FOOD_SPRITE_SIZE, height: FOOD_SPRITE_SIZE },   // pumpkin
-  { x: FOOD_SPRITE_SIZE * 3, y: 0, width: FOOD_SPRITE_SIZE, height: FOOD_SPRITE_SIZE },   // fruit
-  { x: 0, y: FOOD_SPRITE_SIZE, width: FOOD_SPRITE_SIZE, height: FOOD_SPRITE_SIZE },       // more items
+  { x: 0, y: 0, width: FOOD_SPRITE_SIZE, height: FOOD_SPRITE_SIZE },
+  { x: FOOD_SPRITE_SIZE, y: 0, width: FOOD_SPRITE_SIZE, height: FOOD_SPRITE_SIZE },
+  { x: FOOD_SPRITE_SIZE * 2, y: 0, width: FOOD_SPRITE_SIZE, height: FOOD_SPRITE_SIZE },
+  { x: FOOD_SPRITE_SIZE * 3, y: 0, width: FOOD_SPRITE_SIZE, height: FOOD_SPRITE_SIZE },
+  { x: 0, y: FOOD_SPRITE_SIZE, width: FOOD_SPRITE_SIZE, height: FOOD_SPRITE_SIZE },
   { x: FOOD_SPRITE_SIZE, y: FOOD_SPRITE_SIZE, width: FOOD_SPRITE_SIZE, height: FOOD_SPRITE_SIZE },
   { x: FOOD_SPRITE_SIZE * 2, y: FOOD_SPRITE_SIZE, width: FOOD_SPRITE_SIZE, height: FOOD_SPRITE_SIZE },
   { x: FOOD_SPRITE_SIZE * 3, y: FOOD_SPRITE_SIZE, width: FOOD_SPRITE_SIZE, height: FOOD_SPRITE_SIZE },
+  { x: 0, y: FOOD_SPRITE_SIZE * 2, width: FOOD_SPRITE_SIZE, height: FOOD_SPRITE_SIZE },
+  { x: FOOD_SPRITE_SIZE, y: FOOD_SPRITE_SIZE * 2, width: FOOD_SPRITE_SIZE, height: FOOD_SPRITE_SIZE },
+  { x: FOOD_SPRITE_SIZE * 2, y: FOOD_SPRITE_SIZE * 2, width: FOOD_SPRITE_SIZE, height: FOOD_SPRITE_SIZE },
+  { x: FOOD_SPRITE_SIZE * 3, y: FOOD_SPRITE_SIZE * 2, width: FOOD_SPRITE_SIZE, height: FOOD_SPRITE_SIZE },
+  { x: 0, y: FOOD_SPRITE_SIZE * 3, width: FOOD_SPRITE_SIZE, height: FOOD_SPRITE_SIZE },
+  { x: FOOD_SPRITE_SIZE, y: FOOD_SPRITE_SIZE * 3, width: FOOD_SPRITE_SIZE, height: FOOD_SPRITE_SIZE },
+  { x: FOOD_SPRITE_SIZE * 2, y: FOOD_SPRITE_SIZE * 3, width: FOOD_SPRITE_SIZE, height: FOOD_SPRITE_SIZE },
+  { x: FOOD_SPRITE_SIZE * 3, y: FOOD_SPRITE_SIZE * 3, width: FOOD_SPRITE_SIZE, height: FOOD_SPRITE_SIZE },
 ];
+
+// Helper to generate stable key from pickup id
+export function getPickupKey(pickupId: string): string {
+  return pickupId;
+}
 
 export function getFoodSprite(pickupId: string): SpriteRect {
   // Use pickup ID to consistently select a sprite

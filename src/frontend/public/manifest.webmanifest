@@ -1,33 +1,24 @@
 {
-  "name": "Snake Game",
-  "short_name": "Snake",
-  "description": "Classic Snake game - eat food, grow longer, and avoid hitting yourself!",
+  "name": "Hill Climb Racing",
+  "short_name": "Hill Climb",
+  "description": "Race uphill in this physics-based driving game! Play offline, upgrade your vehicles, and conquer challenging terrain.",
   "start_url": "/",
-  "scope": "/",
   "display": "standalone",
+  "background_color": "#f5f5f5",
+  "theme_color": "#d97706",
   "orientation": "landscape",
-  "theme_color": "#15b87a",
-  "background_color": "#0f1729",
   "icons": [
     {
-      "src": "/assets/generated/pwa-icon.dim_192x192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/assets/generated/pwa-icon.dim_512x512.png",
+      "src": "/assets/generated/hillclimb-pwa-icon.dim_512x512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/assets/generated/pwa-icon-maskable.dim_512x512.png",
+      "src": "/assets/generated/hillclimb-pwa-icon-maskable.dim_512x512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
     }
-  ],
-  "categories": ["games", "entertainment"],
-  "lang": "en"
+  ]
 }

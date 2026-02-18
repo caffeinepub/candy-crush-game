@@ -1,50 +1,94 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-14T11:41:07.043Z",
+  "generatedAt": "2026-02-18T12:11:32.751Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 3,
-    "implemented": 3,
+    "total": 5,
+    "implemented": 5,
     "items": [
       {
         "id": "REQ-1",
-        "summary": "Ensure the main menu includes a clearly visible multiplayer \"Join with Code\" flow so a player can enter a room code and join another player’s room.",
+        "summary": "Implement an in-game Photo Gallery feature for the Hill Climb game where the first photo is available for free by default, and the remaining photos are locked until the user unlocks them; users must be able to tap a photo thumbnail to either view it (if unlocked) or see an unlock prompt (if locked).",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/snake/SnakeMainMenu.tsx"
+          "frontend/src/hillclimb/screens/PhotoGalleryScreen.tsx",
+          "frontend/src/hillclimb/HillClimbApp.tsx",
+          "frontend/src/hillclimb/screens/MainMenuScreen.tsx",
+          "frontend/src/index.css"
         ],
         "matchedFiles": [
-          "frontend/src/snake/SnakeMainMenu.tsx"
+          "frontend/src/hillclimb/screens/PhotoGalleryScreen.tsx",
+          "frontend/src/hillclimb/HillClimbApp.tsx",
+          "frontend/src/hillclimb/screens/MainMenuScreen.tsx",
+          "frontend/src/index.css"
         ]
       },
       {
         "id": "REQ-2",
-        "summary": "Display the current multiplayer room code in-game (during multiplayer gameplay) in a persistent, readable panel so players can see/share the room code at any time.",
+        "summary": "Add local persistent state for photo unlocks that follows the existing offline-first approach (localStorage) and integrate it into the Hill Climb progression data model so that unlock state survives refreshes and app restarts.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/snake/multiplayer/MultiplayerRoomCodePanel.tsx",
-          "frontend/src/index.css"
+          "frontend/src/hillclimb/progression/storage.ts",
+          "frontend/src/hillclimb/HillClimbApp.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/snake/multiplayer/MultiplayerRoomCodePanel.tsx",
-          "frontend/src/index.css"
+          "frontend/src/hillclimb/progression/storage.ts",
+          "frontend/src/hillclimb/HillClimbApp.tsx"
         ]
       },
       {
         "id": "REQ-3",
-        "summary": "Remove the right-side coin photo/image from the gameplay UI (the right/top coin HUD panel), while keeping other HUD elements functional.",
+        "summary": "Integrate photo unlock purchasing with the existing coin balance system: unlocking a photo should require sufficient coins, deduct coins when the user confirms unlock, and prevent unlocking when coins are insufficient.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/snake/SnakeHUD.tsx",
+          "frontend/src/hillclimb/screens/PhotoGalleryScreen.tsx",
+          "frontend/src/hillclimb/HillClimbApp.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/hillclimb/screens/PhotoGalleryScreen.tsx",
+          "frontend/src/hillclimb/HillClimbApp.tsx"
+        ]
+      },
+      {
+        "id": "REQ-4",
+        "summary": "Fix the Hill Climb gameplay controls/physics startup issue where the car does not move/respond when the run starts; ensure throttle/brake input reliably registers on mobile touch devices and desktop, and the vehicle accelerates when throttle is held.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/hillclimb/ui/DriveControls.tsx",
+          "frontend/src/hillclimb/screens/GameplayScreen.tsx",
           "frontend/src/index.css"
         ],
         "matchedFiles": [
-          "frontend/src/snake/SnakeHUD.tsx",
+          "frontend/src/hillclimb/ui/DriveControls.tsx",
+          "frontend/src/hillclimb/screens/GameplayScreen.tsx",
           "frontend/src/index.css"
+        ]
+      },
+      {
+        "id": "REQ-5",
+        "summary": "Add the provided photos as curated static gallery assets (clean, cropped game-ready images) and reference them from the new Photo Gallery UI without routing images through the backend.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/public/assets/generated/gallery-photo-01-free.dim_1024x1024.png",
+          "frontend/public/assets/generated/gallery-photo-02-locked.dim_1024x1024.png",
+          "frontend/public/assets/generated/gallery-photo-03-locked.dim_1024x1024.png",
+          "frontend/public/assets/generated/gallery-photo-04-locked.dim_1024x1024.png",
+          "frontend/src/hillclimb/assets.ts",
+          "frontend/public/sw.js",
+          "frontend/src/hillclimb/screens/PhotoGalleryScreen.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/public/assets/generated/gallery-photo-01-free.dim_1024x1024.png",
+          "frontend/public/assets/generated/gallery-photo-02-locked.dim_1024x1024.png",
+          "frontend/public/assets/generated/gallery-photo-03-locked.dim_1024x1024.png",
+          "frontend/public/assets/generated/gallery-photo-04-locked.dim_1024x1024.png",
+          "frontend/src/hillclimb/assets.ts",
+          "frontend/public/sw.js",
+          "frontend/src/hillclimb/screens/PhotoGalleryScreen.tsx"
         ]
       }
     ]
@@ -54,10 +98,20 @@
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
+    "frontend/public/assets/generated/gallery-photo-01-free.dim_1024x1024.png",
+    "frontend/public/assets/generated/gallery-photo-02-locked.dim_1024x1024.png",
+    "frontend/public/assets/generated/gallery-photo-03-locked.dim_1024x1024.png",
+    "frontend/public/assets/generated/gallery-photo-04-locked.dim_1024x1024.png",
+    "frontend/public/sw.js",
+    "frontend/src/hillclimb/HillClimbApp.tsx",
+    "frontend/src/hillclimb/assets.ts",
+    "frontend/src/hillclimb/progression/storage.ts",
+    "frontend/src/hillclimb/screens/GameplayScreen.tsx",
+    "frontend/src/hillclimb/screens/MainMenuScreen.tsx",
+    "frontend/src/hillclimb/screens/PhotoGalleryScreen.tsx",
+    "frontend/src/hillclimb/ui/AuthAndSyncPanel.tsx",
+    "frontend/src/hillclimb/ui/DriveControls.tsx",
     "frontend/src/index.css",
-    "frontend/src/snake/SnakeHUD.tsx",
-    "frontend/src/snake/SnakeMainMenu.tsx",
-    "frontend/src/snake/multiplayer/MultiplayerRoomCodePanel.tsx",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

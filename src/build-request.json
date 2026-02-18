@@ -1,73 +1,134 @@
 {
   "kind": "build_request",
-  "title": "Add multiplayer room code join UI and remove right-side coin HUD panel",
+  "title": "Add in-game photo gallery with unlocks and fix vehicle not moving on start",
+  "projectName": "Hill Climb Offline",
   "priority": "normal",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "Ensure the main menu includes a clearly visible multiplayer \"Join with Code\" flow so a player can enter a room code and join another player’s room.",
+      "text": "Implement an in-game Photo Gallery feature for the Hill Climb game where the first photo is available for free by default, and the remaining photos are locked until the user unlocks them; users must be able to tap a photo thumbnail to either view it (if unlocked) or see an unlock prompt (if locked).",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-4"
+          "msg-6"
         ],
         "quotes": [
-          "In this photo there was no room code to join another player"
+          "the first photo was a free and put in game And ... other was unlocked and put the photo to see and unlock"
         ]
       },
       "acceptanceCriteria": [
-        "On the Multiplayer tab in the main menu, there is an input to enter a room code and a Join action button.",
-        "The Join action triggers the existing multiplayer join logic and transitions into multiplayer mode on success.",
-        "If the code is empty/invalid, the Join action is disabled or shows a clear validation message in English."
+        "A new Photo Gallery entry point exists in the Hill Climb UI (e.g., accessible from Main Menu and/or Garage) and is visible without logging in.",
+        "Gallery shows a grid/list of photo thumbnails with a clear locked/unlocked state.",
+        "Photo #1 is unlocked on first launch (fresh localStorage) without requiring coins or any action.",
+        "Tapping an unlocked photo opens a full-screen (or modal) viewer with a close/back control.",
+        "Tapping a locked photo opens an unlock confirmation UI that explains the unlock action and its cost/requirements.",
+        "After unlocking a photo, it immediately becomes viewable and remains unlocked after page refresh (local persistence)."
       ]
     },
     {
       "id": "REQ-2",
-      "text": "Display the current multiplayer room code in-game (during multiplayer gameplay) in a persistent, readable panel so players can see/share the room code at any time.",
+      "text": "Add local persistent state for photo unlocks that follows the existing offline-first approach (localStorage) and integrate it into the Hill Climb progression data model so that unlock state survives refreshes and app restarts.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-4"
+          "msg-6"
         ],
         "quotes": [
-          "In this photo there was no room code to join another player"
+          "other was unlocked ... to see and unlock"
         ]
       },
       "acceptanceCriteria": [
-        "When in multiplayer gameplay, a \"Room Code\" panel is visible and shows the active room code.",
-        "The room code panel includes a copy-to-clipboard action with clear feedback (e.g., copied state).",
-        "The room code panel remains visible in both landscape and portrait (unless an intentional full-screen blocking overlay is shown)."
+        "Unlock state is persisted using the same localStorage strategy used by Hill Climb progression (see frontend/src/hillclimb/progression/storage.ts).",
+        "On a fresh install, only the first photo is marked unlocked by default; others are locked.",
+        "Unlocking a photo updates the stored state and is reflected correctly after reload.",
+        "No network connection is required to use the Photo Gallery or unlock/view photos."
       ]
     },
     {
       "id": "REQ-3",
-      "text": "Remove the right-side coin photo/image from the gameplay UI (the right/top coin HUD panel), while keeping other HUD elements functional.",
+      "text": "Integrate photo unlock purchasing with the existing coin balance system: unlocking a photo should require sufficient coins, deduct coins when the user confirms unlock, and prevent unlocking when coins are insufficient.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-4"
+          "msg-6"
         ],
         "quotes": [
-          "remove the right side photo of coin"
+          "other was unlocked ... unlock the first photo was a free"
         ]
       },
       "acceptanceCriteria": [
-        "The standalone coin counter HUD panel on the right side is no longer rendered in single-player gameplay.",
-        "No coin icon/coin-image panel appears on the right side after the change (as seen in the provided screenshot).",
-        "Leaderboard and mission HUD (if present) continue to render correctly and are not overlapped by leftover spacing/styling."
+        "Unlock UI shows the coin cost for locked photos.",
+        "If coin balance is insufficient, the unlock action is disabled and cannot complete.",
+        "If coin balance is sufficient and the user confirms, coin balance is reduced by the unlock cost and the photo becomes unlocked.",
+        "Coin deduction and photo unlock persist after refresh."
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "text": "Fix the Hill Climb gameplay controls/physics startup issue where the car does not move/respond when the run starts; ensure throttle/brake input reliably registers on mobile touch devices and desktop, and the vehicle accelerates when throttle is held.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-6"
+        ],
+        "quotes": [
+          "when I start game the car was working ... chal rahi nahi ha so fix them"
+        ]
+      },
+      "acceptanceCriteria": [
+        "On mobile/touch devices, pressing and holding the on-screen throttle button reliably increases vehicle movement (distance starts increasing) during a run.",
+        "Releasing throttle reliably stops acceleration (vehicle eventually slows due to physics).",
+        "Brake button reliably applies braking effect while held.",
+        "Controls remain responsive even if the pointer is canceled or moves off the button (no “stuck pressed” state).",
+        "Desktop keyboard controls (ArrowRight/D for throttle, ArrowLeft/A for brake) continue to work as before."
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "text": "Add the provided photos as curated static gallery assets (clean, cropped game-ready images) and reference them from the new Photo Gallery UI without routing images through the backend.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-6"
+        ],
+        "quotes": [
+          "I send this photo ... put the photo to see and unlock"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Gallery photos are stored as static files under frontend/public/assets/generated and are referenced by URL from the frontend.",
+        "Thumbnails and full-size viewing use these static assets and load offline (service worker caching continues to work)."
       ]
     }
   ],
   "constraints": [
-    "Do not edit files under frontend/src/components/ui (Shadcn components); compose them instead.",
-    "Backend must remain a single Motoko actor (no new backend services)."
+    "Backend must remain a single Motoko actor in backend/main.mo; only add backend changes if strictly necessary for this request.",
+    "Do not edit any files under frontend/src/components/ui or any paths listed in frontend immutablePaths (compose components instead).",
+    "Keep the Photo Gallery offline-first (must function without network connectivity).",
+    "Do not introduce unsupported technologies (no external DBs, no third-party auth beyond Internet Identity, no WebSockets)."
   ],
   "nonGoals": [
-    "Changing game logic, scoring, missions, or coin mechanics.",
-    "Adding real-time chat or external integrations for multiplayer invites."
+    "Adding real-money payments for photo unlocks.",
+    "Adding user-uploaded photos or camera/gallery import from the device.",
+    "Adding multiplayer, chat, or real-time sync for gallery unlocks."
   ],
   "imageRequirements": {
-    "required": [],
+    "required": [
+      "Square car hill-climb scene illustration, red vehicle on green hill with sky background (gallery-photo-01-free.dim_1024x1024.png)",
+      "Square car hill-climb scene illustration, red race car side view on grassy hill with sky background (gallery-photo-02-locked.dim_1024x1024.png)",
+      "Square car hill-climb scene illustration, red off-road jeep with roll cage climbing a hill (gallery-photo-03-locked.dim_1024x1024.png)",
+      "Square car hill-climb scene illustration, red pickup truck climbing hill near water/mountains (gallery-photo-04-locked.dim_1024x1024.png)"
+    ],
     "edits": []
+  },
+  "userProfileUpdate": {
+    "goalsToAdd": [],
+    "goalsToRemove": [],
+    "preferencesToAdd": [],
+    "preferencesToRemove": [],
+    "miscToAdd": [],
+    "miscToRemove": [],
+    "fieldsToSet": {},
+    "fieldsToDelete": []
   }
 }

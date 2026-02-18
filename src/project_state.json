@@ -1,35 +1,51 @@
 {
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
-  "summary": "Multiplayer interface update needed: add room code join flow and remove coin image from the right-side UI.",
+  "summary": "Car game with an in-game photo/gallery system where the first photo is free and others are locked/unlockable; user reports a bug where the car does not move/work when the game starts.",
   "architectural_notes": [],
   "known_issues": [
-    "Multiplayer UI missing room code input/join option in current interface.",
-    "Right-side coin image appears in UI and should be removed."
+    "Bug: car does not move/work properly when starting the game (vehicle not responding/moving)"
   ],
   "isFixRequest": true,
+  "imageRequirements": "## Required Images\n- Square car hill-climb scene illustration, red vehicle on green hill with sky background (gallery-photo-01-free.dim_1024x1024.png)\n- Square car hill-climb scene illustration, red race car side view on grassy hill with sky background (gallery-photo-02-locked.dim_1024x1024.png)\n- Square car hill-climb scene illustration, red off-road jeep with roll cage climbing a hill (gallery-photo-03-locked.dim_1024x1024.png)\n- Square car hill-climb scene illustration, red pickup truck climbing hill near water/mountains (gallery-photo-04-locked.dim_1024x1024.png)",
   "existing_features": [
     {
-      "id": "feature-ensure-the-main-menu-includes-a-clearly-visible-multiplayer-join-with-code-flow-so-a-player-can-enter-a-room-code-and-join-another-player-s-room",
-      "title": "Ensure the main menu includes a clearly visible multiplayer \"Join with Code\" flow so a player can enter a room code and join another player’s room.",
+      "id": "feature-implement-an-in-game-photo-gallery-feature-for-the-hill-climb-game-where-the-first-photo-is-available-for-free-by-default-and-the-remaining-photos-are-locked-until-the-user-unlocks-them-users-must-be-able-to-tap-a-photo-thumbnail-to-either-view-it-if-unlocked-or-see-an-unlock-prompt-if-locked",
+      "title": "Implement an in-game Photo Gallery feature for the Hill Climb game where the first photo is available for free by default, and the remaining photos are locked until the user unlocks them; users must be able to tap a photo thumbnail to either view it (if unlocked) or see an unlock prompt (if locked).",
       "reqIds": [
         "REQ-1"
       ],
       "version": 1
     },
     {
-      "id": "feature-display-the-current-multiplayer-room-code-in-game-during-multiplayer-gameplay-in-a-persistent-readable-panel-so-players-can-see-share-the-room-code-at-any-time",
-      "title": "Display the current multiplayer room code in-game (during multiplayer gameplay) in a persistent, readable panel so players can see/share the room code at any time.",
+      "id": "feature-add-local-persistent-state-for-photo-unlocks-that-follows-the-existing-offline-first-approach-localstorage-and-integrate-it-into-the-hill-climb-progression-data-model-so-that-unlock-state-survives-refreshes-and-app-restarts",
+      "title": "Add local persistent state for photo unlocks that follows the existing offline-first approach (localStorage) and integrate it into the Hill Climb progression data model so that unlock state survives refreshes and app restarts.",
       "reqIds": [
         "REQ-2"
       ],
       "version": 1
     },
     {
-      "id": "feature-remove-the-right-side-coin-photo-image-from-the-gameplay-ui-the-right-top-coin-hud-panel-while-keeping-other-hud-elements-functional",
-      "title": "Remove the right-side coin photo/image from the gameplay UI (the right/top coin HUD panel), while keeping other HUD elements functional.",
+      "id": "feature-integrate-photo-unlock-purchasing-with-the-existing-coin-balance-system-unlocking-a-photo-should-require-sufficient-coins-deduct-coins-when-the-user-confirms-unlock-and-prevent-unlocking-when-coins-are-insufficient",
+      "title": "Integrate photo unlock purchasing with the existing coin balance system: unlocking a photo should require sufficient coins, deduct coins when the user confirms unlock, and prevent unlocking when coins are insufficient.",
       "reqIds": [
         "REQ-3"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-fix-the-hill-climb-gameplay-controls-physics-startup-issue-where-the-car-does-not-move-respond-when-the-run-starts-ensure-throttle-brake-input-reliably-registers-on-mobile-touch-devices-and-desktop-and-the-vehicle-accelerates-when-throttle-is-held",
+      "title": "Fix the Hill Climb gameplay controls/physics startup issue where the car does not move/respond when the run starts; ensure throttle/brake input reliably registers on mobile touch devices and desktop, and the vehicle accelerates when throttle is held.",
+      "reqIds": [
+        "REQ-4"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-the-provided-photos-as-curated-static-gallery-assets-clean-cropped-game-ready-images-and-reference-them-from-the-new-photo-gallery-ui-without-routing-images-through-the-backend",
+      "title": "Add the provided photos as curated static gallery assets (clean, cropped game-ready images) and reference them from the new Photo Gallery UI without routing images through the backend.",
+      "reqIds": [
+        "REQ-5"
       ],
       "version": 1
     }
@@ -37,18 +53,12 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Add room code UI/flow to allow joining another player in multiplayer",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-2",
-      "summary": "Remove the right-side coin photo/image from the interface",
+      "summary": "Add photo/gallery system: first photo available for free in-game; other photos locked and can be viewed/unlocked",
       "reqIds": [],
       "status": "pending"
     }
   ],
-  "projectName": "Add multiplayer room code join UI and remove right-side coin HUD panel",
+  "projectName": "Hill Climb Offline",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

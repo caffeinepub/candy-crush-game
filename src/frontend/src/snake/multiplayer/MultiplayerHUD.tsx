@@ -10,10 +10,10 @@ interface MultiplayerHUDProps {
 }
 
 export default function MultiplayerHUD({ snakes, localPlayerId }: MultiplayerHUDProps) {
-  // Sort by score
+  // Sort by score and show top 3
   const leaderboard = [...snakes]
     .sort((a, b) => b.score - a.score)
-    .slice(0, 5);
+    .slice(0, 3);
 
   return (
     <div className="snake-hud-leaderboard">

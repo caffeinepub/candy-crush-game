@@ -2,17 +2,21 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-ensure-the-main-menu-includes-a-clearly-visible-multiplayer-join-with-code-flow-so-a-player-can-enter-a-room-code-and-join-another-player-s-room",
-      "featureTitle": "Ensure the main menu includes a clearly visible multiplayer \"Join with Code\" flow so a player can enter a room code and join another player’s room.",
+      "featureId": "feature-implement-an-in-game-photo-gallery-feature-for-the-hill-climb-game-where-the-first-photo-is-available-for-free-by-default-and-the-remaining-photos-are-locked-until-the-user-unlocks-them-users-must-be-able-to-tap-a-photo-thumbnail-to-either-view-it-if-unlocked-or-see-an-unlock-prompt-if-locked",
+      "featureTitle": "Implement an in-game Photo Gallery feature for the Hill Climb game where the first photo is available for free by default, and the remaining photos are locked until the user unlocks them; users must be able to tap a photo thumbnail to either view it (if unlocked) or see an unlock prompt (if locked).",
       "files": [
-        "frontend/src/snake/SnakeMainMenu.tsx"
+        "frontend/src/hillclimb/HillClimbApp.tsx",
+        "frontend/src/hillclimb/screens/MainMenuScreen.tsx",
+        "frontend/src/hillclimb/screens/PhotoGalleryScreen.tsx",
+        "frontend/src/index.css"
       ],
       "components": [
         "core-infrastructure@1.0.2",
         "shadcn-ui@1.0.0",
         "build-template-react@1.0.0",
         "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
+        "github-export-icp-cli@1.0.0",
+        "authorization@4.0.0"
       ],
       "testIds": [
         "REQ-1"
@@ -20,18 +24,19 @@
       "confidence": "high"
     },
     {
-      "featureId": "feature-display-the-current-multiplayer-room-code-in-game-during-multiplayer-gameplay-in-a-persistent-readable-panel-so-players-can-see-share-the-room-code-at-any-time",
-      "featureTitle": "Display the current multiplayer room code in-game (during multiplayer gameplay) in a persistent, readable panel so players can see/share the room code at any time.",
+      "featureId": "feature-add-local-persistent-state-for-photo-unlocks-that-follows-the-existing-offline-first-approach-localstorage-and-integrate-it-into-the-hill-climb-progression-data-model-so-that-unlock-state-survives-refreshes-and-app-restarts",
+      "featureTitle": "Add local persistent state for photo unlocks that follows the existing offline-first approach (localStorage) and integrate it into the Hill Climb progression data model so that unlock state survives refreshes and app restarts.",
       "files": [
-        "frontend/src/index.css",
-        "frontend/src/snake/multiplayer/MultiplayerRoomCodePanel.tsx"
+        "frontend/src/hillclimb/HillClimbApp.tsx",
+        "frontend/src/hillclimb/progression/storage.ts"
       ],
       "components": [
         "core-infrastructure@1.0.2",
         "shadcn-ui@1.0.0",
         "build-template-react@1.0.0",
         "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
+        "github-export-icp-cli@1.0.0",
+        "authorization@4.0.0"
       ],
       "testIds": [
         "REQ-2"
@@ -39,21 +44,64 @@
       "confidence": "high"
     },
     {
-      "featureId": "feature-remove-the-right-side-coin-photo-image-from-the-gameplay-ui-the-right-top-coin-hud-panel-while-keeping-other-hud-elements-functional",
-      "featureTitle": "Remove the right-side coin photo/image from the gameplay UI (the right/top coin HUD panel), while keeping other HUD elements functional.",
+      "featureId": "feature-integrate-photo-unlock-purchasing-with-the-existing-coin-balance-system-unlocking-a-photo-should-require-sufficient-coins-deduct-coins-when-the-user-confirms-unlock-and-prevent-unlocking-when-coins-are-insufficient",
+      "featureTitle": "Integrate photo unlock purchasing with the existing coin balance system: unlocking a photo should require sufficient coins, deduct coins when the user confirms unlock, and prevent unlocking when coins are insufficient.",
       "files": [
-        "frontend/src/index.css",
-        "frontend/src/snake/SnakeHUD.tsx"
+        "frontend/src/hillclimb/HillClimbApp.tsx",
+        "frontend/src/hillclimb/screens/PhotoGalleryScreen.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
         "shadcn-ui@1.0.0",
         "build-template-react@1.0.0",
         "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
+        "github-export-icp-cli@1.0.0",
+        "authorization@4.0.0"
       ],
       "testIds": [
         "REQ-3"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-fix-the-hill-climb-gameplay-controls-physics-startup-issue-where-the-car-does-not-move-respond-when-the-run-starts-ensure-throttle-brake-input-reliably-registers-on-mobile-touch-devices-and-desktop-and-the-vehicle-accelerates-when-throttle-is-held",
+      "featureTitle": "Fix the Hill Climb gameplay controls/physics startup issue where the car does not move/respond when the run starts; ensure throttle/brake input reliably registers on mobile touch devices and desktop, and the vehicle accelerates when throttle is held.",
+      "files": [
+        "frontend/src/hillclimb/screens/GameplayScreen.tsx",
+        "frontend/src/hillclimb/ui/DriveControls.tsx",
+        "frontend/src/index.css"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "authorization@4.0.0"
+      ],
+      "testIds": [
+        "REQ-4"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-the-provided-photos-as-curated-static-gallery-assets-clean-cropped-game-ready-images-and-reference-them-from-the-new-photo-gallery-ui-without-routing-images-through-the-backend",
+      "featureTitle": "Add the provided photos as curated static gallery assets (clean, cropped game-ready images) and reference them from the new Photo Gallery UI without routing images through the backend.",
+      "files": [
+        "frontend/public/sw.js",
+        "frontend/src/hillclimb/assets.ts",
+        "frontend/src/hillclimb/screens/PhotoGalleryScreen.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "authorization@4.0.0"
+      ],
+      "testIds": [
+        "REQ-5"
       ],
       "confidence": "high"
     }

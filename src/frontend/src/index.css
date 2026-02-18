@@ -4,67 +4,49 @@
 
 @layer base {
   :root {
-    --background: oklch(98% 0.01 240);
-    --foreground: oklch(15% 0.02 240);
-    --card: oklch(100% 0 0);
-    --card-foreground: oklch(15% 0.02 240);
-    --popover: oklch(100% 0 0);
-    --popover-foreground: oklch(15% 0.02 240);
-    --primary: oklch(55% 0.22 240);
-    --primary-foreground: oklch(98% 0.01 240);
-    --secondary: oklch(92% 0.02 240);
-    --secondary-foreground: oklch(15% 0.02 240);
-    --muted: oklch(92% 0.02 240);
-    --muted-foreground: oklch(45% 0.02 240);
-    --accent: oklch(92% 0.02 240);
-    --accent-foreground: oklch(15% 0.02 240);
+    /* Hill Climb theme - earthy/adventurous palette */
+    --background: oklch(96% 0.02 60);
+    --foreground: oklch(20% 0.02 60);
+    --card: oklch(98% 0.01 60);
+    --card-foreground: oklch(20% 0.02 60);
+    --popover: oklch(98% 0.01 60);
+    --popover-foreground: oklch(20% 0.02 60);
+    --primary: oklch(55% 0.18 40);
+    --primary-foreground: oklch(98% 0.01 60);
+    --secondary: oklch(88% 0.04 60);
+    --secondary-foreground: oklch(20% 0.02 60);
+    --muted: oklch(90% 0.02 60);
+    --muted-foreground: oklch(50% 0.02 60);
+    --accent: oklch(75% 0.16 120);
+    --accent-foreground: oklch(20% 0.02 60);
     --destructive: oklch(55% 0.22 20);
-    --destructive-foreground: oklch(98% 0.01 240);
-    --border: oklch(85% 0.02 240);
-    --input: oklch(85% 0.02 240);
-    --ring: oklch(55% 0.22 240);
-    --radius: 0.5rem;
-    --chart-1: oklch(60% 0.20 20);
-    --chart-2: oklch(65% 0.18 140);
-    --chart-3: oklch(55% 0.22 240);
-    --chart-4: oklch(70% 0.16 280);
-    --chart-5: oklch(60% 0.18 340);
-    
-    /* Menu-specific light theme overrides */
-    --menu-background: oklch(98% 0.01 240);
-    --menu-foreground: oklch(15% 0.02 240);
-    --menu-card: oklch(100% 0 0);
-    --menu-card-foreground: oklch(15% 0.02 240);
-    --menu-muted: oklch(92% 0.02 240);
-    --menu-muted-foreground: oklch(45% 0.02 240);
-    --menu-border: oklch(85% 0.02 240);
+    --destructive-foreground: oklch(98% 0.01 60);
+    --border: oklch(82% 0.02 60);
+    --input: oklch(82% 0.02 60);
+    --ring: oklch(55% 0.18 40);
+    --radius: 0.75rem;
   }
 
   .dark {
-    --background: oklch(15% 0.02 240);
-    --foreground: oklch(98% 0.01 240);
-    --card: oklch(15% 0.02 240);
-    --card-foreground: oklch(98% 0.01 240);
-    --popover: oklch(15% 0.02 240);
-    --popover-foreground: oklch(98% 0.01 240);
-    --primary: oklch(70% 0.20 240);
-    --primary-foreground: oklch(15% 0.02 240);
-    --secondary: oklch(25% 0.02 240);
-    --secondary-foreground: oklch(98% 0.01 240);
-    --muted: oklch(25% 0.02 240);
-    --muted-foreground: oklch(65% 0.02 240);
-    --accent: oklch(25% 0.02 240);
-    --accent-foreground: oklch(98% 0.01 240);
+    --background: oklch(18% 0.02 60);
+    --foreground: oklch(95% 0.01 60);
+    --card: oklch(20% 0.02 60);
+    --card-foreground: oklch(95% 0.01 60);
+    --popover: oklch(20% 0.02 60);
+    --popover-foreground: oklch(95% 0.01 60);
+    --primary: oklch(65% 0.16 40);
+    --primary-foreground: oklch(18% 0.02 60);
+    --secondary: oklch(28% 0.02 60);
+    --secondary-foreground: oklch(95% 0.01 60);
+    --muted: oklch(28% 0.02 60);
+    --muted-foreground: oklch(65% 0.02 60);
+    --accent: oklch(70% 0.14 120);
+    --accent-foreground: oklch(18% 0.02 60);
     --destructive: oklch(55% 0.22 20);
-    --destructive-foreground: oklch(98% 0.01 240);
-    --border: oklch(25% 0.02 240);
-    --input: oklch(25% 0.02 240);
-    --ring: oklch(70% 0.20 240);
-    --chart-1: oklch(65% 0.18 20);
-    --chart-2: oklch(70% 0.16 140);
-    --chart-3: oklch(70% 0.20 240);
-    --chart-4: oklch(75% 0.14 280);
-    --chart-5: oklch(65% 0.16 340);
+    --destructive-foreground: oklch(95% 0.01 60);
+    --border: oklch(28% 0.02 60);
+    --input: oklch(28% 0.02 60);
+    --ring: oklch(65% 0.16 40);
   }
 }
 
@@ -78,7 +60,7 @@
   }
 }
 
-/* Full-screen game layout */
+/* Full-screen layout */
 html, body, #root {
   margin: 0;
   padding: 0;
@@ -87,69 +69,11 @@ html, body, #root {
   overflow: hidden;
   position: fixed;
   touch-action: none;
+  overscroll-behavior: none;
 }
 
-.game-screen {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  background: oklch(var(--menu-background));
-  position: relative;
-  overflow: hidden;
-}
-
-.game-screen-gameplay {
-  background: oklch(12% 0.04 240);
-}
-
-.game-main {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  overflow: hidden;
-}
-
-.game-main-fullscreen {
-  width: 100%;
-  height: 100%;
-}
-
-.game-container {
-  width: 100%;
-  max-width: 1400px;
-  margin: 0 auto;
-  position: relative;
-}
-
-.snake-game-container-fullscreen {
-  max-width: none;
-  width: 100%;
-  height: 100%;
-}
-
-.game-board-container {
-  width: 100%;
-  height: 100%;
-  position: relative;
-  overflow: hidden;
-}
-
-.snake-board-container {
-  background: oklch(12% 0.04 240);
-}
-
-.snake-canvas {
-  display: block;
-  width: 100%;
-  height: 100%;
-  touch-action: none;
-}
-
-/* Snake Main Menu - Light theme with high contrast */
-.snake-main-menu {
+/* Hill Climb Main Menu */
+.hillclimb-menu {
   width: 100%;
   height: 100%;
   display: flex;
@@ -157,10 +81,10 @@ html, body, #root {
   align-items: center;
   justify-content: center;
   padding: 2rem;
-  background: oklch(var(--menu-background));
+  background: linear-gradient(to bottom, oklch(var(--background)), oklch(88% 0.04 60));
 }
 
-.snake-menu-content {
+.hillclimb-menu-content {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -169,485 +93,730 @@ html, body, #root {
   width: 100%;
 }
 
-.snake-menu-logo {
+.hillclimb-menu-logo {
   width: 100%;
   max-width: 500px;
-  margin-bottom: 1rem;
-}
-
-.snake-menu-logo-img {
-  width: 100%;
   height: auto;
-  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.2));
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.15));
 }
 
-.snake-menu-instructions {
+.hillclimb-menu-card {
+  width: 100%;
+  padding: 1.5rem;
   text-align: center;
-  max-width: 500px;
-  margin-bottom: 1rem;
 }
 
-.snake-menu-instructions-text {
-  color: oklch(var(--menu-foreground));
-  font-size: 0.95rem;
+.hillclimb-menu-tagline {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: oklch(var(--foreground));
   line-height: 1.6;
 }
 
-.snake-menu-primary-btn {
-  width: 100%;
-  max-width: 400px;
-  height: 80px;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  border: none;
-  cursor: pointer;
+.hillclimb-menu-buttons {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.2s, filter 0.2s;
-  filter: brightness(1);
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
 }
 
-.snake-menu-primary-btn:hover {
-  transform: scale(1.05);
-  filter: brightness(1.1);
-}
-
-.snake-menu-primary-btn:active {
-  transform: scale(0.98);
-}
-
-.snake-menu-btn-text {
-  font-size: 1.5rem;
+.hillclimb-menu-primary-btn {
+  width: 100%;
+  height: 60px;
+  font-size: 1.25rem;
   font-weight: 700;
-  color: white;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
 }
 
-.snake-menu-secondary-btns {
+.hillclimb-menu-secondary-buttons {
   display: flex;
   gap: 1rem;
-  flex-wrap: wrap;
-  justify-content: center;
+  width: 100%;
 }
 
-.snake-menu-secondary-btn {
-  min-width: 180px;
-}
-
-/* Snake HUD - Compact and lightweight */
-.snake-hud-leaderboard {
-  position: absolute;
-  top: 12px;
-  left: 12px;
-  z-index: 10;
-  pointer-events: none;
-}
-
-.snake-hud-mission {
-  position: absolute;
-  top: 12px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 10;
-  pointer-events: none;
-}
-
-.snake-hud-panel {
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  padding: 8px 12px;
-  border-radius: 8px;
-  backdrop-filter: blur(4px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-}
-
-.snake-hud-panel-title {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: oklch(90% 0.02 240);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-bottom: 6px;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-}
-
-.snake-hud-leaderboard-list {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  min-width: 180px;
-}
-
-.snake-hud-leaderboard-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.85rem;
-  color: oklch(85% 0.02 240);
-}
-
-.snake-hud-leaderboard-item.player {
-  color: oklch(75% 0.24 120);
-  font-weight: 600;
-}
-
-.snake-hud-leaderboard-rank {
-  font-weight: 700;
-  min-width: 20px;
-  text-align: center;
-  color: oklch(70% 0.16 40);
-}
-
-.snake-hud-leaderboard-name {
+.hillclimb-menu-secondary-buttons > button {
   flex: 1;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
-.snake-hud-leaderboard-score {
-  font-weight: 600;
-  color: oklch(80% 0.18 60);
-}
-
-.snake-hud-mission-panel {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 14px;
-}
-
-.snake-hud-mission-icon {
-  width: 32px;
-  height: 32px;
-  flex-shrink: 0;
-}
-
-.snake-hud-mission-icon img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
-.snake-hud-mission-info {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.snake-hud-mission-title {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: oklch(90% 0.02 240);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.snake-hud-mission-progress {
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: oklch(75% 0.24 120);
-}
-
-.snake-hud-mission-timer {
-  display: flex;
-  align-items: center;
-}
-
-.snake-hud-timer-circle {
-  position: relative;
-  width: 40px;
-  height: 40px;
-}
-
-.snake-hud-timer-svg {
-  width: 100%;
-  height: 100%;
-}
-
-.snake-hud-timer-text {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: oklch(90% 0.02 240);
-}
-
-/* In-game controls overlay */
-.snake-controls-overlay {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  z-index: 20;
-  display: flex;
-  gap: 8px;
-  pointer-events: auto;
-}
-
-.snake-control-button {
-  width: 40px;
-  height: 40px;
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(4px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: white;
-}
-
-.snake-control-button:hover {
-  background: rgba(0, 0, 0, 0.8);
-  border-color: rgba(255, 255, 255, 0.3);
-}
-
-/* Tilt toggle */
-.snake-tilt-toggle {
-  position: absolute;
-  bottom: 120px;
-  right: 12px;
-  z-index: 20;
-  pointer-events: auto;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 4px;
-}
-
-.snake-tilt-button {
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(4px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: white;
-}
-
-.snake-tilt-error {
-  font-size: 0.7rem;
-  color: oklch(70% 0.22 20);
-  background: rgba(0, 0, 0, 0.8);
-  padding: 4px 8px;
-  border-radius: 4px;
-  max-width: 200px;
-  text-align: right;
-}
-
-/* Joystick - Always visible when needed */
-.snake-joystick {
-  position: absolute;
-  bottom: 20px;
-  left: 20px;
-  z-index: 20;
-  pointer-events: auto;
-}
-
-/* Boosters */
-.snake-boosters {
-  position: absolute;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 20;
-  pointer-events: auto;
-}
-
-/* Minimap */
-.snake-minimap {
-  position: absolute;
-  bottom: 20px;
-  right: 20px;
-  z-index: 10;
-  pointer-events: none;
-}
-
-/* Multiplayer connection indicator */
-.multiplayer-connection-indicator {
-  position: absolute;
-  top: 60px;
-  right: 12px;
-  z-index: 15;
-  pointer-events: none;
-}
-
-.multiplayer-connection-content {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
-  background: rgba(0, 0, 0, 0.8);
-  backdrop-filter: blur(4px);
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  font-size: 0.85rem;
-  color: oklch(85% 0.02 240);
-}
-
-.multiplayer-connection-icon {
-  color: oklch(70% 0.22 20);
-}
-
-/* Room code panel - Enhanced visibility */
-.multiplayer-room-code-panel {
-  position: absolute;
-  top: 12px;
-  left: 12px;
-  z-index: 15;
-  pointer-events: auto;
-}
-
-.multiplayer-room-code-content {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 14px;
-  background: rgba(0, 0, 0, 0.85);
-  backdrop-filter: blur(6px);
-  border-radius: 8px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  font-size: 0.85rem;
-  color: oklch(85% 0.02 240);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-}
-
-.multiplayer-room-code-label {
-  font-size: 0.7rem;
-  color: oklch(70% 0.02 240);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-bottom: 2px;
-}
-
-.multiplayer-room-code-value {
-  font-family: 'Courier New', monospace;
-  font-weight: 700;
-  font-size: 1rem;
-  color: oklch(90% 0.02 240);
-  letter-spacing: 0.1em;
-}
-
-.multiplayer-room-code-error {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  margin-top: 4px;
-  padding: 4px 8px;
-  background: rgba(220, 38, 38, 0.9);
-  color: white;
-  font-size: 0.75rem;
-  border-radius: 4px;
-  white-space: nowrap;
-}
-
-/* Footer */
-.game-footer {
-  padding: 1rem;
+.hillclimb-footer {
+  margin-top: 2rem;
   text-align: center;
-  background: rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(8px);
 }
 
-.game-footer-text {
-  font-size: 0.85rem;
-  color: oklch(var(--menu-foreground));
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.25rem;
+.hillclimb-footer-text {
+  font-size: 0.875rem;
+  color: oklch(var(--muted-foreground));
 }
 
-.game-footer-link {
-  color: oklch(55% 0.22 240);
+.hillclimb-footer-link {
+  color: oklch(var(--primary));
   text-decoration: none;
   font-weight: 600;
-  transition: color 0.2s;
 }
 
-.game-footer-link:hover {
-  color: oklch(60% 0.24 240);
+.hillclimb-footer-link:hover {
   text-decoration: underline;
 }
 
-/* Joystick styling */
-.joystick-container {
-  user-select: none;
-  -webkit-user-select: none;
-  cursor: pointer;
-}
-
-.joystick-base {
-  position: absolute;
-  top: 0;
-  left: 0;
+/* Gameplay Screen */
+.hillclimb-gameplay {
   width: 100%;
   height: 100%;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.15);
-  border: 3px solid rgba(255, 255, 255, 0.3);
-  backdrop-filter: blur(4px);
+  position: relative;
+  overflow: hidden;
+  background: oklch(85% 0.04 60);
 }
 
-.joystick-thumb {
+.hillclimb-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+}
+
+/* HUD */
+.hillclimb-hud {
   position: absolute;
-  top: 50%;
+  top: 1rem;
   left: 50%;
-  width: 60px;
-  height: 60px;
-  margin-left: -30px;
-  margin-top: -30px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.8);
-  border: 3px solid rgba(255, 255, 255, 1);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  transition: transform 0.05s ease-out;
+  transform: translateX(-50%);
+  z-index: 10;
   pointer-events: none;
 }
 
-.joystick-container.active .joystick-thumb {
-  background: rgba(255, 255, 255, 1);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+.hillclimb-hud-panel {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 0.75rem 1.5rem;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
-.joystick-container.disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+.hillclimb-hud-stat {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.hillclimb-hud-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: oklch(85% 0.02 60);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.hillclimb-hud-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: oklch(95% 0.01 60);
+}
+
+.hillclimb-hud-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.hillclimb-hud-icon-img {
+  width: 32px;
+  height: 32px;
+}
+
+.hillclimb-hud-fuel {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 150px;
+}
+
+.hillclimb-fuel-bar {
+  flex: 1;
+  height: 8px;
+}
+
+/* Drive Controls */
+.hillclimb-controls {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+  display: flex;
+  gap: 2rem;
+  pointer-events: auto;
+}
+
+.hillclimb-control-btn {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  font-size: 2rem;
+  background: oklch(var(--primary));
+  color: oklch(var(--primary-foreground));
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.hillclimb-control-btn:active {
+  transform: scale(0.95);
+}
+
+/* Results Screen */
+.hillclimb-results {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: linear-gradient(to bottom, oklch(var(--background)), oklch(88% 0.04 60));
+}
+
+.hillclimb-results-content {
+  max-width: 500px;
+  width: 100%;
+}
+
+.hillclimb-results-card {
+  width: 100%;
+}
+
+.hillclimb-results-title {
+  font-size: 2rem;
+  font-weight: 700;
+  text-align: center;
+  color: oklch(var(--foreground));
+}
+
+.hillclimb-results-reason {
+  text-align: center;
+  font-size: 1rem;
+  color: oklch(var(--muted-foreground));
+  margin-top: 0.5rem;
+}
+
+.hillclimb-results-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.5rem 0;
+}
+
+.hillclimb-stat {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: oklch(var(--muted));
+  border-radius: 8px;
+}
+
+.hillclimb-stat-icon {
+  width: 32px;
+  height: 32px;
+  color: oklch(var(--primary));
+}
+
+.hillclimb-stat-icon-img {
+  width: 32px;
+  height: 32px;
+}
+
+.hillclimb-stat-content {
+  flex: 1;
+}
+
+.hillclimb-stat-label {
+  font-size: 0.875rem;
+  color: oklch(var(--muted-foreground));
+}
+
+.hillclimb-stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: oklch(var(--foreground));
+}
+
+.hillclimb-stat-total {
+  background: oklch(var(--accent));
+}
+
+.hillclimb-results-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+/* Garage Screen */
+.hillclimb-garage {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: oklch(var(--background));
+  overflow-y: auto;
+}
+
+.hillclimb-garage-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  background: oklch(var(--card));
+  border-bottom: 1px solid oklch(var(--border));
+}
+
+.hillclimb-garage-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: oklch(var(--foreground));
+}
+
+.hillclimb-garage-coins {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: oklch(var(--foreground));
+}
+
+.hillclimb-coin-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.hillclimb-garage-content {
+  flex: 1;
+  padding: 1rem;
+  overflow-y: auto;
+}
+
+.hillclimb-garage-tabs {
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.hillclimb-garage-tab-content {
+  margin-top: 1rem;
+}
+
+.hillclimb-vehicle-grid,
+.hillclimb-upgrade-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.hillclimb-vehicle-card,
+.hillclimb-upgrade-card {
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.hillclimb-vehicle-card:hover,
+.hillclimb-upgrade-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+.hillclimb-vehicle-card.selected {
+  border: 2px solid oklch(var(--primary));
+}
+
+.hillclimb-vehicle-name,
+.hillclimb-upgrade-name {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.hillclimb-vehicle-preview {
+  width: 100%;
+  height: 120px;
+  background: oklch(var(--muted));
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hillclimb-vehicle-placeholder {
+  width: 80px;
+  height: 80px;
+  background: oklch(var(--primary));
+  border-radius: 8px;
+}
+
+.hillclimb-vehicle-description,
+.hillclimb-upgrade-description {
+  font-size: 0.875rem;
+  color: oklch(var(--muted-foreground));
+  margin-bottom: 1rem;
+}
+
+.hillclimb-upgrade-level {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: oklch(var(--foreground));
+  margin-bottom: 0.5rem;
+}
+
+.hillclimb-upgrade-maxed {
+  padding: 0.5rem;
+  background: oklch(var(--accent));
+  color: oklch(var(--accent-foreground));
+  text-align: center;
+  border-radius: 6px;
+  font-weight: 700;
+}
+
+.hillclimb-sync-panel {
+  margin-top: 2rem;
+}
+
+/* Stage Select Screen */
+.hillclimb-stage-select {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: oklch(var(--background));
+  overflow-y: auto;
+}
+
+.hillclimb-stage-select-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: oklch(var(--card));
+  border-bottom: 1px solid oklch(var(--border));
+}
+
+.hillclimb-stage-select-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: oklch(var(--foreground));
+}
+
+.hillclimb-stage-select-content {
+  flex: 1;
+  padding: 1rem;
+  overflow-y: auto;
+}
+
+.hillclimb-stage-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+.hillclimb-stage-card {
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  overflow: hidden;
+}
+
+.hillclimb-stage-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+.hillclimb-stage-preview {
+  width: 100%;
+  height: 150px;
+  background-size: cover;
+  background-position: center;
+}
+
+.hillclimb-stage-name {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.hillclimb-stage-description {
+  font-size: 0.875rem;
+  color: oklch(var(--muted-foreground));
+}
+
+/* Daily Challenge Screen */
+.hillclimb-daily {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: oklch(var(--background));
+  overflow-y: auto;
+}
+
+.hillclimb-daily-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: oklch(var(--card));
+  border-bottom: 1px solid oklch(var(--border));
+}
+
+.hillclimb-daily-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: oklch(var(--foreground));
+}
+
+.hillclimb-daily-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.hillclimb-daily-card {
+  max-width: 500px;
+  width: 100%;
+}
+
+.hillclimb-daily-challenge-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+}
+
+.hillclimb-daily-objective {
+  margin: 1.5rem 0;
+}
+
+.hillclimb-daily-objective-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: oklch(var(--foreground));
+  margin-bottom: 0.5rem;
+}
+
+.hillclimb-daily-objective-description {
+  font-size: 1rem;
+  color: oklch(var(--muted-foreground));
+}
+
+.hillclimb-daily-reward {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: oklch(var(--accent));
+  border-radius: 8px;
+  margin: 1rem 0;
+}
+
+.hillclimb-daily-reward-amount {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: oklch(var(--accent-foreground));
+}
+
+.hillclimb-daily-claimed,
+.hillclimb-daily-incomplete {
+  padding: 1rem;
+  text-align: center;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+.hillclimb-daily-claimed {
+  background: oklch(var(--muted));
+  color: oklch(var(--muted-foreground));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hillclimb-daily-incomplete {
+  background: oklch(var(--secondary));
+  color: oklch(var(--secondary-foreground));
+}
+
+/* Photo Gallery Screen */
+.hillclimb-gallery {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: oklch(var(--background));
+  overflow-y: auto;
+}
+
+.hillclimb-gallery-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  background: oklch(var(--card));
+  border-bottom: 1px solid oklch(var(--border));
+  gap: 1rem;
+}
+
+.hillclimb-gallery-title {
+  flex: 1;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: oklch(var(--foreground));
+  text-align: center;
+}
+
+.hillclimb-gallery-coins {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: oklch(var(--foreground));
+}
+
+.hillclimb-gallery-content {
+  flex: 1;
+  padding: 1rem;
+  overflow-y: auto;
+}
+
+.hillclimb-gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.hillclimb-gallery-card {
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  overflow: hidden;
+}
+
+.hillclimb-gallery-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+.hillclimb-gallery-photo-container {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  overflow: hidden;
+  background: oklch(var(--muted));
+}
+
+.hillclimb-gallery-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.hillclimb-gallery-photo-locked {
+  filter: blur(8px) brightness(0.5);
+}
+
+.hillclimb-gallery-lock-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.5);
+  color: oklch(95% 0.01 60);
+}
+
+.hillclimb-gallery-photo-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+
+.hillclimb-gallery-photo-footer {
+  display: flex;
+  justify-content: center;
+  padding-top: 0;
+}
+
+.hillclimb-gallery-cost {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: oklch(var(--primary));
+  color: oklch(var(--primary-foreground));
+  border-radius: 6px;
+  font-weight: 700;
+}
+
+.hillclimb-gallery-viewer {
+  max-width: 90vw;
+  max-height: 90vh;
+  padding: 0;
+  border: none;
+  background: transparent;
+}
+
+.hillclimb-gallery-viewer-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 50;
+  background: rgba(0, 0, 0, 0.7);
+  color: oklch(95% 0.01 60);
+}
+
+.hillclimb-gallery-viewer-close:hover {
+  background: rgba(0, 0, 0, 0.9);
+}
+
+.hillclimb-gallery-viewer-image {
+  width: 100%;
+  height: auto;
+  max-height: 90vh;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+.hillclimb-gallery-unlock-preview {
+  width: 100%;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 8px;
+  background: oklch(var(--muted));
+}
+
+.hillclimb-gallery-unlock-preview-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-  .snake-menu-logo {
+  .hillclimb-menu {
+    padding: 1rem;
+  }
+
+  .hillclimb-menu-logo {
     max-width: 350px;
   }
-  
-  .snake-menu-instructions-text {
-    font-size: 0.85rem;
-  }
-  
-  .snake-menu-primary-btn {
-    height: 70px;
-  }
-  
-  .snake-menu-btn-text {
-    font-size: 1.3rem;
-  }
-}
 
-/* Portrait mode - hide HUD elements but keep joystick and room code visible */
-@media (orientation: portrait) {
-  .snake-hud-leaderboard,
-  .snake-hud-mission,
-  .snake-controls-overlay,
-  .snake-tilt-toggle,
-  .snake-boosters,
-  .snake-minimap {
-    display: none;
+  .hillclimb-menu-secondary-buttons {
+    flex-direction: column;
   }
-  
-  /* Keep joystick and room code visible in portrait */
-  .snake-joystick,
-  .multiplayer-room-code-panel {
-    display: block;
+
+  .hillclimb-vehicle-grid,
+  .hillclimb-upgrade-grid,
+  .hillclimb-stage-grid,
+  .hillclimb-gallery-grid {
+    grid-template-columns: 1fr;
   }
 }

@@ -1,51 +1,42 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-14T11:41:07.040Z",
-  "summary": "REQ-3 appears implemented by removing the standalone right-side coin HUD panel from SnakeHUD and related styling. REQ-1 is partially evidenced (join code state/validation and join handler exist), but the diff truncation prevents confirming the actual Multiplayer tab UI elements (input + Join button) are rendered. REQ-2 adds a Room Code panel component with copy-to-clipboard feedback, but there is no evidence it is actually rendered during multiplayer gameplay.",
+  "generatedAt": "2026-02-18T12:11:32.747Z",
+  "summary": "Diff implements a new Hill Climb Photo Gallery screen with navigation from the main menu, adds localStorage persistence for unlocked photos (defaulting photo-1 to unlocked), integrates photo unlocking with coin balance deduction, updates drive controls to use pointer capture/cancel handling for reliable mobile input, and updates asset mappings + service worker cache list for the gallery images. However, the diff does not explicitly include the actual static image files under frontend/public/assets/generated.",
   "missing_requirements": [
     {
-      "id": "REQ-1",
-      "requirement": "On the Multiplayer tab in the main menu, show an input to enter a room code and a Join action button.",
-      "reason": "Logic for join code, validation, and joining exists, but the provided diff for the menu JSX is truncated before confirming the actual rendered UI (input + Join button) within the Multiplayer tab.",
+      "id": "REQ-5",
+      "requirement": "Add the provided photos as curated static gallery assets under frontend/public/assets/generated and reference them by URL from the frontend.",
+      "reason": "The diff updates asset URL mappings and service worker cache list to include the gallery photo paths, but it does not show any added static image files in frontend/public/assets/generated. Without the actual files, the gallery would reference paths that may not exist.",
       "evidence": [
-        "frontend/src/snake/SnakeMainMenu.tsx (truncated)"
-      ]
-    },
-    {
-      "id": "REQ-2",
-      "requirement": "Display the current multiplayer room code in-game in a persistent panel during multiplayer gameplay, including copy-to-clipboard action with feedback.",
-      "reason": "A MultiplayerRoomCodePanel component with copy feedback is added, but the diff summary does not show it being imported/used in the in-game multiplayer HUD/gameplay screen, so persistence/visibility during gameplay cannot be confirmed.",
-      "evidence": [
-        "frontend/src/snake/multiplayer/MultiplayerRoomCodePanel.tsx",
-        "frontend/src/snake/SnakeHUD.tsx",
-        "frontend/src/index.css (mentions room code panel styling but not usage)"
+        "frontend/src/hillclimb/assets.ts",
+        "frontend/public/sw.js",
+        "File diff summary shows only 1 added file (a TSX screen) and no added PNG assets under frontend/public/assets/generated"
       ]
     }
   ],
   "hallucinated_features": [
     {
-      "description": "Copy invite URL action in the main menu (buildInviteURL + clipboard copy + copied state).",
-      "reason": "BuildRequest requires a Join-with-Code flow and in-game room code copy; it does not request generating/copying an invite URL from the menu.",
+      "description": "Cloud save/load conversion logic that explicitly drops/does not sync photo unlock state (defaults unlockedPhotos to ['photo-1'] when loading from backend).",
+      "reason": "BuildRequest focuses on an offline-first gallery with local persistence and does not request changes to cloud sync behavior. This adds/changes behavior in the auth/sync panel unrelated to the gallery requirements and could cause unexpected loss of unlocked photo state on cloud load.",
       "evidence": [
-        "frontend/src/snake/SnakeMainMenu.tsx (truncated)"
-      ]
-    },
-    {
-      "description": "Menu-specific light theme CSS variables (e.g., --menu-background/foreground/card/etc.).",
-      "reason": "Not explicitly requested by the BuildRequest; appears to be additional styling work beyond the specified UI changes.",
-      "evidence": [
-        "frontend/src/index.css"
+        "frontend/src/hillclimb/ui/AuthAndSyncPanel.tsx"
       ]
     }
   ],
-  "confidence": 0.62,
+  "confidence": 0.66,
   "changed_files": [
     "frontend-file-summaries.txt",
+    "frontend/public/sw.js",
+    "frontend/src/hillclimb/HillClimbApp.tsx",
+    "frontend/src/hillclimb/assets.ts",
+    "frontend/src/hillclimb/progression/storage.ts",
+    "frontend/src/hillclimb/screens/GameplayScreen.tsx",
+    "frontend/src/hillclimb/screens/MainMenuScreen.tsx",
+    "frontend/src/hillclimb/screens/PhotoGalleryScreen.tsx",
+    "frontend/src/hillclimb/ui/AuthAndSyncPanel.tsx",
+    "frontend/src/hillclimb/ui/DriveControls.tsx",
     "frontend/src/index.css",
-    "frontend/src/snake/SnakeHUD.tsx",
-    "frontend/src/snake/SnakeMainMenu.tsx",
-    "frontend/src/snake/multiplayer/MultiplayerRoomCodePanel.tsx",
     "project_state.json"
   ]
 }

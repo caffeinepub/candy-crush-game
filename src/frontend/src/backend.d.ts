@@ -20,10 +20,6 @@ export interface GameSnapshot {
     snakes: Array<Snake>;
     timeRemaining: bigint;
 }
-export interface Coordinate {
-    x: bigint;
-    y: bigint;
-}
 export interface Snake {
     direction: Direction;
     body: Array<Coordinate>;
@@ -43,21 +39,45 @@ export interface MultiplayerRoom {
     roomId: string;
     worldState: GameSnapshot;
 }
+export interface Coordinate {
+    x: bigint;
+    y: bigint;
+}
+export interface GameState {
+    coinBalance: bigint;
+    dailyClaimHistory: Array<string>;
+    upgradeLevels: bigint;
+    unlockedVehicles: Array<string>;
+}
+export interface UserProfile {
+    username: string;
+    gameState: GameState;
+}
 export enum Direction {
     Up = "Up",
     Down = "Down",
     Left = "Left",
     Right = "Right"
 }
+export enum UserRole {
+    admin = "admin",
+    user = "user",
+    guest = "guest"
+}
 export interface backendInterface {
+    assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     checkRoomExists(roomId: string): Promise<boolean>;
-    containsText(times: bigint): Promise<string>;
     createRoom(username: string): Promise<string>;
     getAllRooms(): Promise<Array<[string, MultiplayerRoom]>>;
+    getCallerUserProfile(): Promise<UserProfile | null>;
+    getCallerUserRole(): Promise<UserRole>;
+    getGameState(): Promise<GameState>;
     getRoomParticipants(roomId: string): Promise<Array<Player>>;
     getRoomState(roomId: string): Promise<MultiplayerRoom | null>;
     getState(_roomId: string): Promise<GameSnapshot>;
     getTimeRemaining(_roomId: string): Promise<bigint>;
+    getUserProfile(user: Principal): Promise<UserProfile | null>;
+    isCallerAdmin(): Promise<boolean>;
     joinRoom(roomId: string, playerName: string): Promise<{
         __kind__: "AlreadyJoined";
         AlreadyJoined: null;
@@ -68,5 +88,7 @@ export interface backendInterface {
         __kind__: "RoomNotFoundOrInactive";
         RoomNotFoundOrInactive: null;
     }>;
+    saveCallerUserProfile(profile: UserProfile): Promise<void>;
+    saveGameState(state: GameState): Promise<void>;
     toggleTimer(roomId: string): Promise<boolean>;
 }

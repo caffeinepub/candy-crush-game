@@ -1,11 +1,15 @@
 # Specification
 
 ## Summary
-**Goal:** Add a multiplayer room-code join flow in the main menu, show the active room code in-game during multiplayer, and remove the right-side coin HUD panel from gameplay.
+**Goal:** Add an offline-first in-game Photo Gallery with coin-based unlocks (first photo free) and fix the issue where the vehicle doesn’t move/respond at run start.
 
 **Planned changes:**
-- Update the main menu Multiplayer tab to include a clearly visible “Join with Code” input and Join button that uses existing multiplayer join behavior, with simple English validation for empty/invalid codes.
-- During multiplayer gameplay, add a persistent “Room Code” panel that displays the active room code and provides a copy-to-clipboard action with clear feedback.
-- Remove the standalone right-side/top coin HUD photo/panel from gameplay UI, ensuring remaining HUD elements (e.g., leaderboard/mission HUD) still render correctly without layout gaps/overlap.
+- Add a new Photo Gallery entry point in the Hill Climb UI (accessible without login).
+- Implement a gallery screen showing photo thumbnails with clear locked/unlocked states, with Photo #1 unlocked by default.
+- Add tap behavior: open a full-screen/modal viewer for unlocked photos; show an unlock confirmation prompt for locked photos.
+- Persist photo unlock state locally (localStorage) integrated with the existing Hill Climb progression storage approach.
+- Integrate unlock purchasing with the existing coin balance: display cost, block unlock when coins are insufficient, deduct coins on confirmation, and persist both coins and unlocks.
+- Add curated static gallery photo assets under `frontend/public/assets/generated` and reference them directly so they work offline.
+- Fix gameplay control/physics startup so throttle/brake reliably register on touch and desktop, avoiding stuck/canceled pointer states and ensuring the vehicle accelerates when throttle is held.
 
-**User-visible outcome:** Players can join multiplayer using a room code from the main menu, can always view/copy the current room code during multiplayer gameplay, and the right-side coin image panel no longer appears during gameplay.
+**User-visible outcome:** Players can open a Photo Gallery, view the first free photo immediately, unlock additional photos using coins (persisting offline across restarts), and the car reliably moves when holding throttle at the start of a run on mobile and desktop.

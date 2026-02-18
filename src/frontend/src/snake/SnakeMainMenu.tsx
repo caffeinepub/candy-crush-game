@@ -53,7 +53,8 @@ export default function SnakeMainMenu({ onStartGame, onStartMultiplayer }: Snake
     return true;
   };
 
-  const handleCreateRoom = async () => {
+  const handleCreateRoom = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
     if (!isValid()) return;
     
     const code = await createRoom(nickname.trim());
@@ -143,6 +144,7 @@ export default function SnakeMainMenu({ onStartGame, onStartMultiplayer }: Snake
               </CardHeader>
               <CardContent>
                 <button 
+                  type="button"
                   onClick={onStartGame}
                   className="snake-menu-primary-btn w-full"
                   style={{ backgroundImage: `url(${WZ_ASSETS.btnPrimaryGreen})` }}
@@ -186,6 +188,7 @@ export default function SnakeMainMenu({ onStartGame, onStartMultiplayer }: Snake
                 {/* Create Room */}
                 <div className="space-y-2">
                   <Button
+                    type="button"
                     onClick={handleCreateRoom}
                     disabled={!isValid() || roomStatus === 'creating'}
                     className="w-full"
@@ -222,6 +225,7 @@ export default function SnakeMainMenu({ onStartGame, onStartMultiplayer }: Snake
                       }}
                     />
                     <Button
+                      type="button"
                       onClick={handleJoinRoom}
                       disabled={isJoinDisabled}
                     >
@@ -250,6 +254,7 @@ export default function SnakeMainMenu({ onStartGame, onStartMultiplayer }: Snake
         {/* Secondary buttons */}
         <div className="snake-menu-secondary-btns">
           <Button 
+            type="button"
             variant="outline" 
             size="lg"
             className="snake-menu-secondary-btn bg-white"

@@ -285,7 +285,7 @@ export default function SnakeCanvas({
             );
           }
         } else {
-          const sprite = getFoodSprite(pickup.type);
+          const sprite = getFoodSprite(pickup.id);
           if (foodSpritesImage.complete) {
             ctx.drawImage(
               foodSpritesImage,
@@ -314,7 +314,7 @@ export default function SnakeCanvas({
               size * zoom
             );
           } else if (foodSpritesImage.complete) {
-            const sprite = getFoodSprite(pickup.type);
+            const sprite = getFoodSprite(pickup.id);
             ctx.drawImage(
               foodSpritesImage,
               sprite.x,
@@ -339,7 +339,7 @@ export default function SnakeCanvas({
               size * zoom
             );
           } else if (foodSpritesImage.complete) {
-            const sprite = getFoodSprite(pickup.type);
+            const sprite = getFoodSprite(pickup.id);
             ctx.drawImage(
               foodSpritesImage,
               sprite.x,
@@ -364,7 +364,7 @@ export default function SnakeCanvas({
               size * zoom
             );
           } else if (foodSpritesImage.complete) {
-            const sprite = getFoodSprite(pickup.type);
+            const sprite = getFoodSprite(pickup.id);
             ctx.drawImage(
               foodSpritesImage,
               sprite.x,
@@ -389,7 +389,7 @@ export default function SnakeCanvas({
               size * zoom
             );
           } else if (foodSpritesImage.complete) {
-            const sprite = getFoodSprite(pickup.type);
+            const sprite = getFoodSprite(pickup.id);
             ctx.drawImage(
               foodSpritesImage,
               sprite.x,

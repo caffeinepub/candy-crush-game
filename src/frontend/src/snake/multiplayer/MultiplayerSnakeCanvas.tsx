@@ -150,7 +150,13 @@ export default function MultiplayerSnakeCanvas({
         return 8 + Math.min(segmentCount * 0.3, 20);
       };
 
-      const drawWormSegment = (x: number, y: number, radius: number, hue: number, isHead = false) => {
+      const drawWormSegment = (
+        x: number,
+        y: number,
+        radius: number,
+        hue: number,
+        isHead = false
+      ) => {
         const screen = worldToScreen(x, y);
         const gradient = ctx.createRadialGradient(screen.x, screen.y, 0, screen.x, screen.y, radius * zoom);
         gradient.addColorStop(0, `hsl(${hue}, 80%, 70%)`);
@@ -186,6 +192,44 @@ export default function MultiplayerSnakeCanvas({
           ctx.arc(screen.x + eyeOffset * zoom, screen.y - eyeOffset * zoom, eyeSize * zoom * 0.5, 0, Math.PI * 2);
           ctx.fill();
         }
+
+        const margin = radius * 2;
+        if (x < margin) {
+          const wrapScreen = worldToScreen(x + worldWidth, y);
+          ctx.fillStyle = gradient;
+          ctx.beginPath();
+          ctx.arc(wrapScreen.x, wrapScreen.y, radius * zoom, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.strokeStyle = `hsl(${hue}, 50%, 20%)`;
+          ctx.stroke();
+        }
+        if (x > worldWidth - margin) {
+          const wrapScreen = worldToScreen(x - worldWidth, y);
+          ctx.fillStyle = gradient;
+          ctx.beginPath();
+          ctx.arc(wrapScreen.x, wrapScreen.y, radius * zoom, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.strokeStyle = `hsl(${hue}, 50%, 20%)`;
+          ctx.stroke();
+        }
+        if (y < margin) {
+          const wrapScreen = worldToScreen(x, y + worldHeight);
+          ctx.fillStyle = gradient;
+          ctx.beginPath();
+          ctx.arc(wrapScreen.x, wrapScreen.y, radius * zoom, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.strokeStyle = `hsl(${hue}, 50%, 20%)`;
+          ctx.stroke();
+        }
+        if (y > worldHeight - margin) {
+          const wrapScreen = worldToScreen(x, y - worldHeight);
+          ctx.fillStyle = gradient;
+          ctx.beginPath();
+          ctx.arc(wrapScreen.x, wrapScreen.y, radius * zoom, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.strokeStyle = `hsl(${hue}, 50%, 20%)`;
+          ctx.stroke();
+        }
       };
 
       // Draw all snakes
@@ -197,23 +241,33 @@ export default function MultiplayerSnakeCanvas({
         });
       });
 
-      // Draw pickups
+      // Draw pickups with wrapping
       state.pickups.forEach((pickup) => {
         const screen = worldToScreen(pickup.position.x, pickup.position.y);
-        const size = pickup.radius * 2;
+        const size = 32; // Default size for multiplayer pickups
 
-        if (pickup.type === 'coin') {
-          if (coinImage.complete) {
-            ctx.drawImage(
-              coinImage,
-              screen.x - (size * zoom) / 2,
-              screen.y - (size * zoom) / 2,
-              size * zoom,
-              size * zoom
-            );
-          }
-        } else {
-          const sprite = getFoodSprite(pickup.type as any);
+        // Generate stable pickup ID from coordinates
+        const pickupId = `${Math.floor(pickup.position.x)}-${Math.floor(pickup.position.y)}`;
+        const sprite = getFoodSprite(pickupId);
+
+        if (foodSpritesImage.complete) {
+          ctx.drawImage(
+            foodSpritesImage,
+            sprite.x,
+            sprite.y,
+            sprite.width,
+            sprite.height,
+            screen.x - (size * zoom) / 2,
+            screen.y - (size * zoom) / 2,
+            size * zoom,
+            size * zoom
+          );
+        }
+
+        // Handle wrapping for pickups
+        const margin = size;
+        if (pickup.position.x < margin) {
+          const wrapScreen = worldToScreen(pickup.position.x + worldWidth, pickup.position.y);
           if (foodSpritesImage.complete) {
             ctx.drawImage(
               foodSpritesImage,
@@ -221,8 +275,56 @@ export default function MultiplayerSnakeCanvas({
               sprite.y,
               sprite.width,
               sprite.height,
-              screen.x - (size * zoom) / 2,
-              screen.y - (size * zoom) / 2,
+              wrapScreen.x - (size * zoom) / 2,
+              wrapScreen.y - (size * zoom) / 2,
+              size * zoom,
+              size * zoom
+            );
+          }
+        }
+        if (pickup.position.x > worldWidth - margin) {
+          const wrapScreen = worldToScreen(pickup.position.x - worldWidth, pickup.position.y);
+          if (foodSpritesImage.complete) {
+            ctx.drawImage(
+              foodSpritesImage,
+              sprite.x,
+              sprite.y,
+              sprite.width,
+              sprite.height,
+              wrapScreen.x - (size * zoom) / 2,
+              wrapScreen.y - (size * zoom) / 2,
+              size * zoom,
+              size * zoom
+            );
+          }
+        }
+        if (pickup.position.y < margin) {
+          const wrapScreen = worldToScreen(pickup.position.x, pickup.position.y + worldHeight);
+          if (foodSpritesImage.complete) {
+            ctx.drawImage(
+              foodSpritesImage,
+              sprite.x,
+              sprite.y,
+              sprite.width,
+              sprite.height,
+              wrapScreen.x - (size * zoom) / 2,
+              wrapScreen.y - (size * zoom) / 2,
+              size * zoom,
+              size * zoom
+            );
+          }
+        }
+        if (pickup.position.y > worldHeight - margin) {
+          const wrapScreen = worldToScreen(pickup.position.x, pickup.position.y - worldHeight);
+          if (foodSpritesImage.complete) {
+            ctx.drawImage(
+              foodSpritesImage,
+              sprite.x,
+              sprite.y,
+              sprite.width,
+              sprite.height,
+              wrapScreen.x - (size * zoom) / 2,
+              wrapScreen.y - (size * zoom) / 2,
               size * zoom,
               size * zoom
             );

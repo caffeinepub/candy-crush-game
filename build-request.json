@@ -1,0 +1,84 @@
+{
+  "kind": "build_request",
+  "title": "Add landscape orientation enforcement and tilt/gyroscope controls for mobile gameplay",
+  "projectName": "Space Snake",
+  "priority": "normal",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "text": "Enforce landscape orientation for the game screen: when a player on mobile holds their phone in portrait mode, display the existing RotateToLandscapeOverlay component (frontend/src/snake/RotateToLandscapeOverlay.tsx) to prompt them to rotate to landscape. Hide all game UI and pause the game loop while in portrait mode. Resume automatically when the device rotates to landscape.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "make the game like when I play game i turn the phone to play with better"
+        ]
+      },
+      "acceptanceCriteria": [
+        "On a mobile device in portrait mode, the RotateToLandscapeOverlay is shown and the game is paused.",
+        "When the device is rotated to landscape, the overlay disappears and the game resumes.",
+        "On desktop or landscape-oriented devices the overlay is never shown.",
+        "The useLandscapeOrientation hook (frontend/src/snake/useLandscapeOrientation.ts) is used to detect orientation."
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "text": "Add gyroscope/tilt steering as an alternative input method in the Space Snake game. Use the DeviceOrientation API (gamma axis) to map left/right phone tilt to snake steering direction. The tilt control should work alongside the existing virtual joystick — whichever input is active most recently takes precedence. Apply a deadzone (±5°) so minor tilt noise does not affect direction.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "when I play game i turn the phone to play with better"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Tilting the phone left/right in landscape mode steers the player snake left/right.",
+        "A deadzone of approximately ±5° gamma prevents accidental steering from minor tilt.",
+        "The joystick still works and can override tilt input.",
+        "Tilt input feeds into the same angle/steering pipeline used by the joystick in useSpaceSnakeGame.ts.",
+        "On devices without DeviceOrientation support, tilt control is silently skipped with no errors.",
+        "If the browser requires a permission request for DeviceOrientation (e.g. iOS 13+), prompt the user on first tilt interaction or game start."
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "text": "Add a small tilt-control indicator icon or toggle button in the in-game HUD (SpaceSnakeScreen) that shows whether gyroscope/tilt steering is active. Tapping it should toggle tilt steering on or off, and the toggle state should be persisted to localStorage so the preference is remembered across sessions.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "when I play game i turn the phone to play with better"
+        ]
+      },
+      "acceptanceCriteria": [
+        "A small tilt toggle button is visible in the game HUD on mobile (hidden on desktop).",
+        "The button clearly indicates active/inactive tilt mode with a visual difference (e.g. icon color or label).",
+        "Toggling persists to localStorage and is restored on reload.",
+        "When tilt is disabled, only joystick input steers the snake."
+      ]
+    }
+  ],
+  "constraints": [
+    "Do not modify files under frontend/src/hooks/ (immutable paths).",
+    "Do not modify files under frontend/src/components/ui/ (immutable paths).",
+    "Keep all backend logic in backend/main.mo; no backend changes are required for this feature.",
+    "Reuse the existing useLandscapeOrientation hook for orientation detection.",
+    "Reuse the existing RotateToLandscapeOverlay component for the portrait-mode prompt."
+  ],
+  "nonGoals": [
+    "Adding multiplayer-specific tilt controls.",
+    "Changing the joystick design or removing it.",
+    "Any backend or leaderboard changes.",
+    "Supporting portrait-mode gameplay layout."
+  ],
+  "imageRequirements": {
+    "required": [],
+    "edits": []
+  }
+}

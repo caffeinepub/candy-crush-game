@@ -1,0 +1,46 @@
+{
+  "schemaVersion": "1.0.0",
+  "projectStateVersion": 3,
+  "summary": "Space snake game with joystick controls, bot snakes, coin collection, leaderboard, and starfield background. Player requested landscape/gyroscope orientation support for better mobile gameplay.",
+  "architectural_notes": [],
+  "known_issues": [],
+  "isFixRequest": false,
+  "existing_features": [
+    {
+      "id": "feature-enforce-landscape-orientation-for-the-game-screen-when-a-player-on-mobile-holds-their-phone-in-portrait-mode-display-the-existing-rotatetolandscapeoverlay-component-frontend-src-snake-rotatetolandscapeoverlay-tsx-to-prompt-them-to-rotate-to-landscape-hide-all-game-ui-and-pause-the-game-loop-while-in-portrait-mode-resume-automatically-when-the-device-rotates-to-landscape",
+      "title": "Enforce landscape orientation for the game screen: when a player on mobile holds their phone in portrait mode, display the existing RotateToLandscapeOverlay component (frontend/src/snake/RotateToLandscapeOverlay.tsx) to prompt them to rotate to landscape. Hide all game UI and pause the game loop while in portrait mode. Resume automatically when the device rotates to landscape.",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-gyroscope-tilt-steering-as-an-alternative-input-method-in-the-space-snake-game-use-the-deviceorientation-api-gamma-axis-to-map-left-right-phone-tilt-to-snake-steering-direction-the-tilt-control-should-work-alongside-the-existing-virtual-joystick-whichever-input-is-active-most-recently-takes-precedence-apply-a-deadzone-5-so-minor-tilt-noise-does-not-affect-direction",
+      "title": "Add gyroscope/tilt steering as an alternative input method in the Space Snake game. Use the DeviceOrientation API (gamma axis) to map left/right phone tilt to snake steering direction. The tilt control should work alongside the existing virtual joystick — whichever input is active most recently takes precedence. Apply a deadzone (±5°) so minor tilt noise does not affect direction.",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-small-tilt-control-indicator-icon-or-toggle-button-in-the-in-game-hud-spacesnakescreen-that-shows-whether-gyroscope-tilt-steering-is-active-tapping-it-should-toggle-tilt-steering-on-or-off-and-the-toggle-state-should-be-persisted-to-localstorage-so-the-preference-is-remembered-across-sessions",
+      "title": "Add a small tilt-control indicator icon or toggle button in the in-game HUD (SpaceSnakeScreen) that shows whether gyroscope/tilt steering is active. Tapping it should toggle tilt steering on or off, and the toggle state should be persisted to localStorage so the preference is remembered across sessions.",
+      "reqIds": [
+        "REQ-3"
+      ],
+      "version": 1
+    }
+  ],
+  "new_feature_requests": [
+    {
+      "id": "AR-1",
+      "summary": "Force landscape orientation or add tilt/gyroscope controls so turning the phone improves gameplay on mobile",
+      "reqIds": [],
+      "status": "pending"
+    }
+  ],
+  "gameProjectType": "2d",
+  "projectName": "Space Snake",
+  "clarification_mode": "instant",
+  "clarification_rounds": 0
+}

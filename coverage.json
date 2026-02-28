@@ -1,0 +1,71 @@
+{
+  "kind": "coverage_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-28T07:54:12.494Z",
+  "sources": {
+    "buildRequest": true,
+    "implementationPlan": true
+  },
+  "requirements": {
+    "total": 3,
+    "implemented": 3,
+    "items": [
+      {
+        "id": "REQ-1",
+        "summary": "Enforce landscape orientation for the game screen: when a player on mobile holds their phone in portrait mode, display the existing RotateToLandscapeOverlay component (frontend/src/snake/RotateToLandscapeOverlay.tsx) to prompt them to rotate to landscape. Hide all game UI and pause the game loop while in portrait mode. Resume automatically when the device rotates to landscape.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/snake/SpaceSnakeScreen.tsx",
+          "frontend/src/snake/useSpaceSnakeGame.ts"
+        ],
+        "matchedFiles": [
+          "frontend/src/snake/SpaceSnakeScreen.tsx",
+          "frontend/src/snake/useSpaceSnakeGame.ts"
+        ]
+      },
+      {
+        "id": "REQ-2",
+        "summary": "Add gyroscope/tilt steering as an alternative input method in the Space Snake game. Use the DeviceOrientation API (gamma axis) to map left/right phone tilt to snake steering direction. The tilt control should work alongside the existing virtual joystick — whichever input is active most recently takes precedence. Apply a deadzone (±5°) so minor tilt noise does not affect direction.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/snake/useTiltControls.ts",
+          "frontend/src/snake/useSpaceSnakeGame.ts",
+          "frontend/src/snake/SpaceSnakeScreen.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/snake/useTiltControls.ts",
+          "frontend/src/snake/useSpaceSnakeGame.ts",
+          "frontend/src/snake/SpaceSnakeScreen.tsx"
+        ]
+      },
+      {
+        "id": "REQ-3",
+        "summary": "Add a small tilt-control indicator icon or toggle button in the in-game HUD (SpaceSnakeScreen) that shows whether gyroscope/tilt steering is active. Tapping it should toggle tilt steering on or off, and the toggle state should be persisted to localStorage so the preference is remembered across sessions.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/snake/SpaceSnakeTiltToggle.tsx",
+          "frontend/src/snake/SpaceSnakeScreen.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/snake/SpaceSnakeTiltToggle.tsx",
+          "frontend/src/snake/SpaceSnakeScreen.tsx"
+        ]
+      }
+    ]
+  },
+  "changedFiles": [
+    "build-request.json",
+    "feature_evidence.json",
+    "frontend-file-summaries.txt",
+    "frontend-implementation-plan.json",
+    "frontend/src/index.css",
+    "frontend/src/snake/SpaceSnakeScreen.tsx",
+    "frontend/src/snake/SpaceSnakeTiltToggle.tsx",
+    "frontend/src/snake/useSpaceSnakeGame.ts",
+    "frontend/src/snake/useTiltControls.ts",
+    "project_state.json",
+    "scratch/component-selection.json",
+    "spec.md",
+    "spec_vs_diff_report.json"
+  ]
+}

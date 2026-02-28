@@ -1,0 +1,27 @@
+{
+  "kind": "spec_vs_diff_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-28T07:54:12.490Z",
+  "summary": "The diff implements all three requirements (REQ-1, REQ-2, REQ-3) with good coverage. REQ-1 is addressed via useLandscapeOrientation hook usage in SpaceSnakeScreen and game loop pausing in useSpaceSnakeGame. REQ-2 is addressed via the new useTiltControls hook with deadzone, gamma axis mapping, iOS permission handling, and integration into useSpaceSnakeGame. REQ-3 is addressed via the new SpaceSnakeTiltToggle component with localStorage persistence. One minor gap exists: the tilt precedence logic in useSpaceSnakeGame always prefers tilt over joystick when tilt is active, rather than using 'most recently active' precedence as specified.",
+  "missing_requirements": [
+    {
+      "id": "REQ-2",
+      "requirement": "The tilt control should work alongside the existing virtual joystick — whichever input is active most recently takes precedence.",
+      "reason": "In useSpaceSnakeGame.ts, the logic always gives tilt priority when tiltEnabled and tiltAngle is non-null, rather than tracking which input was most recently used and giving that input precedence. There is no timestamp or recency tracking between tilt and joystick inputs.",
+      "evidence": [
+        "frontend/src/snake/useSpaceSnakeGame.ts"
+      ]
+    }
+  ],
+  "hallucinated_features": [],
+  "confidence": 0.88,
+  "changed_files": [
+    "frontend-file-summaries.txt",
+    "frontend/src/index.css",
+    "frontend/src/snake/SpaceSnakeScreen.tsx",
+    "frontend/src/snake/SpaceSnakeTiltToggle.tsx",
+    "frontend/src/snake/useSpaceSnakeGame.ts",
+    "frontend/src/snake/useTiltControls.ts",
+    "project_state.json"
+  ]
+}

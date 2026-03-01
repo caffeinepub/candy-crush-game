@@ -1,21 +1,23 @@
 import Time "mo:core/Time";
 import Map "mo:core/Map";
 import Nat "mo:core/Nat";
-import Array "mo:core/Array";
 import List "mo:core/List";
 import Runtime "mo:core/Runtime";
 import Text "mo:core/Text";
-import Iter "mo:core/Iter";
 import Principal "mo:core/Principal";
+
 
 import MixinAuthorization "authorization/MixinAuthorization";
 import AccessControl "authorization/access-control";
 
+// Apply migration for persistent state changes
+
 actor {
-  // Initialize the access control system
+  // Initialize the access control state
   let accessControlState = AccessControl.initState();
   include MixinAuthorization(accessControlState);
 
+  // Types
   public type Coordinate = {
     x : Nat;
     y : Nat;
@@ -40,19 +42,19 @@ actor {
     #Right;
   };
 
-  public type GameSnapshot = {
-    snakes : [Snake];
-    snacks : [Coordinate];
-    timer : Int;
-    timeRemaining : Int;
-    food : Coordinate;
-    worldSize : Coordinate;
-  };
-
   public type MultiplayerRoom = {
     roomId : Text;
     players : [(Text, Text)];
-    worldState : GameSnapshot;
+    worldState : {
+      snakes : [Snake];
+      snacks : [Coordinate];
+      timer : Int;
+      timeRemaining : Int;
+      food : Coordinate;
+      worldSize : Coordinate;
+      colorPoints : [ColorPoint];
+      coinDrops : [CoinDrop];
+    };
     currentTime : Int;
     lastStateUpdateTimestamp : {
       #Stopped;
@@ -73,23 +75,34 @@ actor {
     gameState : GameState;
   };
 
+  public type ColorPoint = {
+    position : Coordinate;
+    pointType : {
+      #red;
+      #green;
+      #blue;
+    };
+  };
+
+  public type CoinDrop = {
+    position : Coordinate;
+    value : Nat;
+    timeRemaining : Int;
+  };
+
   let rooms = Map.empty<Text, MultiplayerRoom>();
   let playerRooms = Map.empty<Text, Map.Map<Text, Player>>();
-  let roomCodes = List.empty<Text>();
-
-  // Store game state by Principal instead of username
   let gameState = Map.empty<Principal, GameState>();
   let userProfiles = Map.empty<Principal, UserProfile>();
+  var roomCodes = List.empty<Text>();
 
   var timeRemaining = 100;
   var activeRoomId : ?Text = null;
   var currentRoomNumber = 0;
 
-  // User Profile Management
+  // User profile management
   public query ({ caller }) func getCallerUserProfile() : async ?UserProfile {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only users can access profiles");
-    };
+    checkUser(caller);
     userProfiles.get(caller);
   };
 
@@ -101,53 +114,20 @@ actor {
   };
 
   public shared ({ caller }) func saveCallerUserProfile(profile : UserProfile) : async () {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only users can save profiles");
-    };
+    checkUser(caller);
     userProfiles.add(caller, profile);
-    // Also update the game state separately for backward compatibility
-    gameState.add(caller, profile.gameState);
   };
 
-  // Game State Management - tied to caller's Principal
-  public query ({ caller }) func getGameState() : async GameState {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only authenticated users can access game state");
-    };
-    switch (gameState.get(caller)) {
-      case (null) {
-        // Return default state for new users
-        {
-          coinBalance = 0;
-          unlockedVehicles = [];
-          upgradeLevels = 0;
-          dailyClaimHistory = [];
-        };
-      };
-      case (?state) { state };
-    };
-  };
-
-  public shared ({ caller }) func saveGameState(state : GameState) : async () {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only authenticated users can save game state");
-    };
-    gameState.add(caller, state);
-  };
-
-  // Room Management - requires user authentication
+  // Room management
   public shared ({ caller }) func createRoom(username : Text) : async Text {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only authenticated users can create rooms");
-    };
+    checkUser(caller);
 
     await clearInactiveRooms();
-
     activeRoomId := null;
     currentRoomNumber += 1 : Nat;
     let roomId = currentRoomNumber.toText();
 
-    let room : MultiplayerRoom = {
+    let newRoom = {
       roomId;
       players = [];
       worldState = {
@@ -157,28 +137,63 @@ actor {
         timeRemaining = 0;
         food = { x = 0; y = 0 };
         worldSize = { x = 0; y = 0 };
+        colorPoints = [];
+        coinDrops = [];
       };
       currentTime = 0;
       lastStateUpdateTimestamp = #Stopped;
       isActive = true;
     };
 
-    rooms.add(roomId, room);
+    rooms.add(roomId, newRoom);
+
     roomCodes.clear();
     for ((id, _room) in rooms.entries()) {
       if (_room.isActive) {
         roomCodes.add(id);
       };
     };
+    "MP-" # roomId;
+  };
 
-    let code = "MP-" # roomId;
-    code;
+  // Coin drop logic for snake deaths
+  public shared ({ caller }) func onSnakeDeath(_roomId : Text, body : [Coordinate], snakeSize : Nat) : async [CoinDrop] {
+    checkUser(caller);
+
+    let coinDropConfigs = List.empty<CoinDrop>();
+    let baseRadius = Nat.min(snakeSize / 4, 10);
+    let coinsToGenerate = Nat.min((body.size() * 15) / 100, 200);
+
+    var coinsLeft = coinsToGenerate;
+
+    for (position in body.values()) {
+      let isPoint = false; // Switch to random bool
+      var multiplier = 1;
+
+      var radius = baseRadius;
+      while (coinsLeft > 0 and radius > 0) {
+        if (isPoint) {
+          multiplier := (baseRadius - radius + 1) * 2;
+        };
+        if (coinsLeft > 0) {
+          let coinDrop = {
+            position;
+            value = multiplier;
+            timeRemaining = snakeSize * 2;
+          };
+          coinsLeft -= 1;
+          coinDropConfigs.add(coinDrop);
+        };
+        radius -= 1;
+      };
+    };
+
+    coinDropConfigs.toArray();
   };
 
   func clearInactiveRooms() : async () {
     let currentTime = Time.now();
     let inactivationTime = 15_000_000_000;
-
     for ((roomId, room) in rooms.entries()) {
       if (room.isActive) {
         let lastUpdate = switch (room.lastStateUpdateTimestamp) {
@@ -194,162 +209,52 @@ actor {
     };
   };
 
-  public shared ({ caller }) func toggleTimer(roomId : Text) : async Bool {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only authenticated users can toggle timer");
-    };
+  // Color point generation
+  public shared ({ caller }) func addRandomPointsToRoom(roomId : Text) : async () {
+    checkUser(caller);
 
     switch (rooms.get(roomId)) {
-      case (null) { Runtime.trap("Room does not exist!") };
+      case (null) { () };
       case (?room) {
-        switch (room.lastStateUpdateTimestamp) {
-          case (#Stopped) {
-            let updatedRoom = {
-              room with
-              lastStateUpdateTimestamp = #InProgress(Time.now());
-            };
-            rooms.add(roomId, updatedRoom);
-            true;
-          };
-          case (#InProgress(_)) {
-            let updatedRoom = {
-              room with
-              lastStateUpdateTimestamp = #Stopped;
-            };
-            rooms.add(roomId, updatedRoom);
-            false;
-          };
+        let points = generateRandomColorPoints();
+        let newWorldState = {
+          room.worldState with colorPoints = points;
         };
+        let newRoom = { room with worldState = newWorldState };
+        rooms.add(roomId, newRoom);
       };
     };
   };
 
-  // Public query - anyone can check if room exists (needed for joining)
-  public query ({ caller }) func checkRoomExists(roomId : Text) : async Bool {
-    switch (rooms.get(roomId)) {
-      case (null) { false };
-      case (?room) { room.isActive };
+  func generateRandomColorPoints() : [ColorPoint] {
+    // TODO: Switch to cryptographic randomness
+    let red = {
+      pointType = #red;
+      position = getRandomPosition();
     };
-  };
-
-  func gameLoop(roomId : Text, speed : Int) : async () {
-    let currentTime = Time.now();
-
-    switch (rooms.get(roomId)) {
-      case (null) { Runtime.trap("Room does not exist") };
-      case (?room) {
-        switch (room.lastStateUpdateTimestamp) {
-          case (#Stopped) { Runtime.trap("Game is not running!") };
-          case (#InProgress(lastUpdateTime)) {
-            if (currentTime - lastUpdateTime >= speed * 1000000) {
-              let updatedRoom = {
-                room with
-                worldState = {
-                  room.worldState with
-                  timeRemaining = room.worldState.timeRemaining - 1 : Int;
-                };
-                lastStateUpdateTimestamp = #InProgress(currentTime);
-              };
-              rooms.add(roomId, updatedRoom);
-            };
-          };
-        };
-      };
+    let green = {
+      pointType = #green;
+      position = getRandomPosition();
     };
-  };
-
-  // Public query - game state information
-  public query ({ caller }) func getTimeRemaining(_roomId : Text) : async Nat {
-    timeRemaining;
-  };
-
-  // Public query - anyone can view room state (needed for multiplayer)
-  public query ({ caller }) func getRoomState(roomId : Text) : async ?MultiplayerRoom {
-    switch (rooms.get(roomId)) {
-      case (null) { null };
-      case (?room) { ?room };
+    let blue = {
+      pointType = #blue;
+      position = getRandomPosition();
     };
+    [red, green, blue];
   };
 
-  // Public query - game state information
-  public query ({ caller }) func getState(_roomId : Text) : async GameSnapshot {
-    {
-      snakes = [];
-      snacks = [];
-      timer = 0;
-      timeRemaining = 0;
-      food = { x = 0; y = 0 };
-      worldSize = { x = 0; y = 0 };
-    };
+  func getRandomPosition() : Coordinate {
+    // TODO: Replace with actual randomness
+    let x = 0;
+    let y = 0;
+    { x; y };
   };
 
-  public shared ({ caller }) func joinRoom(roomId : Text, playerName : Text) : async {
-    #Success : GameSnapshot;
-    #AlreadyJoined;
-    #RoomNotFoundOrInactive;
-  } {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only authenticated users can join rooms");
-    };
-
-    switch (rooms.get(roomId)) {
-      case (null) { #RoomNotFoundOrInactive };
-      case (?room) {
-        if (not room.isActive) { return #RoomNotFoundOrInactive };
-
-        let existingPlayers = playerRooms.get(roomId);
-
-        switch (existingPlayers) {
-          case (null) {
-            let newPlayerMap = Map.empty<Text, Player>();
-            let newPlayer : Player = {
-              username = playerName;
-              score = 0;
-              snake = ?{
-                body = [{ x = 0; y = 0 }];
-                direction = #Up;
-                score = 0;
-              };
-            };
-            newPlayerMap.add(playerName, newPlayer);
-            playerRooms.add(roomId, newPlayerMap);
-            #Success(room.worldState);
-          };
-          case (?players) {
-            if (players.containsKey(playerName)) {
-              #AlreadyJoined;
-            } else {
-              let newPlayer : Player = {
-                username = playerName;
-                score = 0;
-                snake = ?{
-                  body = [{ x = 0; y = 0 }];
-                  direction = #Up;
-                  score = 0;
-                };
-              };
-              players.add(playerName, newPlayer);
-              #Success(room.worldState);
-            };
-          };
-        };
-      };
-    };
-  };
-
-  // Public query - anyone can view available rooms (needed for multiplayer lobby)
-  public query ({ caller }) func getAllRooms() : async [(Text, MultiplayerRoom)] {
-    rooms.toArray();
-  };
-
-  // Public query - anyone can view room participants (needed for multiplayer)
-  public query ({ caller }) func getRoomParticipants(roomId : Text) : async [Player] {
-    switch (playerRooms.get(roomId)) {
-      case (null) { [] };
-      case (?players) {
-        let playerValues = players.values().toArray();
-        playerValues;
-      };
+  // Access control check helper
+  func checkUser(caller : Principal) {
+    if (not AccessControl.hasPermission(accessControlState, caller, #user)) {
+      Runtime.trap("Unauthorized: Only users can perform this action");
     };
   };
 };
+

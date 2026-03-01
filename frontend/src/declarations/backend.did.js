@@ -13,37 +13,6 @@ export const UserRole = IDL.Variant({
   'user' : IDL.Null,
   'guest' : IDL.Null,
 });
-export const Coordinate = IDL.Record({ 'x' : IDL.Nat, 'y' : IDL.Nat });
-export const Direction = IDL.Variant({
-  'Up' : IDL.Null,
-  'Down' : IDL.Null,
-  'Left' : IDL.Null,
-  'Right' : IDL.Null,
-});
-export const Snake = IDL.Record({
-  'direction' : Direction,
-  'body' : IDL.Vec(Coordinate),
-  'score' : IDL.Nat,
-});
-export const GameSnapshot = IDL.Record({
-  'timer' : IDL.Int,
-  'food' : Coordinate,
-  'worldSize' : Coordinate,
-  'snacks' : IDL.Vec(Coordinate),
-  'snakes' : IDL.Vec(Snake),
-  'timeRemaining' : IDL.Int,
-});
-export const MultiplayerRoom = IDL.Record({
-  'lastStateUpdateTimestamp' : IDL.Variant({
-    'Stopped' : IDL.Null,
-    'InProgress' : IDL.Int,
-  }),
-  'isActive' : IDL.Bool,
-  'currentTime' : IDL.Int,
-  'players' : IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text)),
-  'roomId' : IDL.Text,
-  'worldState' : GameSnapshot,
-});
 export const GameState = IDL.Record({
   'coinBalance' : IDL.Nat,
   'dailyClaimHistory' : IDL.Vec(IDL.Text),
@@ -54,49 +23,32 @@ export const UserProfile = IDL.Record({
   'username' : IDL.Text,
   'gameState' : GameState,
 });
-export const Player = IDL.Record({
-  'username' : IDL.Text,
-  'score' : IDL.Nat,
-  'snake' : IDL.Opt(Snake),
+export const Coordinate = IDL.Record({ 'x' : IDL.Nat, 'y' : IDL.Nat });
+export const CoinDrop = IDL.Record({
+  'value' : IDL.Nat,
+  'timeRemaining' : IDL.Int,
+  'position' : Coordinate,
 });
 
 export const idlService = IDL.Service({
   '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
+  'addRandomPointsToRoom' : IDL.Func([IDL.Text], [], []),
   'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
-  'checkRoomExists' : IDL.Func([IDL.Text], [IDL.Bool], ['query']),
   'createRoom' : IDL.Func([IDL.Text], [IDL.Text], []),
-  'getAllRooms' : IDL.Func(
-      [],
-      [IDL.Vec(IDL.Tuple(IDL.Text, MultiplayerRoom))],
-      ['query'],
-    ),
   'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
   'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
-  'getGameState' : IDL.Func([], [GameState], ['query']),
-  'getRoomParticipants' : IDL.Func([IDL.Text], [IDL.Vec(Player)], ['query']),
-  'getRoomState' : IDL.Func([IDL.Text], [IDL.Opt(MultiplayerRoom)], ['query']),
-  'getState' : IDL.Func([IDL.Text], [GameSnapshot], ['query']),
-  'getTimeRemaining' : IDL.Func([IDL.Text], [IDL.Nat], ['query']),
   'getUserProfile' : IDL.Func(
       [IDL.Principal],
       [IDL.Opt(UserProfile)],
       ['query'],
     ),
   'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
-  'joinRoom' : IDL.Func(
-      [IDL.Text, IDL.Text],
-      [
-        IDL.Variant({
-          'AlreadyJoined' : IDL.Null,
-          'Success' : GameSnapshot,
-          'RoomNotFoundOrInactive' : IDL.Null,
-        }),
-      ],
+  'onSnakeDeath' : IDL.Func(
+      [IDL.Text, IDL.Vec(Coordinate), IDL.Nat],
+      [IDL.Vec(CoinDrop)],
       [],
     ),
   'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
-  'saveGameState' : IDL.Func([GameState], [], []),
-  'toggleTimer' : IDL.Func([IDL.Text], [IDL.Bool], []),
 });
 
 export const idlInitArgs = [];
@@ -106,37 +58,6 @@ export const idlFactory = ({ IDL }) => {
     'admin' : IDL.Null,
     'user' : IDL.Null,
     'guest' : IDL.Null,
-  });
-  const Coordinate = IDL.Record({ 'x' : IDL.Nat, 'y' : IDL.Nat });
-  const Direction = IDL.Variant({
-    'Up' : IDL.Null,
-    'Down' : IDL.Null,
-    'Left' : IDL.Null,
-    'Right' : IDL.Null,
-  });
-  const Snake = IDL.Record({
-    'direction' : Direction,
-    'body' : IDL.Vec(Coordinate),
-    'score' : IDL.Nat,
-  });
-  const GameSnapshot = IDL.Record({
-    'timer' : IDL.Int,
-    'food' : Coordinate,
-    'worldSize' : Coordinate,
-    'snacks' : IDL.Vec(Coordinate),
-    'snakes' : IDL.Vec(Snake),
-    'timeRemaining' : IDL.Int,
-  });
-  const MultiplayerRoom = IDL.Record({
-    'lastStateUpdateTimestamp' : IDL.Variant({
-      'Stopped' : IDL.Null,
-      'InProgress' : IDL.Int,
-    }),
-    'isActive' : IDL.Bool,
-    'currentTime' : IDL.Int,
-    'players' : IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text)),
-    'roomId' : IDL.Text,
-    'worldState' : GameSnapshot,
   });
   const GameState = IDL.Record({
     'coinBalance' : IDL.Nat,
@@ -148,53 +69,32 @@ export const idlFactory = ({ IDL }) => {
     'username' : IDL.Text,
     'gameState' : GameState,
   });
-  const Player = IDL.Record({
-    'username' : IDL.Text,
-    'score' : IDL.Nat,
-    'snake' : IDL.Opt(Snake),
+  const Coordinate = IDL.Record({ 'x' : IDL.Nat, 'y' : IDL.Nat });
+  const CoinDrop = IDL.Record({
+    'value' : IDL.Nat,
+    'timeRemaining' : IDL.Int,
+    'position' : Coordinate,
   });
   
   return IDL.Service({
     '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
+    'addRandomPointsToRoom' : IDL.Func([IDL.Text], [], []),
     'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
-    'checkRoomExists' : IDL.Func([IDL.Text], [IDL.Bool], ['query']),
     'createRoom' : IDL.Func([IDL.Text], [IDL.Text], []),
-    'getAllRooms' : IDL.Func(
-        [],
-        [IDL.Vec(IDL.Tuple(IDL.Text, MultiplayerRoom))],
-        ['query'],
-      ),
     'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
     'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
-    'getGameState' : IDL.Func([], [GameState], ['query']),
-    'getRoomParticipants' : IDL.Func([IDL.Text], [IDL.Vec(Player)], ['query']),
-    'getRoomState' : IDL.Func(
-        [IDL.Text],
-        [IDL.Opt(MultiplayerRoom)],
-        ['query'],
-      ),
-    'getState' : IDL.Func([IDL.Text], [GameSnapshot], ['query']),
-    'getTimeRemaining' : IDL.Func([IDL.Text], [IDL.Nat], ['query']),
     'getUserProfile' : IDL.Func(
         [IDL.Principal],
         [IDL.Opt(UserProfile)],
         ['query'],
       ),
     'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
-    'joinRoom' : IDL.Func(
-        [IDL.Text, IDL.Text],
-        [
-          IDL.Variant({
-            'AlreadyJoined' : IDL.Null,
-            'Success' : GameSnapshot,
-            'RoomNotFoundOrInactive' : IDL.Null,
-          }),
-        ],
+    'onSnakeDeath' : IDL.Func(
+        [IDL.Text, IDL.Vec(Coordinate), IDL.Nat],
+        [IDL.Vec(CoinDrop)],
         [],
       ),
     'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
-    'saveGameState' : IDL.Func([GameState], [], []),
-    'toggleTimer' : IDL.Func([IDL.Text], [IDL.Bool], []),
   });
 };
 

@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useInternetIdentity } from '@/hooks/useInternetIdentity';
 import { useActor } from '@/hooks/useActor';
-import { Cloud, CloudOff, LogIn, LogOut, Upload, Download } from 'lucide-react';
+import { LogIn, LogOut, Upload, Download } from 'lucide-react';
 import { toast } from 'sonner';
 import type { GameState } from '../progression/storage';
 import { saveGameState } from '../progression/storage';
@@ -22,8 +22,8 @@ function toBackendGameState(state: GameState): BackendGameState {
   return {
     coinBalance: BigInt(state.coinBalance),
     unlockedVehicles: state.unlockedVehicles,
-    upgradeLevels: BigInt(Object.keys(state.upgradeLevels).length), // Backend uses single number
-    dailyClaimHistory: state.dailyClaimHistory
+    upgradeLevels: BigInt(Object.keys(state.upgradeLevels).length),
+    dailyClaimHistory: state.dailyClaimHistory,
   };
 }
 
@@ -32,10 +32,10 @@ function fromBackendGameState(backendState: BackendGameState): GameState {
   return {
     coinBalance: Number(backendState.coinBalance),
     unlockedVehicles: backendState.unlockedVehicles,
-    upgradeLevels: {}, // Backend doesn't store detailed upgrade levels, use empty object
+    upgradeLevels: {},
     dailyClaimHistory: backendState.dailyClaimHistory,
-    unlockedPhotos: ['photo-1'], // Backend doesn't store photos, default to first photo unlocked
-    lastUpdated: Date.now()
+    unlockedPhotos: ['photo-1'],
+    lastUpdated: Date.now(),
   };
 }
 
@@ -51,7 +51,6 @@ export default function AuthAndSyncPanel({ gameState, onCloudSyncUpdate }: AuthA
   const handleLogin = async () => {
     try {
       await login();
-      // Check if user has profile
       if (actor) {
         const profile = await actor.getCallerUserProfile();
         if (!profile) {
@@ -71,11 +70,11 @@ export default function AuthAndSyncPanel({ gameState, onCloudSyncUpdate }: AuthA
 
   const handleSaveProfile = async () => {
     if (!actor || !username.trim()) return;
-    
+
     try {
       await actor.saveCallerUserProfile({
         username: username.trim(),
-        gameState: toBackendGameState(gameState)
+        gameState: toBackendGameState(gameState),
       });
       setShowProfileSetup(false);
       toast.success('Profile created!');
@@ -87,10 +86,16 @@ export default function AuthAndSyncPanel({ gameState, onCloudSyncUpdate }: AuthA
 
   const handleCloudSave = async () => {
     if (!actor) return;
-    
+
     setIsSyncing(true);
     try {
-      await actor.saveGameState(toBackendGameState(gameState));
+      // Save game state via user profile (backend stores gameState inside UserProfile)
+      const profile = await actor.getCallerUserProfile();
+      const profileUsername = profile?.username ?? 'Player';
+      await actor.saveCallerUserProfile({
+        username: profileUsername,
+        gameState: toBackendGameState(gameState),
+      });
       toast.success('Game saved to cloud');
     } catch (error) {
       console.error('Cloud save error:', error);
@@ -102,21 +107,24 @@ export default function AuthAndSyncPanel({ gameState, onCloudSyncUpdate }: AuthA
 
   const handleCloudLoad = async () => {
     if (!actor) return;
-    
+
     setIsSyncing(true);
     try {
-      const cloudState = await actor.getGameState();
-      
-      // Simple last-write-wins: compare timestamps if available, or let user choose
+      const profile = await actor.getCallerUserProfile();
+      if (!profile) {
+        toast.error('No cloud save found');
+        return;
+      }
+
       const useCloud = confirm('Load game state from cloud? This will replace your local progress.');
-      
+
       if (useCloud) {
-        const newState = fromBackendGameState(cloudState);
-        
-        // Merge with current upgrade levels and photos since backend doesn't store them in detail
+        const newState = fromBackendGameState(profile.gameState);
+
+        // Preserve local-only fields
         newState.upgradeLevels = gameState.upgradeLevels;
         newState.unlockedPhotos = gameState.unlockedPhotos;
-        
+
         onCloudSyncUpdate(newState);
         saveGameState(newState);
         toast.success('Game loaded from cloud');

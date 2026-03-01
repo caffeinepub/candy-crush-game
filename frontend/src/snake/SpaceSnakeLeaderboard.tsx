@@ -1,5 +1,10 @@
 import React from 'react';
-import { LeaderboardEntry } from './spaceSnakeLogic';
+
+export interface LeaderboardEntry {
+  name: string;
+  score: number;
+  isPlayer: boolean;
+}
 
 interface Props {
   entries: LeaderboardEntry[];
@@ -8,7 +13,7 @@ interface Props {
 const SpaceSnakeLeaderboard: React.FC<Props> = ({ entries }) => {
   return (
     <div
-      className="absolute top-2 left-2 z-20"
+      className="absolute top-2 right-2 z-20"
       style={{
         background: 'rgba(5,15,40,0.75)',
         border: '1.5px solid rgba(0,200,255,0.5)',
@@ -31,11 +36,11 @@ const SpaceSnakeLeaderboard: React.FC<Props> = ({ entries }) => {
         }}
       >
         <svg width="100%" height="100%">
-          <line x1="0" y1="20" x2="30" y2="20" stroke="#00cfff" strokeWidth="1" />
-          <line x1="30" y1="20" x2="30" y2="5" stroke="#00cfff" strokeWidth="1" />
-          <line x1="30" y1="5" x2="80" y2="5" stroke="#00cfff" strokeWidth="1" />
-          <line x1="0" y1="40" x2="20" y2="40" stroke="#ff00ff" strokeWidth="1" />
-          <line x1="20" y1="40" x2="20" y2="55" stroke="#ff00ff" strokeWidth="1" />
+          <line x1="100%" y1="20" x2="calc(100% - 30px)" y2="20" stroke="#00cfff" strokeWidth="1" />
+          <line x1="calc(100% - 30px)" y1="20" x2="calc(100% - 30px)" y2="5" stroke="#00cfff" strokeWidth="1" />
+          <line x1="calc(100% - 30px)" y1="5" x2="calc(100% - 80px)" y2="5" stroke="#00cfff" strokeWidth="1" />
+          <line x1="100%" y1="40" x2="calc(100% - 20px)" y2="40" stroke="#ff00ff" strokeWidth="1" />
+          <line x1="calc(100% - 20px)" y1="40" x2="calc(100% - 20px)" y2="55" stroke="#ff00ff" strokeWidth="1" />
         </svg>
       </div>
 

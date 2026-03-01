@@ -1,21 +1,18 @@
-import React, { useState, useCallback, useEffect } from 'react';
-import SpaceSnakeMainMenu from './SpaceSnakeMainMenu';
+import React, { useRef, useState, useCallback } from 'react';
+import { useSpaceSnakeGame } from './useSpaceSnakeGame';
 import SpaceSnakeCanvas from './SpaceSnakeCanvas';
-import SpaceSnakeJoystick from './SpaceSnakeJoystick';
+import SpaceSnakeMainMenu from './SpaceSnakeMainMenu';
+import SpaceSnakeGameOverOverlay from './SpaceSnakeGameOverOverlay';
 import SpaceSnakeLeaderboard from './SpaceSnakeLeaderboard';
 import SpaceSnakeMissionBanner from './SpaceSnakeMissionBanner';
 import SpaceSnakeScoreCounter from './SpaceSnakeScoreCounter';
 import SpaceSnakeMinimap from './SpaceSnakeMinimap';
-import SpaceSnakeGameOverOverlay from './SpaceSnakeGameOverOverlay';
+import SpaceSnakeJoystick from './SpaceSnakeJoystick';
 import SpaceSnakeTiltToggle from './SpaceSnakeTiltToggle';
 import RotateToLandscapeOverlay from './RotateToLandscapeOverlay';
 import { useLandscapeOrientation } from './useLandscapeOrientation';
 import { useTiltControls } from './useTiltControls';
-import { useSpaceSnakeGame } from './useSpaceSnakeGame';
-
-const TILT_STORAGE_KEY = 'spaceSnakeTiltEnabled';
-
-type Screen = 'menu' | 'game';
+import { useCanvasViewport } from './useCanvasViewport';
 
 /** Detect if the user is on a mobile/touch device */
 function isMobileDevice(): boolean {
@@ -27,137 +24,121 @@ function isMobileDevice(): boolean {
   );
 }
 
-const SpaceSnakeScreen: React.FC = () => {
-  const [screen, setScreen] = useState<Screen>('menu');
-  const [playerName, setPlayerName] = useState('Player');
+export default function SpaceSnakeScreen() {
+  const [nickname, setNickname] = useState('');
+  const joystickAngleRef = useRef<number | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [isMobile] = useState(() => isMobileDevice());
 
-  // Orientation detection
   const isLandscape = useLandscapeOrientation();
 
-  // Tilt enabled state — persisted to localStorage
-  const [tiltEnabled, setTiltEnabled] = useState<boolean>(() => {
-    try {
-      const stored = localStorage.getItem(TILT_STORAGE_KEY);
-      return stored === 'true';
-    } catch {
-      return false;
-    }
-  });
-
-  const handleTiltToggle = useCallback(() => {
-    setTiltEnabled(prev => {
-      const next = !prev;
-      try {
-        localStorage.setItem(TILT_STORAGE_KEY, String(next));
-      } catch {
-        // ignore
-      }
-      return next;
-    });
-  }, []);
-
-  // Tilt controls hook
+  // tiltEnabled state managed locally; useTiltControls requires the enabled flag
+  const [tiltEnabled, setTiltEnabled] = useState(false);
   const { tiltAngle, permissionGranted, requestPermission } = useTiltControls(
     tiltEnabled && isMobile
   );
 
-  // Request iOS permission when tilt is first enabled
-  useEffect(() => {
-    if (tiltEnabled && isMobile && !permissionGranted) {
-      requestPermission();
-    }
-  }, [tiltEnabled, isMobile, permissionGranted, requestPermission]);
+  const { width, height } = useCanvasViewport(containerRef);
 
-  const { gameState, setSteering, setMouseSteering, restart } = useSpaceSnakeGame(
-    playerName,
-    screen === 'game',
-    isLandscape,
-    tiltEnabled && isMobile,
-    tiltAngle
-  );
-
-  const handlePlay = useCallback((name: string) => {
-    setPlayerName(name);
-    setScreen('game');
+  const handleJoystickChange = useCallback((angle: number | null) => {
+    joystickAngleRef.current = angle;
   }, []);
 
-  const handlePlayAgain = useCallback(() => {
-    restart();
-  }, [restart]);
+  const { gameState, startGame, goToMenu } = useSpaceSnakeGame(nickname, joystickAngleRef, {
+    isLandscape,
+    tiltEnabled: tiltEnabled && isMobile,
+    // tiltAngle can be null; coerce to 0 when null so the options type (number) is satisfied
+    tiltAngle: tiltAngle ?? 0,
+  });
 
-  const handleMouseMove = useCallback(
-    (x: number, y: number) => {
-      if (!gameState) return;
-      const canvas = document.querySelector('canvas');
-      if (!canvas) return;
-      setMouseSteering(x, y, canvas.offsetWidth, canvas.offsetHeight);
-    },
-    [gameState, setMouseSteering]
-  );
+  const handleTiltToggle = useCallback(async () => {
+    if (!tiltEnabled) {
+      if (!permissionGranted) {
+        await requestPermission();
+      }
+      setTiltEnabled(true);
+    } else {
+      setTiltEnabled(false);
+    }
+  }, [tiltEnabled, permissionGranted, requestPermission]);
 
-  if (screen === 'menu') {
+  if (gameState.phase === 'menu') {
     return (
-      <div className="w-full h-full">
-        <SpaceSnakeMainMenu onPlay={handlePlay} />
-      </div>
+      <SpaceSnakeMainMenu
+        nickname={nickname}
+        onNicknameChange={setNickname}
+        onPlay={startGame}
+      />
     );
   }
 
   return (
-    <div className="relative w-full h-full overflow-hidden" style={{ background: '#0a1a3a' }}>
-      {/* Game Canvas */}
-      {gameState && (
-        <SpaceSnakeCanvas
-          gameState={gameState}
-          onMouseMove={handleMouseMove}
-        />
-      )}
+    <div
+      ref={containerRef}
+      className="relative overflow-hidden bg-black"
+      style={{ width: '100vw', height: '100vh' }}
+    >
+      {/* Game canvas */}
+      <SpaceSnakeCanvas
+        player={gameState.player}
+        bots={gameState.bots}
+        coins={gameState.coins}
+        points={gameState.points}
+        width={width}
+        height={height}
+      />
 
-      {/* HUD Overlays */}
-      {gameState && (
+      {/* HUD overlays */}
+      {gameState.phase === 'playing' && (
         <>
-          {/* Top-left leaderboard */}
+          {/* Leaderboard - top right */}
           <SpaceSnakeLeaderboard entries={gameState.leaderboard} />
 
-          {/* Top-center mission banner */}
-          <SpaceSnakeMissionBanner mission={gameState.mission} />
+          {/* Mission banner - top center */}
+          <SpaceSnakeMissionBanner
+            collected={gameState.coins_collected}
+            target={30}
+          />
 
-          {/* Bottom-center score */}
-          <SpaceSnakeScoreCounter score={gameState.player.score} />
+          {/* Score - bottom center */}
+          <SpaceSnakeScoreCounter score={gameState.score} />
 
-          {/* Bottom-left: minimap + joystick + tilt toggle */}
-          <div
-            className="absolute bottom-4 left-4 z-20 flex flex-col items-center gap-2"
-          >
-            <SpaceSnakeMinimap gameState={gameState} />
-            <div className="flex items-center gap-2">
-              <SpaceSnakeJoystick onAngleChange={setSteering} />
-              <SpaceSnakeTiltToggle
-                tiltEnabled={tiltEnabled}
-                onToggle={handleTiltToggle}
-                isMobile={isMobile}
-              />
-            </div>
+          {/* Minimap - top left (rendered inside SpaceSnakeMinimap component) */}
+          <SpaceSnakeMinimap
+            player={gameState.player}
+            bots={gameState.bots}
+            coins={gameState.coins}
+            points={gameState.points}
+          />
+
+          {/* Tilt toggle (mobile only) - raised from bottom */}
+          <div className="absolute bottom-14 left-28 z-20">
+            <SpaceSnakeTiltToggle
+              tiltEnabled={tiltEnabled}
+              onToggle={handleTiltToggle}
+              isMobile={isMobile}
+            />
           </div>
 
-          {/* Game Over Overlay */}
-          {gameState.gameOver && (
-            <SpaceSnakeGameOverOverlay
-              score={gameState.player.score}
-              rank={gameState.playerRank}
-              onPlayAgain={handlePlayAgain}
-            />
-          )}
+          {/* Joystick - raised from bottom edge */}
+          <div className="absolute bottom-10 left-6 z-20">
+            <SpaceSnakeJoystick onAngleChange={handleJoystickChange} />
+          </div>
         </>
       )}
 
-      {/* Portrait mode overlay — blocks gameplay and prompts rotation */}
-      {isMobile && (
-        <RotateToLandscapeOverlay visible={!isLandscape} />
+      {/* Game over overlay */}
+      {gameState.phase === 'gameover' && (
+        <SpaceSnakeGameOverOverlay
+          score={gameState.score}
+          deathReason={gameState.deathReason}
+          onPlayAgain={startGame}
+          onGoToMenu={goToMenu}
+        />
       )}
+
+      {/* Rotate to landscape overlay */}
+      <RotateToLandscapeOverlay visible={!isLandscape} />
     </div>
   );
-};
-
-export default SpaceSnakeScreen;
+}

@@ -1,21 +1,25 @@
 {
-  "name": "Hill Climb Racing",
-  "short_name": "Hill Climb",
-  "description": "Race uphill in this physics-based driving game! Play offline, upgrade your vehicles, and conquer challenging terrain.",
+  "name": "Snake Game 3D",
+  "short_name": "Snake Game 3D",
+  "description": "Slither, grow, and dominate the arena in Snake Game 3D!",
   "start_url": "/",
-  "display": "standalone",
-  "background_color": "#f5f5f5",
-  "theme_color": "#d97706",
+  "display": "fullscreen",
   "orientation": "landscape",
+  "background_color": "#0a0a1a",
+  "theme_color": "#0a0a1a",
   "icons": [
     {
-      "src": "/assets/generated/hillclimb-pwa-icon.dim_512x512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any"
+      "src": "/assets/generated/pwa-icon.dim_192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
     },
     {
-      "src": "/assets/generated/hillclimb-pwa-icon-maskable.dim_512x512.png",
+      "src": "/assets/generated/pwa-icon.dim_512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/assets/generated/pwa-icon-maskable.dim_512x512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"

@@ -1,11 +1,11 @@
 import React from 'react';
-import { MissionState } from './spaceSnakeLogic';
 
 interface Props {
-  mission: MissionState;
+  collected: number;
+  target: number;
 }
 
-const SpaceSnakeMissionBanner: React.FC<Props> = ({ mission }) => {
+const SpaceSnakeMissionBanner: React.FC<Props> = ({ collected, target }) => {
   return (
     <div
       className="absolute top-2 z-20"
@@ -61,27 +61,8 @@ const SpaceSnakeMissionBanner: React.FC<Props> = ({ mission }) => {
             fontSize: 15,
           }}
         >
-          {mission.current}/{mission.target}
+          {collected}/{target}
         </div>
-      </div>
-
-      {/* Timer badge */}
-      <div
-        style={{
-          width: 38,
-          height: 38,
-          borderRadius: '50%',
-          background: 'rgba(0,0,0,0.5)',
-          border: '2px solid rgba(200,200,200,0.5)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          flexShrink: 0,
-        }}
-      >
-        <span style={{ color: '#fff', fontSize: 11, fontWeight: 'bold' }}>
-          {mission.timeRemaining}s
-        </span>
       </div>
     </div>
   );

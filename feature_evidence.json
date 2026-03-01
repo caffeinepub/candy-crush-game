@@ -2,10 +2,9 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-enforce-landscape-orientation-for-the-game-screen-when-a-player-on-mobile-holds-their-phone-in-portrait-mode-display-the-existing-rotatetolandscapeoverlay-component-frontend-src-snake-rotatetolandscapeoverlay-tsx-to-prompt-them-to-rotate-to-landscape-hide-all-game-ui-and-pause-the-game-loop-while-in-portrait-mode-resume-automatically-when-the-device-rotates-to-landscape",
-      "featureTitle": "Enforce landscape orientation for the game screen: when a player on mobile holds their phone in portrait mode, display the existing RotateToLandscapeOverlay component (frontend/src/snake/RotateToLandscapeOverlay.tsx) to prompt them to rotate to landscape. Hide all game UI and pause the game loop while in portrait mode. Resume automatically when the device rotates to landscape.",
+      "featureId": "feature-fix-the-coin-collection-counter-in-spacesnakemissionbanner-and-usespacesnakegame-so-that-it-correctly-initializes-at-0-and-increments-by-the-actual-number-of-coins-collected-per-pickup-event-the-counter-must-not-go-negative-or-overflow-into-large-negative-numbers-as-seen-in-the-screenshot-showing-203223-30",
+      "featureTitle": "Fix the coin collection counter in SpaceSnakeMissionBanner and useSpaceSnakeGame so that it correctly initializes at 0 and increments by the actual number of coins collected per pickup event. The counter must not go negative or overflow into large negative numbers as seen in the screenshot showing '-203223/30'.",
       "files": [
-        "frontend/src/snake/SpaceSnakeScreen.tsx",
         "frontend/src/snake/useSpaceSnakeGame.ts"
       ],
       "components": [
@@ -22,12 +21,10 @@
       "confidence": "high"
     },
     {
-      "featureId": "feature-add-gyroscope-tilt-steering-as-an-alternative-input-method-in-the-space-snake-game-use-the-deviceorientation-api-gamma-axis-to-map-left-right-phone-tilt-to-snake-steering-direction-the-tilt-control-should-work-alongside-the-existing-virtual-joystick-whichever-input-is-active-most-recently-takes-precedence-apply-a-deadzone-5-so-minor-tilt-noise-does-not-affect-direction",
-      "featureTitle": "Add gyroscope/tilt steering as an alternative input method in the Space Snake game. Use the DeviceOrientation API (gamma axis) to map left/right phone tilt to snake steering direction. The tilt control should work alongside the existing virtual joystick — whichever input is active most recently takes precedence. Apply a deadzone (±5°) so minor tilt noise does not affect direction.",
+      "featureId": "feature-move-the-spacesnakeminimap-component-from-the-right-side-of-the-screen-to-the-top-left-corner-in-spacesnakescreen-tsx",
+      "featureTitle": "Move the SpaceSnakeMinimap component from the right side of the screen to the top-left corner in SpaceSnakeScreen.tsx.",
       "files": [
-        "frontend/src/snake/SpaceSnakeScreen.tsx",
-        "frontend/src/snake/useSpaceSnakeGame.ts",
-        "frontend/src/snake/useTiltControls.ts"
+        "frontend/src/snake/SpaceSnakeScreen.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -43,11 +40,10 @@
       "confidence": "high"
     },
     {
-      "featureId": "feature-add-a-small-tilt-control-indicator-icon-or-toggle-button-in-the-in-game-hud-spacesnakescreen-that-shows-whether-gyroscope-tilt-steering-is-active-tapping-it-should-toggle-tilt-steering-on-or-off-and-the-toggle-state-should-be-persisted-to-localstorage-so-the-preference-is-remembered-across-sessions",
-      "featureTitle": "Add a small tilt-control indicator icon or toggle button in the in-game HUD (SpaceSnakeScreen) that shows whether gyroscope/tilt steering is active. Tapping it should toggle tilt steering on or off, and the toggle state should be persisted to localStorage so the preference is remembered across sessions.",
+      "featureId": "feature-move-the-spacesnakejoystick-component-slightly-upward-in-spacesnakescreen-tsx-so-it-is-not-sitting-at-the-very-bottom-edge-of-the-screen",
+      "featureTitle": "Move the SpaceSnakeJoystick component slightly upward in SpaceSnakeScreen.tsx so it is not sitting at the very bottom edge of the screen.",
       "files": [
-        "frontend/src/snake/SpaceSnakeScreen.tsx",
-        "frontend/src/snake/SpaceSnakeTiltToggle.tsx"
+        "frontend/src/snake/SpaceSnakeScreen.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",

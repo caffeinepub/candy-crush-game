@@ -1,389 +1,364 @@
-// Core game logic for Space Snake
+// Core Space Snake game logic
 
-export const WORLD_SIZE = 3000;
-export const SEGMENT_RADIUS = 12;
-export const HEAD_RADIUS = 16;
-export const COIN_RADIUS = 14;
-export const COIN_COUNT = 20;
-export const BOT_COUNT = 8;
-export const PLAYER_SPEED = 2.8;
-export const BOT_SPEED = 2.2;
+export const WORLD_SIZE = 8000;
+export const SPAWN_RADIUS = 2000;
+export const PLAYER_SPEED = 3.2;
+export const BOT_SPEED = 2.6;
+export const SEGMENT_SPACING = 18;
+export const INITIAL_LENGTH = 20;
+export const COIN_RADIUS = 22;
+export const POINT_RADIUS = 18;
+export const HEAD_COLLISION_RADIUS = 28;
+export const SNAKE_HEAD_RADIUS = 24;
 
-export interface Vec2 {
+export interface Vector2 {
   x: number;
   y: number;
 }
 
-export interface SnakeSegment {
+export interface SpaceSnakeSegment {
   x: number;
   y: number;
 }
 
-export interface SnakeEntity {
+export interface SpaceSnakeCoin {
   id: string;
-  name: string;
-  color: string;
-  headColor: string;
-  segments: SnakeSegment[];
-  angle: number; // radians
+  x: number;
+  y: number;
+  value: number;
+}
+
+export interface SpaceSnakeColorPoint {
+  id: string;
+  x: number;
+  y: number;
+  color: 'red' | 'green' | 'blue' | 'yellow' | 'purple' | 'cyan' | 'orange' | 'pink';
+  value: number;
+}
+
+export interface SpaceSnake {
+  id: string;
+  segments: SpaceSnakeSegment[];
+  angle: number;
   speed: number;
-  score: number;
-  alive: boolean;
-  respawnTimer: number;
-  isPlayer: boolean;
-}
-
-export interface CoinEntity {
-  id: string;
-  x: number;
-  y: number;
-}
-
-export interface MissionState {
-  current: number;
-  target: number;
-  timeRemaining: number;
-  completed: boolean;
-}
-
-export interface LeaderboardEntry {
+  color: string;
   name: string;
-  score: number;
   isPlayer: boolean;
+  score: number;
+  boosting: boolean;
+  // For bots: target angle
+  targetAngle?: number;
+  wanderTimer?: number;
 }
 
-export interface GameState {
-  player: SnakeEntity;
-  bots: SnakeEntity[];
-  coins: CoinEntity[];
-  mission: MissionState;
-  leaderboard: LeaderboardEntry[];
-  cameraX: number;
-  cameraY: number;
-  gameOver: boolean;
-  playerRank: number;
+export interface KillDropResult {
+  coins: SpaceSnakeCoin[];
+  points: SpaceSnakeColorPoint[];
 }
 
-const BOT_COLORS = [
-  { body: '#e53e3e', head: '#fc8181' },
-  { body: '#dd6b20', head: '#f6ad55' },
-  { body: '#d69e2e', head: '#faf089' },
-  { body: '#805ad5', head: '#d6bcfa' },
-  { body: '#e91e8c', head: '#f48fb1' },
-  { body: '#ffffff', head: '#e2e8f0' },
-  { body: '#38a169', head: '#9ae6b4' },
-  { body: '#3182ce', head: '#90cdf4' },
+const COLORS = [
+  '#ff4444', '#44ff44', '#4444ff', '#ffff44', '#ff44ff',
+  '#44ffff', '#ff8844', '#8844ff', '#44ff88', '#ff4488',
 ];
 
-let coinIdCounter = 0;
+const POINT_COLORS: SpaceSnakeColorPoint['color'][] = [
+  'red', 'green', 'blue', 'yellow', 'purple', 'cyan', 'orange', 'pink'
+];
 
-export function createCoin(): CoinEntity {
-  return {
-    id: `coin_${coinIdCounter++}`,
-    x: Math.random() * (WORLD_SIZE - 200) + 100,
-    y: Math.random() * (WORLD_SIZE - 200) + 100,
-  };
+const POINT_COLOR_VALUES: Record<SpaceSnakeColorPoint['color'], number> = {
+  red: 3,
+  green: 2,
+  blue: 2,
+  yellow: 4,
+  purple: 5,
+  cyan: 3,
+  orange: 4,
+  pink: 3,
+};
+
+let idCounter = 0;
+function genId(prefix: string): string {
+  return `${prefix}_${++idCounter}_${Math.random().toString(36).slice(2, 7)}`;
 }
 
-export function createPlayerSnake(name: string): SnakeEntity {
-  const startX = WORLD_SIZE / 2;
-  const startY = WORLD_SIZE / 2;
-  const segments: SnakeSegment[] = [];
-  for (let i = 0; i < 20; i++) {
-    segments.push({ x: startX, y: startY + i * (SEGMENT_RADIUS * 1.8) });
+export function createPlayerSnake(x: number, y: number, name: string): SpaceSnake {
+  const segments: SpaceSnakeSegment[] = [];
+  for (let i = 0; i < INITIAL_LENGTH; i++) {
+    segments.push({ x: x - i * SEGMENT_SPACING, y });
   }
   return {
     id: 'player',
-    name,
-    color: '#4dd0c4',
-    headColor: '#a0f0e8',
     segments,
-    angle: -Math.PI / 2,
+    angle: 0,
     speed: PLAYER_SPEED,
-    score: 0,
-    alive: true,
-    respawnTimer: 0,
+    color: '#00e5ff',
+    name,
     isPlayer: true,
+    score: 0,
+    boosting: false,
   };
 }
 
-export function createBotSnake(index: number): SnakeEntity {
-  const colors = BOT_COLORS[index % BOT_COLORS.length];
-  const startX = Math.random() * (WORLD_SIZE - 400) + 200;
-  const startY = Math.random() * (WORLD_SIZE - 400) + 200;
+export function createBotSnake(index: number, playerX: number, playerY: number): SpaceSnake {
   const angle = Math.random() * Math.PI * 2;
-  const segments: SnakeSegment[] = [];
-  for (let i = 0; i < 15; i++) {
+  const dist = 400 + Math.random() * SPAWN_RADIUS;
+  const x = playerX + Math.cos(angle) * dist;
+  const y = playerY + Math.sin(angle) * dist;
+  const snakeAngle = Math.random() * Math.PI * 2;
+  const segments: SpaceSnakeSegment[] = [];
+  const length = INITIAL_LENGTH + Math.floor(Math.random() * 30);
+  for (let i = 0; i < length; i++) {
     segments.push({
-      x: startX + Math.cos(angle + Math.PI) * i * (SEGMENT_RADIUS * 1.8),
-      y: startY + Math.sin(angle + Math.PI) * i * (SEGMENT_RADIUS * 1.8),
+      x: x - Math.cos(snakeAngle) * i * SEGMENT_SPACING,
+      y: y - Math.sin(snakeAngle) * i * SEGMENT_SPACING,
     });
   }
   return {
-    id: `bot_${index}`,
-    name: `Bot ${index + 1}`,
-    color: colors.body,
-    headColor: colors.head,
+    id: `bot_${index}_${Date.now()}`,
     segments,
-    angle,
+    angle: snakeAngle,
     speed: BOT_SPEED + Math.random() * 0.5,
-    score: Math.floor(Math.random() * 30),
-    alive: true,
-    respawnTimer: 0,
+    color: COLORS[index % COLORS.length],
+    name: BOT_NAMES[index % BOT_NAMES.length],
     isPlayer: false,
+    score: Math.floor(Math.random() * 50),
+    boosting: false,
+    targetAngle: snakeAngle,
+    wanderTimer: Math.random() * 100,
   };
 }
 
-export function initGameState(playerName: string): GameState {
-  coinIdCounter = 0;
-  const player = createPlayerSnake(playerName);
-  const bots: SnakeEntity[] = [];
-  for (let i = 0; i < BOT_COUNT; i++) {
-    bots.push(createBotSnake(i));
-  }
-  const coins: CoinEntity[] = [];
-  for (let i = 0; i < COIN_COUNT; i++) {
-    coins.push(createCoin());
-  }
-  const mission: MissionState = {
-    current: 0,
-    target: 5,
-    timeRemaining: 30,
-    completed: false,
-  };
+const BOT_NAMES = [
+  'Cobra', 'Viper', 'Mamba', 'Python', 'Anaconda',
+  'Rattler', 'Boa', 'Adder', 'Asp', 'Krait',
+  'Taipan', 'Copperhead', 'Sidewinder', 'Kingsnake', 'Racer',
+];
+
+export function spawnCoin(playerX: number, playerY: number): SpaceSnakeCoin {
+  const angle = Math.random() * Math.PI * 2;
+  const dist = 100 + Math.random() * SPAWN_RADIUS;
   return {
-    player,
-    bots,
-    coins,
-    mission,
-    leaderboard: [],
-    cameraX: player.segments[0].x,
-    cameraY: player.segments[0].y,
-    gameOver: false,
-    playerRank: 1,
+    id: genId('coin'),
+    x: playerX + Math.cos(angle) * dist,
+    y: playerY + Math.sin(angle) * dist,
+    value: 1,
   };
 }
 
-function moveSnake(snake: SnakeEntity): void {
-  if (!snake.alive) return;
-  const head = snake.segments[0];
-  const newHead: SnakeSegment = {
-    x: head.x + Math.cos(snake.angle) * snake.speed,
-    y: head.y + Math.sin(snake.angle) * snake.speed,
+export function spawnColorPoint(playerX: number, playerY: number): SpaceSnakeColorPoint {
+  const angle = Math.random() * Math.PI * 2;
+  const dist = 100 + Math.random() * SPAWN_RADIUS;
+  const color = POINT_COLORS[Math.floor(Math.random() * POINT_COLORS.length)];
+  return {
+    id: genId('pt'),
+    x: playerX + Math.cos(angle) * dist,
+    y: playerY + Math.sin(angle) * dist,
+    color,
+    value: POINT_COLOR_VALUES[color],
   };
-  // Clamp to world bounds
-  newHead.x = Math.max(HEAD_RADIUS, Math.min(WORLD_SIZE - HEAD_RADIUS, newHead.x));
-  newHead.y = Math.max(HEAD_RADIUS, Math.min(WORLD_SIZE - HEAD_RADIUS, newHead.y));
-
-  snake.segments.unshift(newHead);
-  snake.segments.pop();
 }
 
-function growSnake(snake: SnakeEntity): void {
-  const tail = snake.segments[snake.segments.length - 1];
-  snake.segments.push({ ...tail });
+/**
+ * Generate kill drops (coins + colored points) scattered along a dead snake's body.
+ * Larger snakes drop more and higher-value items.
+ */
+export function generateKillDrops(deadSnake: SpaceSnake): KillDropResult {
+  const length = deadSnake.segments.length;
+  // Scale drops with snake size
+  // Small snake (20 segs) → ~5 coins, 3 points
+  // Large snake (100 segs) → ~40 coins, 20 points
+  const coinCount = Math.max(3, Math.floor(length * 0.4));
+  const pointCount = Math.max(2, Math.floor(length * 0.2));
+
+  const coins: SpaceSnakeCoin[] = [];
+  const points: SpaceSnakeColorPoint[] = [];
+
+  // Coin value scales with snake size
+  const coinValue = Math.max(1, Math.floor(length / 20));
+
+  // Distribute coins along body segments with scatter
+  for (let i = 0; i < coinCount; i++) {
+    const segIdx = Math.floor(Math.random() * deadSnake.segments.length);
+    const seg = deadSnake.segments[segIdx];
+    const scatter = 40 + Math.random() * 60;
+    const scatterAngle = Math.random() * Math.PI * 2;
+    coins.push({
+      id: genId('drop_coin'),
+      x: seg.x + Math.cos(scatterAngle) * scatter,
+      y: seg.y + Math.sin(scatterAngle) * scatter,
+      value: coinValue,
+    });
+  }
+
+  // Distribute colored points along body segments with scatter
+  for (let i = 0; i < pointCount; i++) {
+    const segIdx = Math.floor(Math.random() * deadSnake.segments.length);
+    const seg = deadSnake.segments[segIdx];
+    const scatter = 30 + Math.random() * 50;
+    const scatterAngle = Math.random() * Math.PI * 2;
+    const color = POINT_COLORS[Math.floor(Math.random() * POINT_COLORS.length)];
+    // Point value also scales with snake size
+    const baseValue = POINT_COLOR_VALUES[color];
+    const scaledValue = Math.max(baseValue, Math.floor(baseValue * length / 30));
+    points.push({
+      id: genId('drop_pt'),
+      x: seg.x + Math.cos(scatterAngle) * scatter,
+      y: seg.y + Math.sin(scatterAngle) * scatter,
+      color,
+      value: scaledValue,
+    });
+  }
+
+  return { coins, points };
 }
 
-function dist(ax: number, ay: number, bx: number, by: number): number {
+export function dist2(ax: number, ay: number, bx: number, by: number): number {
   const dx = ax - bx;
   const dy = ay - by;
-  return Math.sqrt(dx * dx + dy * dy);
+  return dx * dx + dy * dy;
 }
 
-function updateBotAI(bot: SnakeEntity, coins: CoinEntity[], allSnakes: SnakeEntity[]): void {
-  if (!bot.alive) return;
-  const head = bot.segments[0];
-
-  // Find nearest coin
-  let nearestCoin: CoinEntity | null = null;
-  let nearestDist = Infinity;
-  for (const coin of coins) {
-    const d = dist(head.x, head.y, coin.x, coin.y);
-    if (d < nearestDist) {
-      nearestDist = d;
-      nearestCoin = coin;
-    }
-  }
-
-  // Avoid walls
-  const margin = 150;
-  let targetAngle = bot.angle;
-
-  if (head.x < margin) targetAngle = 0;
-  else if (head.x > WORLD_SIZE - margin) targetAngle = Math.PI;
-  else if (head.y < margin) targetAngle = Math.PI / 2;
-  else if (head.y > WORLD_SIZE - margin) targetAngle = -Math.PI / 2;
-  else if (nearestCoin) {
-    targetAngle = Math.atan2(nearestCoin.y - head.y, nearestCoin.x - head.x);
-    // Add some randomness
-    if (Math.random() < 0.02) {
-      targetAngle += (Math.random() - 0.5) * 1.5;
-    }
-  } else {
-    if (Math.random() < 0.02) {
-      targetAngle += (Math.random() - 0.5) * 1.0;
-    }
-  }
-
-  // Smooth angle change
-  let angleDiff = targetAngle - bot.angle;
-  while (angleDiff > Math.PI) angleDiff -= Math.PI * 2;
-  while (angleDiff < -Math.PI) angleDiff += Math.PI * 2;
-  const maxTurn = 0.06;
-  bot.angle += Math.max(-maxTurn, Math.min(maxTurn, angleDiff));
+export function dist(ax: number, ay: number, bx: number, by: number): number {
+  return Math.sqrt(dist2(ax, ay, bx, by));
 }
 
-function checkCoinCollision(snake: SnakeEntity, coins: CoinEntity[]): number {
-  if (!snake.alive) return -1;
-  const head = snake.segments[0];
-  for (let i = 0; i < coins.length; i++) {
-    const coin = coins[i];
-    if (dist(head.x, head.y, coin.x, coin.y) < HEAD_RADIUS + COIN_RADIUS) {
-      return i;
-    }
-  }
-  return -1;
+/**
+ * Check if two snake heads are colliding head-on.
+ * Returns true if the distance between the two heads is within the collision threshold.
+ */
+export function checkHeadOnCollision(snakeA: SpaceSnake, snakeB: SpaceSnake): boolean {
+  if (snakeA.segments.length === 0 || snakeB.segments.length === 0) return false;
+  const headA = snakeA.segments[0];
+  const headB = snakeB.segments[0];
+  const threshold = SNAKE_HEAD_RADIUS * 2;
+  return dist(headA.x, headA.y, headB.x, headB.y) < threshold;
 }
 
-function checkSnakeCollision(snake: SnakeEntity, allSnakes: SnakeEntity[]): boolean {
-  if (!snake.alive) return false;
-  const head = snake.segments[0];
-  for (const other of allSnakes) {
-    if (!other.alive) continue;
-    const startIdx = other.id === snake.id ? 10 : 0;
-    for (let i = startIdx; i < other.segments.length; i++) {
-      const seg = other.segments[i];
-      if (dist(head.x, head.y, seg.x, seg.y) < HEAD_RADIUS + SEGMENT_RADIUS * 0.8) {
-        return true;
-      }
+/**
+ * Check if snakeA's head collides with any body segment of snakeB (excluding snakeB's head).
+ */
+export function checkHeadBodyCollision(snakeA: SpaceSnake, snakeB: SpaceSnake): boolean {
+  if (snakeA.segments.length === 0 || snakeB.segments.length < 2) return false;
+  const head = snakeA.segments[0];
+  // Start from index 1 to skip the head (head-on is handled separately)
+  for (let i = 3; i < snakeB.segments.length; i++) {
+    const seg = snakeB.segments[i];
+    if (dist(head.x, head.y, seg.x, seg.y) < HEAD_COLLISION_RADIUS) {
+      return true;
     }
   }
   return false;
 }
 
-export function computeLeaderboard(player: SnakeEntity, bots: SnakeEntity[]): LeaderboardEntry[] {
-  const entries: LeaderboardEntry[] = [
-    { name: player.name, score: player.score, isPlayer: true },
-    ...bots.map(b => ({ name: b.name, score: b.score, isPlayer: false })),
-  ];
-  entries.sort((a, b) => b.score - a.score);
-  return entries.slice(0, 5);
+export function moveSnake(snake: SpaceSnake): SpaceSnake {
+  const head = snake.segments[0];
+  const speed = snake.boosting ? snake.speed * 1.6 : snake.speed;
+  const newHead: SpaceSnakeSegment = {
+    x: head.x + Math.cos(snake.angle) * speed,
+    y: head.y + Math.sin(snake.angle) * speed,
+  };
+  const newSegments = [newHead, ...snake.segments.slice(0, -1)];
+  return { ...snake, segments: newSegments };
 }
 
-export function updateGame(
-  state: GameState,
-  steeringAngle: number | null,
-  deltaMs: number
-): GameState {
-  if (state.gameOver) return state;
-
-  const { player, bots, coins, mission } = state;
-
-  // Update player angle from steering
-  if (steeringAngle !== null && player.alive) {
-    let angleDiff = steeringAngle - player.angle;
-    while (angleDiff > Math.PI) angleDiff -= Math.PI * 2;
-    while (angleDiff < -Math.PI) angleDiff += Math.PI * 2;
-    const maxTurn = 0.08;
-    player.angle += Math.max(-maxTurn, Math.min(maxTurn, angleDiff));
+export function growSnake(snake: SpaceSnake, amount: number = 5): SpaceSnake {
+  const tail = snake.segments[snake.segments.length - 1];
+  const extra: SpaceSnakeSegment[] = [];
+  for (let i = 0; i < amount; i++) {
+    extra.push({ ...tail });
   }
+  return { ...snake, segments: [...snake.segments, ...extra] };
+}
 
-  // Move player
-  moveSnake(player);
+export function updateBotAI(
+  bot: SpaceSnake,
+  playerHead: SpaceSnakeSegment,
+  coins: SpaceSnakeCoin[],
+  points: SpaceSnakeColorPoint[],
+  allSnakes: SpaceSnake[]
+): SpaceSnake {
+  let { targetAngle = bot.angle, wanderTimer = 0 } = bot;
+  const head = bot.segments[0];
 
-  // Update bots
-  const allSnakes = [player, ...bots];
-  for (const bot of bots) {
-    if (!bot.alive) {
-      bot.respawnTimer -= deltaMs;
-      if (bot.respawnTimer <= 0) {
-        // Respawn
-        const newBot = createBotSnake(parseInt(bot.id.replace('bot_', '')));
-        bot.segments = newBot.segments;
-        bot.angle = newBot.angle;
-        bot.alive = true;
-        bot.respawnTimer = 0;
+  // Wander back toward player if too far
+  const distToPlayer = dist(head.x, head.y, playerHead.x, playerHead.y);
+  if (distToPlayer > SPAWN_RADIUS * 1.5) {
+    const angleToPlayer = Math.atan2(playerHead.y - head.y, playerHead.x - head.x);
+    targetAngle = angleToPlayer;
+    wanderTimer = 0;
+  } else {
+    wanderTimer -= 1;
+    if (wanderTimer <= 0) {
+      // Find nearest coin or point
+      let bestDist = Infinity;
+      let bestAngle = targetAngle;
+
+      for (const coin of coins) {
+        const d = dist(head.x, head.y, coin.x, coin.y);
+        if (d < bestDist) {
+          bestDist = d;
+          bestAngle = Math.atan2(coin.y - head.y, coin.x - head.x);
+        }
       }
-      continue;
-    }
-    updateBotAI(bot, coins, allSnakes);
-    moveSnake(bot);
-  }
+      for (const pt of points) {
+        const d = dist(head.x, head.y, pt.x, pt.y);
+        if (d < bestDist * 0.8) {
+          bestDist = d;
+          bestAngle = Math.atan2(pt.y - head.y, pt.x - head.x);
+        }
+      }
 
-  // Check coin collisions for player
-  let missionCurrent = mission.current;
-  const coinIdx = checkCoinCollision(player, coins);
-  if (coinIdx >= 0) {
-    coins[coinIdx] = createCoin();
-    growSnake(player);
-    player.score += 1;
-    missionCurrent += 1;
-  }
-
-  // Check coin collisions for bots
-  for (const bot of bots) {
-    const bCoinIdx = checkCoinCollision(bot, coins);
-    if (bCoinIdx >= 0) {
-      coins[bCoinIdx] = createCoin();
-      growSnake(bot);
-      bot.score += 1;
+      if (bestDist < SPAWN_RADIUS) {
+        targetAngle = bestAngle;
+      } else {
+        targetAngle += (Math.random() - 0.5) * 0.8;
+      }
+      wanderTimer = 30 + Math.random() * 60;
     }
   }
 
-  // Check snake collisions for bots
-  for (const bot of bots) {
-    if (!bot.alive) continue;
-    const otherSnakes = allSnakes.filter(s => s.id !== bot.id);
-    if (checkSnakeCollision(bot, otherSnakes)) {
-      bot.alive = false;
-      bot.respawnTimer = 3000;
+  // Smooth turn
+  let angleDiff = targetAngle - bot.angle;
+  while (angleDiff > Math.PI) angleDiff -= Math.PI * 2;
+  while (angleDiff < -Math.PI) angleDiff += Math.PI * 2;
+  const turnRate = 0.06;
+  const newAngle = bot.angle + Math.sign(angleDiff) * Math.min(Math.abs(angleDiff), turnRate);
+
+  return { ...bot, angle: newAngle, targetAngle, wanderTimer };
+}
+
+export function checkCoinCollision(
+  snake: SpaceSnake,
+  coins: SpaceSnakeCoin[]
+): { collected: SpaceSnakeCoin[]; remaining: SpaceSnakeCoin[] } {
+  if (snake.segments.length === 0) return { collected: [], remaining: coins };
+  const head = snake.segments[0];
+  const collected: SpaceSnakeCoin[] = [];
+  const remaining: SpaceSnakeCoin[] = [];
+  for (const coin of coins) {
+    if (dist(head.x, head.y, coin.x, coin.y) < COIN_RADIUS) {
+      collected.push(coin);
+    } else {
+      remaining.push(coin);
     }
   }
+  return { collected, remaining };
+}
 
-  // Check player collision — explicitly typed as boolean to avoid literal type narrowing
-  let gameOver: boolean = state.gameOver;
-  if (player.alive) {
-    const otherSnakes = bots.filter(b => b.alive);
-    if (checkSnakeCollision(player, otherSnakes)) {
-      player.alive = false;
-      gameOver = true;
+export function checkPointCollision(
+  snake: SpaceSnake,
+  points: SpaceSnakeColorPoint[]
+): { collected: SpaceSnakeColorPoint[]; remaining: SpaceSnakeColorPoint[] } {
+  if (snake.segments.length === 0) return { collected: [], remaining: points };
+  const head = snake.segments[0];
+  const collected: SpaceSnakeColorPoint[] = [];
+  const remaining: SpaceSnakeColorPoint[] = [];
+  for (const pt of points) {
+    if (dist(head.x, head.y, pt.x, pt.y) < POINT_RADIUS) {
+      collected.push(pt);
+    } else {
+      remaining.push(pt);
     }
   }
-
-  // Update mission
-  let missionTarget = mission.target;
-  let missionTimeRemaining = mission.timeRemaining;
-
-  // Check mission completion
-  if (missionCurrent >= missionTarget) {
-    missionCurrent = 0;
-    missionTarget = Math.floor(Math.random() * 6) + 5; // 5-10
-    missionTimeRemaining = 30;
-  }
-
-  // Update camera
-  const cameraX = player.alive ? player.segments[0].x : state.cameraX;
-  const cameraY = player.alive ? player.segments[0].y : state.cameraY;
-
-  // Compute leaderboard
-  const leaderboard = computeLeaderboard(player, bots);
-  const playerRank = leaderboard.findIndex(e => e.isPlayer) + 1;
-
-  return {
-    ...state,
-    player,
-    bots,
-    coins,
-    mission: {
-      current: missionCurrent,
-      target: missionTarget,
-      timeRemaining: missionTimeRemaining,
-      completed: mission.completed,
-    },
-    leaderboard,
-    cameraX,
-    cameraY,
-    gameOver,
-    playerRank: playerRank || leaderboard.length + 1,
-  };
+  return { collected, remaining };
 }

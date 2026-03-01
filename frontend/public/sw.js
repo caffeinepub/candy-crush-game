@@ -1,48 +1,52 @@
-const CACHE_NAME = 'hillclimb-v2';
-const urlsToCache = [
+const CACHE_NAME = 'snake-game-3d-cache-v1';
+const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
-  '/assets/generated/hillclimb-logo.dim_1024x512.png',
-  '/assets/generated/hillclimb-pwa-icon.dim_512x512.png',
-  '/assets/generated/hillclimb-pwa-icon-maskable.dim_512x512.png',
-  '/assets/generated/stage-canyon-bg.dim_1920x1080.png',
-  '/assets/generated/stage-moon-bg.dim_1920x1080.png',
-  '/assets/generated/vehicles-sprites.dim_1024x512.png',
-  '/assets/generated/icon-fuel.dim_128x128.png',
-  '/assets/generated/icon-coin.dim_128x128.png',
-  '/assets/generated/hud-panel.dim_800x200.png',
-  '/assets/generated/gallery-photo-01-free.dim_1024x1024.png',
-  '/assets/generated/gallery-photo-02-locked.dim_1024x1024.png',
-  '/assets/generated/gallery-photo-03-locked.dim_1024x1024.png',
-  '/assets/generated/gallery-photo-04-locked.dim_1024x1024.png'
+  '/manifest.webmanifest',
+  '/assets/generated/pwa-icon.dim_192x192.png',
+  '/assets/generated/pwa-icon.dim_512x512.png',
+  '/assets/generated/pwa-icon-maskable.dim_512x512.png',
+  '/assets/generated/space-bg.dim_1920x1080.png',
+  '/assets/generated/game-logo-wz.dim_1024x512.png',
+  '/assets/generated/coin-icon-wz.dim_128x128.png',
+  '/assets/generated/food-pickups-sprites-wz-fruit.dim_1024x1024.png',
+  '/assets/generated/minimap-frame-wz.dim_320x320.png',
+  '/assets/generated/arena-bg-tile-wz.dim_512x512.png',
+  '/assets/generated/btn-primary-green-wz.dim_900x260.png',
+  '/assets/generated/booster-btn-bg-wz.dim_256x256.png',
+  '/assets/generated/booster-icons-wz.dim_512x512.png',
+  '/assets/generated/hud-panel-dark-wz.dim_800x200.png',
 ];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(urlsToCache);
-    })
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS_TO_CACHE))
   );
+  self.skipWaiting();
+});
+
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    caches.keys().then((cacheNames) =>
+      Promise.all(
+        cacheNames
+          .filter((name) => name !== CACHE_NAME)
+          .map((name) => caches.delete(name))
+      )
+    )
+  );
+  self.clients.claim();
 });
 
 self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.match(event.request).then((response) => {
-      return response || fetch(event.request);
-    })
-  );
-});
-
-self.addEventListener('activate', (event) => {
-  event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cacheName) => {
-          if (cacheName !== CACHE_NAME) {
-            return caches.delete(cacheName);
-          }
-        })
-      );
+      if (response) return response;
+      return fetch(event.request).catch(() => {
+        if (event.request.destination === 'document') {
+          return caches.match('/index.html');
+        }
+      });
     })
   );
 });

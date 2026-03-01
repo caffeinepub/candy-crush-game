@@ -1,175 +1,152 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
-interface Props {
-  onPlay: (nickname: string) => void;
+interface SpaceSnakeMainMenuProps {
+  nickname: string;
+  onNicknameChange: (name: string) => void;
+  onPlay: () => void;
 }
 
-const SpaceSnakeMainMenu: React.FC<Props> = ({ onPlay }) => {
-  const [nickname, setNickname] = useState('Player');
+export default function SpaceSnakeMainMenu({
+  nickname,
+  onNicknameChange,
+  onPlay,
+}: SpaceSnakeMainMenuProps) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const animRef = useRef<number | null>(null);
 
-  const handlePlay = () => {
-    const name = nickname.trim() || 'Player';
-    onPlay(name);
+  // Animated starfield background
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const stars = Array.from({ length: 200 }, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      r: 0.5 + Math.random() * 1.5,
+      speed: 0.1 + Math.random() * 0.3,
+      brightness: 0.3 + Math.random() * 0.7,
+    }));
+
+    const animate = () => {
+      ctx.fillStyle = '#050510';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      for (const star of stars) {
+        star.y += star.speed;
+        if (star.y > canvas.height) {
+          star.y = 0;
+          star.x = Math.random() * canvas.width;
+        }
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255,255,255,${star.brightness})`;
+        ctx.fill();
+      }
+      animRef.current = requestAnimationFrame(animate);
+    };
+    animate();
+
+    const handleResize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      if (animRef.current) cancelAnimationFrame(animRef.current);
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && nickname.trim()) onPlay();
   };
 
   return (
-    <div
-      className="relative w-full h-full flex flex-col items-center justify-center"
-      style={{
-        background: '#0a1a3a',
-        overflow: 'hidden',
-      }}
-    >
-      {/* Starfield */}
-      <div className="absolute inset-0" style={{ pointerEvents: 'none' }}>
-        {Array.from({ length: 200 }).map((_, i) => {
-          const x = (Math.sin(i * 7.3) * 0.5 + 0.5) * 100;
-          const y = (Math.sin(i * 13.7) * 0.5 + 0.5) * 100;
-          const size = (Math.sin(i * 3.1) * 0.5 + 0.5) * 3 + 1;
-          const isCyan = i % 5 === 0;
-          return (
-            <div
-              key={i}
-              style={{
-                position: 'absolute',
-                left: `${x}%`,
-                top: `${y}%`,
-                width: size,
-                height: size * 0.6,
-                borderRadius: '50%',
-                background: isCyan ? 'rgba(100,220,255,0.85)' : 'rgba(255,255,255,0.9)',
-              }}
-            />
-          );
-        })}
-      </div>
+    <div className="relative w-screen h-screen overflow-hidden flex items-center justify-center">
+      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />
 
-      {/* Content */}
-      <div className="relative z-10 flex flex-col items-center gap-6">
+      <div className="relative z-10 flex flex-col items-center gap-8 px-6">
         {/* Title */}
-        <div style={{ textAlign: 'center' }}>
-          <div
+        <div className="text-center">
+          <h1
+            className="text-5xl md:text-7xl font-black tracking-widest uppercase"
             style={{
-              fontSize: 52,
-              fontWeight: 900,
-              color: '#4dd0c4',
-              textShadow: '0 0 30px rgba(77,208,196,0.8), 0 0 60px rgba(77,208,196,0.4)',
-              letterSpacing: 4,
-              lineHeight: 1,
+              color: '#00e5ff',
+              textShadow: '0 0 30px #00e5ff, 0 0 60px #00e5ff88',
+              letterSpacing: '0.12em',
             }}
           >
-            SPACE
-          </div>
+            Snake Game
+          </h1>
           <div
+            className="text-2xl md:text-3xl font-bold tracking-[0.3em] uppercase mt-1"
             style={{
-              fontSize: 52,
-              fontWeight: 900,
-              color: '#fff',
-              textShadow: '0 0 20px rgba(255,255,255,0.5)',
-              letterSpacing: 4,
-              lineHeight: 1,
+              color: '#7c3aed',
+              textShadow: '0 0 20px #7c3aed',
             }}
           >
-            SNAKE
+            3D
           </div>
-          <div
-            style={{
-              color: '#64748b',
-              fontSize: 13,
-              marginTop: 8,
-              letterSpacing: 2,
-            }}
-          >
-            SLITHER THROUGH THE COSMOS
-          </div>
+          <p className="mt-3 text-white/50 text-sm tracking-widest uppercase">
+            Slither · Grow · Dominate
+          </p>
         </div>
 
-        {/* Snake preview */}
-        <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
-          {Array.from({ length: 12 }).map((_, i) => (
-            <div
-              key={i}
-              style={{
-                width: i === 0 ? 22 : 16,
-                height: i === 0 ? 22 : 16,
-                borderRadius: '50%',
-                background: i === 0 ? '#a0f0e8' : '#4dd0c4',
-                border: `2px solid ${i === 0 ? '#4dd0c4' : '#2a9d8f'}`,
-                boxShadow: i === 0 ? '0 0 12px rgba(77,208,196,0.8)' : 'none',
-              }}
-            />
-          ))}
-        </div>
-
-        {/* Nickname input */}
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
-          <label
-            style={{ color: '#94a3b8', fontSize: 12, letterSpacing: 2, textTransform: 'uppercase' }}
-          >
-            Your Name
-          </label>
-          <input
-            type="text"
+        {/* Input + Play */}
+        <div className="flex flex-col items-center gap-4 w-full max-w-xs">
+          <Input
             value={nickname}
-            onChange={e => setNickname(e.target.value)}
+            onChange={(e) => onNicknameChange(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="Enter your name..."
             maxLength={20}
-            onKeyDown={e => e.key === 'Enter' && handlePlay()}
-            style={{
-              background: 'rgba(255,255,255,0.08)',
-              border: '1.5px solid rgba(0,200,255,0.4)',
-              borderRadius: 8,
-              padding: '10px 20px',
-              color: '#fff',
-              fontSize: 16,
-              textAlign: 'center',
-              outline: 'none',
-              width: 220,
-            }}
+            className="text-center text-white bg-white/10 border-white/20 placeholder:text-white/30 focus:border-cyan-400 focus:ring-cyan-400/30 text-base py-3"
           />
+          <Button
+            onClick={onPlay}
+            disabled={!nickname.trim()}
+            className="w-full py-4 text-lg font-black tracking-widest uppercase"
+            style={{
+              background: nickname.trim()
+                ? 'linear-gradient(135deg, #00e5ff, #7c3aed)'
+                : undefined,
+              boxShadow: nickname.trim() ? '0 0 30px #00e5ff44' : undefined,
+            }}
+          >
+            PLAY
+          </Button>
         </div>
-
-        {/* Play button */}
-        <button
-          onClick={handlePlay}
-          style={{
-            background: 'linear-gradient(135deg, #4dd0c4, #0ea5e9)',
-            color: '#fff',
-            border: 'none',
-            borderRadius: 10,
-            padding: '14px 56px',
-            fontSize: 20,
-            fontWeight: 'bold',
-            cursor: 'pointer',
-            letterSpacing: 3,
-            boxShadow: '0 0 24px rgba(77,208,196,0.6)',
-            transition: 'transform 0.1s, box-shadow 0.1s',
-          }}
-          onMouseEnter={e => {
-            (e.currentTarget as HTMLButtonElement).style.transform = 'scale(1.05)';
-          }}
-          onMouseLeave={e => {
-            (e.currentTarget as HTMLButtonElement).style.transform = 'scale(1)';
-          }}
-        >
-          PLAY
-        </button>
 
         {/* Instructions */}
-        <div
-          style={{
-            color: '#475569',
-            fontSize: 12,
-            textAlign: 'center',
-            lineHeight: 1.8,
-          }}
-        >
-          🖱️ Move mouse to steer &nbsp;|&nbsp; 📱 Use joystick on mobile
-          <br />
-          Collect coins to grow • Avoid other snakes
+        <div className="text-center text-white/30 text-xs space-y-1">
+          <p>🖱️ Mouse / Joystick to steer</p>
+          <p>🐍 Eat coins &amp; orbs to grow</p>
+          <p>💀 Avoid other snakes' bodies</p>
+          <p>⚡ Kill snakes to collect their drops!</p>
         </div>
+
+        {/* Footer */}
+        <p className="text-white/20 text-xs mt-4">
+          Built with ❤️ using{' '}
+          <a
+            href={`https://caffeine.ai/?utm_source=Caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(
+              typeof window !== 'undefined' ? window.location.hostname : 'snake-game-3d'
+            )}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline hover:text-white/50"
+          >
+            caffeine.ai
+          </a>
+        </p>
       </div>
     </div>
   );
-};
-
-export default SpaceSnakeMainMenu;
+}

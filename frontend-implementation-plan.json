@@ -1,78 +1,58 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Add landscape orientation enforcement and tilt/gyroscope controls for mobile gameplay",
+  "title": "Fix coin counter bug and reposition minimap + joystick",
   "requirements": [
     {
       "id": "REQ-1",
-      "summary": "Enforce landscape orientation for the game screen by showing RotateToLandscapeOverlay in portrait mode and pausing gameplay",
+      "summary": "Fix coin collection counter initialization and increment logic to prevent negative overflow",
       "acceptanceCriteria": [
-        "On a mobile device in portrait mode, the RotateToLandscapeOverlay is shown and the game is paused.",
-        "When the device is rotated to landscape, the overlay disappears and the game resumes.",
-        "On desktop or landscape-oriented devices the overlay is never shown.",
-        "The useLandscapeOrientation hook (frontend/src/snake/useLandscapeOrientation.ts) is used to detect orientation."
+        "Coin counter initializes to 0 at game start",
+        "Each coin pickup increments the counter by exactly 1 (or the correct coin value)",
+        "Counter never displays negative values",
+        "Counter displays correctly as 'collected/target' (e.g., '1/30') with no overflow or sign errors"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/snake/SpaceSnakeScreen.tsx",
-          "operation": "modify",
-          "description": "Import and use the useLandscapeOrientation hook to detect orientation state. When isLandscape is false on mobile, render the RotateToLandscapeOverlay component above all other game UI. Pass the orientation state down to useSpaceSnakeGame so the game loop can pause when in portrait mode."
-        },
-        {
           "path": "frontend/src/snake/useSpaceSnakeGame.ts",
           "operation": "modify",
-          "description": "Accept an isLandscape boolean parameter. When isLandscape is false, pause the game loop by skipping all game state updates in the requestAnimationFrame callback. Ensure the game resumes automatically when isLandscape becomes true again."
+          "description": "Fix the coin counter state initialization and update logic in the useSpaceSnakeGame hook. Ensure coinsCollected initializes to 0 in the initial game state and that coin collection increments the counter by exactly 1 (or the pickup's value field) without arithmetic errors. Review the collision detection and coin pickup handling to ensure the counter never goes negative or overflows."
+        },
+        {
+          "path": "frontend/src/snake/SpaceSnakeMissionBanner.tsx",
+          "operation": "modify",
+          "description": "Verify that SpaceSnakeMissionBanner correctly receives and displays the coinsCollected and coinsTarget props. Ensure the display format is 'collected/target' and that negative or malformed values are handled gracefully (e.g., clamping to 0 or showing an error state)."
         }
       ]
     },
     {
       "id": "REQ-2",
-      "summary": "Add gyroscope/tilt steering as an alternative input method using DeviceOrientation API gamma axis with deadzone",
+      "summary": "Move minimap component to the top-left corner of the screen",
       "acceptanceCriteria": [
-        "Tilting the phone left/right in landscape mode steers the player snake left/right.",
-        "A deadzone of approximately ±5° gamma prevents accidental steering from minor tilt.",
-        "The joystick still works and can override tilt input.",
-        "Tilt input feeds into the same angle/steering pipeline used by the joystick in useSpaceSnakeGame.ts.",
-        "On devices without DeviceOrientation support, tilt control is silently skipped with no errors.",
-        "If the browser requires a permission request for DeviceOrientation (e.g. iOS 13+), prompt the user on first tilt interaction or game start."
+        "Minimap is positioned at the top-left corner of the screen",
+        "Minimap does not overlap the mission banner or other top-center HUD elements",
+        "Minimap remains fully visible and does not clip off screen edges"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/snake/useTiltControls.ts",
-          "operation": "create",
-          "description": "Create a new React hook that sets up DeviceOrientation event listeners when tilt is enabled. Map the gamma axis (left/right tilt) to a steering angle, applying a ±5° deadzone to filter noise. Handle iOS 13+ permission requests by calling DeviceOrientationEvent.requestPermission() if the API exists. Return the current tilt angle and a method to request permission. Implement proper cleanup of event listeners on unmount."
-        },
-        {
-          "path": "frontend/src/snake/useSpaceSnakeGame.ts",
-          "operation": "modify",
-          "description": "Accept a tiltEnabled boolean and tiltAngle number as parameters. In the game loop, when tiltEnabled is true and tiltAngle is not null, use the tilt angle to update the player direction. Ensure tilt input and joystick input can both control the snake, with the most recent input taking precedence by comparing timestamps or simply allowing both to set the angle."
-        },
-        {
           "path": "frontend/src/snake/SpaceSnakeScreen.tsx",
           "operation": "modify",
-          "description": "Import and use the new useTiltControls hook. Pass the tiltEnabled state (from localStorage via REQ-3) and retrieve the current tiltAngle. Forward tiltEnabled and tiltAngle to useSpaceSnakeGame. Handle permission requests by triggering the permission method from useTiltControls when the game starts or when the user first interacts with tilt controls."
+          "description": "Update the positioning styles for the SpaceSnakeMinimap component in SpaceSnakeScreen.tsx. Change the absolute positioning from right-side to top-left corner using appropriate top and left values (e.g., top-4 left-4 or equivalent spacing). Ensure the minimap does not overlap the top-center SpaceSnakeMissionBanner and remains fully visible within the viewport."
         }
       ]
     },
     {
       "id": "REQ-3",
-      "summary": "Add a tilt-control toggle button in the HUD that persists to localStorage and shows active/inactive state",
+      "summary": "Move joystick component upward from the bottom edge of the screen",
       "acceptanceCriteria": [
-        "A small tilt toggle button is visible in the game HUD on mobile (hidden on desktop).",
-        "The button clearly indicates active/inactive tilt mode with a visual difference (e.g. icon color or label).",
-        "Toggling persists to localStorage and is restored on reload.",
-        "When tilt is disabled, only joystick input steers the snake."
+        "Joystick is visually raised from the bottom edge by a noticeable margin (e.g., at least 16–24px or equivalent spacing)",
+        "Joystick remains in the lower-left area of the screen and is fully accessible via touch"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/snake/SpaceSnakeTiltToggle.tsx",
-          "operation": "create",
-          "description": "Create a new component that renders a small toggle button for tilt controls. The button should display an icon (e.g. phone/gyroscope icon) with visual state indicating active (e.g. bright color) or inactive (e.g. dimmed/gray). Accept tiltEnabled and onToggle props. Hide the button on desktop using CSS media queries or the useLandscapeOrientation hook to detect mobile. Use Tailwind classes for styling consistent with the existing Space Snake HUD design."
-        },
-        {
           "path": "frontend/src/snake/SpaceSnakeScreen.tsx",
           "operation": "modify",
-          "description": "Add state management for tiltEnabled using useState, initializing from localStorage key 'spaceSnakeTiltEnabled'. Implement a toggle handler that updates state and persists the new value to localStorage. Render the SpaceSnakeTiltToggle component in the HUD area (positioned near other controls like the joystick or minimap). Pass tiltEnabled and the toggle handler as props."
+          "description": "Update the positioning styles for the SpaceSnakeJoystick component in SpaceSnakeScreen.tsx. Adjust the bottom positioning value to add a noticeable margin (e.g., change from bottom-0 to bottom-4 or bottom-6) so the joystick is raised from the very bottom edge while remaining in the lower-left area and fully accessible for touch input."
         }
       ]
     }

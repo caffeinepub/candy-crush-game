@@ -1,13 +1,33 @@
 import React, { useRef, useEffect } from 'react';
-import { GameState, WORLD_SIZE } from './spaceSnakeLogic';
+import { SpaceSnake, SpaceSnakeCoin, SpaceSnakeColorPoint, SPAWN_RADIUS } from './spaceSnakeLogic';
 
-interface Props {
-  gameState: GameState;
+interface SpaceSnakeMinimapProps {
+  player: SpaceSnake | null;
+  bots: SpaceSnake[];
+  coins: SpaceSnakeCoin[];
+  points: SpaceSnakeColorPoint[];
 }
 
-const MAP_SIZE = 110;
+const MINIMAP_SIZE = 120;
+const VIEW_RADIUS = SPAWN_RADIUS * 1.2;
 
-const SpaceSnakeMinimap: React.FC<Props> = ({ gameState }) => {
+const POINT_COLOR_MAP: Record<string, string> = {
+  red: '#ff4444',
+  green: '#44ff88',
+  blue: '#4488ff',
+  yellow: '#ffee44',
+  purple: '#cc44ff',
+  cyan: '#44ffee',
+  orange: '#ff8844',
+  pink: '#ff44aa',
+};
+
+export default function SpaceSnakeMinimap({
+  player,
+  bots,
+  coins,
+  points,
+}: SpaceSnakeMinimapProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -16,79 +36,99 @@ const SpaceSnakeMinimap: React.FC<Props> = ({ gameState }) => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const dpr = window.devicePixelRatio || 1;
-    canvas.width = MAP_SIZE * dpr;
-    canvas.height = MAP_SIZE * dpr;
-    ctx.scale(dpr, dpr);
-
-    const scale = MAP_SIZE / WORLD_SIZE;
+    const size = MINIMAP_SIZE;
+    ctx.clearRect(0, 0, size, size);
 
     // Background
-    ctx.fillStyle = 'rgba(5,15,40,0.75)';
+    ctx.fillStyle = 'rgba(5,5,20,0.85)';
     ctx.beginPath();
-    ctx.arc(MAP_SIZE / 2, MAP_SIZE / 2, MAP_SIZE / 2, 0, Math.PI * 2);
+    ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
     ctx.fill();
 
     // Border
-    ctx.strokeStyle = 'rgba(0,200,255,0.5)';
+    ctx.strokeStyle = 'rgba(0,229,255,0.4)';
     ctx.lineWidth = 1.5;
     ctx.beginPath();
-    ctx.arc(MAP_SIZE / 2, MAP_SIZE / 2, MAP_SIZE / 2 - 1, 0, Math.PI * 2);
+    ctx.arc(size / 2, size / 2, size / 2 - 1, 0, Math.PI * 2);
     ctx.stroke();
+
+    if (!player || player.segments.length === 0) return;
+
+    const cx = player.segments[0].x;
+    const cy = player.segments[0].y;
+    const scale = (size / 2) / VIEW_RADIUS;
+
+    const toMinimap = (wx: number, wy: number) => ({
+      mx: size / 2 + (wx - cx) * scale,
+      my: size / 2 + (wy - cy) * scale,
+    });
 
     // Clip to circle
     ctx.save();
     ctx.beginPath();
-    ctx.arc(MAP_SIZE / 2, MAP_SIZE / 2, MAP_SIZE / 2 - 2, 0, Math.PI * 2);
+    ctx.arc(size / 2, size / 2, size / 2 - 2, 0, Math.PI * 2);
     ctx.clip();
 
-    // Coins
-    for (const coin of gameState.coins) {
-      const mx = coin.x * scale;
-      const my = coin.y * scale;
+    // Draw coins
+    for (const coin of coins) {
+      const { mx, my } = toMinimap(coin.x, coin.y);
       ctx.beginPath();
-      ctx.arc(mx, my, 2.5, 0, Math.PI * 2);
+      ctx.arc(mx, my, 2, 0, Math.PI * 2);
       ctx.fillStyle = '#ffd700';
       ctx.fill();
     }
 
-    // Bots
-    for (const bot of gameState.bots) {
-      if (!bot.alive || bot.segments.length === 0) continue;
-      const head = bot.segments[0];
-      const mx = head.x * scale;
-      const my = head.y * scale;
+    // Draw colored points
+    for (const pt of points) {
+      const { mx, my } = toMinimap(pt.x, pt.y);
+      ctx.beginPath();
+      ctx.arc(mx, my, 2, 0, Math.PI * 2);
+      ctx.fillStyle = POINT_COLOR_MAP[pt.color] || '#fff';
+      ctx.fill();
+    }
+
+    // Draw bots
+    for (const bot of bots) {
+      if (bot.segments.length === 0) continue;
+      const { mx, my } = toMinimap(bot.segments[0].x, bot.segments[0].y);
       ctx.beginPath();
       ctx.arc(mx, my, 3, 0, Math.PI * 2);
       ctx.fillStyle = bot.color;
       ctx.fill();
     }
 
-    // Player
-    if (gameState.player.alive && gameState.player.segments.length > 0) {
-      const head = gameState.player.segments[0];
-      const mx = head.x * scale;
-      const my = head.y * scale;
-      ctx.beginPath();
-      ctx.arc(mx, my, 4, 0, Math.PI * 2);
-      ctx.fillStyle = '#fff';
-      ctx.fill();
-    }
+    // Draw player
+    ctx.beginPath();
+    ctx.arc(size / 2, size / 2, 4, 0, Math.PI * 2);
+    ctx.fillStyle = '#00e5ff';
+    ctx.fill();
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    // Direction indicator
+    const dirLen = 8;
+    ctx.beginPath();
+    ctx.moveTo(size / 2, size / 2);
+    ctx.lineTo(
+      size / 2 + Math.cos(player.angle) * dirLen,
+      size / 2 + Math.sin(player.angle) * dirLen
+    );
+    ctx.strokeStyle = '#00e5ff';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
 
     ctx.restore();
-  });
+  }, [player, bots, coins, points]);
 
   return (
-    <canvas
-      ref={canvasRef}
-      style={{
-        width: MAP_SIZE,
-        height: MAP_SIZE,
-        borderRadius: '50%',
-        display: 'block',
-      }}
-    />
+    <div className="absolute top-4 left-4 z-20">
+      <canvas
+        ref={canvasRef}
+        width={MINIMAP_SIZE}
+        height={MINIMAP_SIZE}
+        style={{ width: MINIMAP_SIZE, height: MINIMAP_SIZE }}
+      />
+    </div>
   );
-};
-
-export default SpaceSnakeMinimap;
+}

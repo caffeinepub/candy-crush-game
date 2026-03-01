@@ -19,12 +19,9 @@ import { MultiplayerRoomProvider } from './multiplayer/MultiplayerRoomContext';
 import { useMultiplayerRoom } from './multiplayer/useMultiplayerRoom';
 import { useRoomPolling } from './multiplayer/useRoomPolling';
 import { useInputSubmission } from './multiplayer/useInputSubmission';
-import MultiplayerSnakeCanvas from './multiplayer/MultiplayerSnakeCanvas';
-import MultiplayerHUD from './multiplayer/MultiplayerHUD';
 import MultiplayerConnectionIndicator from './multiplayer/MultiplayerConnectionIndicator';
 import MultiplayerConnectingScreen from './multiplayer/MultiplayerConnectingScreen';
 import MultiplayerRoomCodePanel from './multiplayer/MultiplayerRoomCodePanel';
-import { MultiplayerGameState, MultiplayerSnake } from './multiplayer/types';
 
 // Reduced zoom for more spacious view
 const ZOOM = 0.6;
@@ -69,7 +66,6 @@ function SnakeScreenContent() {
   const handleStartMultiplayer = (code: string, nickname: string) => {
     setIsMultiplayer(true);
     setMultiplayerNickname(nickname);
-    // Don't start single-player game loop
   };
 
   const handleLeaveMultiplayer = () => {
@@ -77,34 +73,6 @@ function SnakeScreenContent() {
     setMultiplayerNickname('');
     leaveRoom();
   };
-
-  // Convert backend room state to renderable multiplayer state
-  const multiplayerGameState: MultiplayerGameState | null = roomState && roomState.players.length > 0 ? {
-    snakes: roomState.players.map(([id, nickname], index): MultiplayerSnake => ({
-      id,
-      nickname,
-      segments: roomState.worldState.snakes[index]?.body.map(coord => ({
-        x: Number(coord.x),
-        y: Number(coord.y),
-      })) || [],
-      angle: 0,
-      score: Number(roomState.worldState.snakes[index]?.score || 0),
-      color: `hsl(${index * 60}, 70%, 50%)`,
-      isLocalPlayer: nickname === multiplayerNickname,
-    })),
-    pickups: roomState.worldState.snacks.map((coord, index) => ({
-      position: { x: Number(coord.x), y: Number(coord.y) },
-      type: 'small',
-      radius: 10,
-    })),
-    worldSize: {
-      width: Number(roomState.worldState.worldSize.x) || 2000,
-      height: Number(roomState.worldState.worldSize.y) || 2000,
-    },
-    timeRemaining: Number(roomState.worldState.timeRemaining),
-  } : null;
-
-  const localPlayerId = roomState?.players.find(([_, nick]) => nick === multiplayerNickname)?.[0] || '';
 
   // Keyboard controls (Arrow keys + WASD)
   useEffect(() => {
@@ -210,47 +178,24 @@ function SnakeScreenContent() {
             ref={playfieldRef}
             className="game-board-container snake-board-container"
           >
-            {/* Canvas */}
-            {isMultiplayer && multiplayerGameState ? (
-              <MultiplayerSnakeCanvas
-                gameState={multiplayerGameState}
-                localPlayerId={localPlayerId}
-                viewportWidth={viewport.width}
-                viewportHeight={viewport.height}
-                canvasWidth={viewport.canvasWidth}
-                canvasHeight={viewport.canvasHeight}
-                dpr={viewport.dpr}
-                zoom={ZOOM}
-              />
-            ) : (
-              <SnakeCanvas
-                gameState={gameState}
-                viewportWidth={viewport.width}
-                viewportHeight={viewport.height}
-                canvasWidth={viewport.canvasWidth}
-                canvasHeight={viewport.canvasHeight}
-                dpr={viewport.dpr}
-                zoom={ZOOM}
-              />
-            )}
+            {/* Canvas — always single-player; multiplayer canvas requires backend getRoomState */}
+            <SnakeCanvas
+              gameState={gameState}
+              viewportWidth={viewport.width}
+              viewportHeight={viewport.height}
+              canvasWidth={viewport.canvasWidth}
+              canvasHeight={viewport.canvasHeight}
+              dpr={viewport.dpr}
+              zoom={ZOOM}
+            />
 
-            {/* HUD */}
-            {isMultiplayer && multiplayerGameState ? (
-              <MultiplayerHUD
-                snakes={multiplayerGameState.snakes}
-                localPlayerId={localPlayerId}
-                viewportWidth={viewport.width}
-                viewportHeight={viewport.height}
-                zoom={ZOOM}
-              />
-            ) : (
-              <SnakeHUD 
-                gameState={gameState}
-                viewportWidth={viewport.width}
-                viewportHeight={viewport.height}
-                zoom={ZOOM}
-              />
-            )}
+            {/* HUD — always single-player */}
+            <SnakeHUD 
+              gameState={gameState}
+              viewportWidth={viewport.width}
+              viewportHeight={viewport.height}
+              zoom={ZOOM}
+            />
 
             {/* Multiplayer room code panel */}
             {isMultiplayer && roomCode && (

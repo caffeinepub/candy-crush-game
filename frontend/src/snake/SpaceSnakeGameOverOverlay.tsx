@@ -1,71 +1,69 @@
 import React from 'react';
+import { Button } from '@/components/ui/button';
+import { Trophy, RotateCcw, Home, Skull } from 'lucide-react';
 
-interface Props {
+interface SpaceSnakeGameOverOverlayProps {
   score: number;
-  rank: number;
+  deathReason?: string;
   onPlayAgain: () => void;
+  onGoToMenu: () => void;
 }
 
-const SpaceSnakeGameOverOverlay: React.FC<Props> = ({ score, rank, onPlayAgain }) => {
+export default function SpaceSnakeGameOverOverlay({
+  score,
+  deathReason,
+  onPlayAgain,
+  onGoToMenu,
+}: SpaceSnakeGameOverOverlayProps) {
   return (
-    <div
-      className="absolute inset-0 z-50 flex items-center justify-center"
-      style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)' }}
-    >
+    <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
       <div
-        style={{
-          background: 'rgba(5,15,40,0.95)',
-          border: '2px solid rgba(0,200,255,0.6)',
-          borderRadius: 16,
-          padding: '32px 48px',
-          textAlign: 'center',
-          boxShadow: '0 0 40px rgba(0,200,255,0.3)',
-        }}
+        className="flex flex-col items-center gap-5 rounded-2xl border border-white/10 bg-black/80 p-8 shadow-2xl"
+        style={{ minWidth: 280 }}
       >
-        <div
-          style={{
-            color: '#f87171',
-            fontSize: 32,
-            fontWeight: 'bold',
-            marginBottom: 8,
-            textShadow: '0 0 16px rgba(248,113,113,0.8)',
-          }}
-        >
-          GAME OVER
+        {/* Icon */}
+        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-red-900/40 border border-red-500/40">
+          <Skull className="h-8 w-8 text-red-400" />
         </div>
-        <div style={{ color: '#94a3b8', fontSize: 14, marginBottom: 16 }}>
-          You were eliminated!
-        </div>
-        <div style={{ display: 'flex', gap: 32, justifyContent: 'center', marginBottom: 24 }}>
-          <div>
-            <div style={{ color: '#64748b', fontSize: 12 }}>SCORE</div>
-            <div style={{ color: '#ffd700', fontSize: 28, fontWeight: 'bold' }}>{score}</div>
+
+        {/* Title */}
+        <h2 className="text-2xl font-bold tracking-widest text-white uppercase">
+          Game Over
+        </h2>
+
+        {/* Death reason */}
+        {deathReason && (
+          <p className="text-sm text-red-300 text-center max-w-xs">{deathReason}</p>
+        )}
+
+        {/* Score */}
+        <div className="flex flex-col items-center gap-1">
+          <div className="flex items-center gap-2 text-yellow-400">
+            <Trophy className="h-5 w-5" />
+            <span className="text-3xl font-bold tabular-nums">{score}</span>
           </div>
-          <div>
-            <div style={{ color: '#64748b', fontSize: 12 }}>RANK</div>
-            <div style={{ color: '#f97316', fontSize: 28, fontWeight: 'bold' }}>#{rank}</div>
-          </div>
+          <span className="text-xs text-white/50 uppercase tracking-widest">Final Score</span>
         </div>
-        <button
-          onClick={onPlayAgain}
-          style={{
-            background: 'linear-gradient(135deg, #0ea5e9, #0284c7)',
-            color: '#fff',
-            border: 'none',
-            borderRadius: 8,
-            padding: '12px 32px',
-            fontSize: 16,
-            fontWeight: 'bold',
-            cursor: 'pointer',
-            letterSpacing: 1,
-            boxShadow: '0 0 16px rgba(14,165,233,0.5)',
-          }}
-        >
-          PLAY AGAIN
-        </button>
+
+        {/* Buttons */}
+        <div className="flex flex-col gap-3 w-full mt-2">
+          <Button
+            onClick={onPlayAgain}
+            className="w-full gap-2 bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-3 text-base"
+          >
+            <RotateCcw className="h-4 w-4" />
+            Play Again
+          </Button>
+          <Button
+            onClick={onGoToMenu}
+            variant="outline"
+            className="w-full gap-2 border-white/20 text-white hover:bg-white/10 py-3 text-base"
+          >
+            <Home className="h-4 w-4" />
+            Go to Menu
+          </Button>
+        </div>
       </div>
     </div>
   );
-};
-
-export default SpaceSnakeGameOverOverlay;
+}
